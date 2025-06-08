@@ -1,0 +1,90 @@
+.view-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .view-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .view-toggle {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .toggle-button {
+    padding: 0 16px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .toggle-button mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+  
+  ::ng-deep .mat-button-toggle-checked {
+    background-color: #3f51b5;
+    color: white;
+  }
+  
+  ::ng-deep .mat-button-toggle-group {
+    border: none;
+  }
+  
+  ::ng-deep .mat-button-toggle {
+    background-color: #f5f5f5;
+    color: #666;
+    transition: all 0.2s ease;
+  }
+  
+  ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
+    background-color: #e0e0e0;
+  }
+  
+  .view-content {
+    width: 100%;
+  }
+  
+  .table-container, .calendar-container {
+    width: 100%;
+    min-height: 400px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 768px) {
+    .view-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .view-toggle {
+      width: 100%;
+    }
+    
+    .toggle-button {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+  
+  

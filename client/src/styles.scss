@@ -1,0 +1,80 @@
+@use '@angular/material' as mat;
+@use 'palettes';
+
+$my-primary: mat.define-palette(palettes.$m2-primary);
+$my-accent: mat.define-palette(palettes.$m2-accent, A200, A100, A400);
+$my-warn: mat.define-palette(palettes.$m2-error);
+
+$my-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+      warn: $my-warn,
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+$my-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+      warn: $my-warn,
+    ),
+  )
+);
+
+// Include core Material styles
+@include mat.core();
+
+// Remove default spacing and add theme styles
+mat-toolbar {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+mat-sidenav {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+// Apply light theme
+@include mat.all-component-themes($my-theme);
+
+// Body background for light theme
+body {
+  margin: 0;
+  padding: 0;
+  background-color: mat.get-color-from-palette(palettes.$m2-primary, 50);
+  color: mat.get-color-from-palette(palettes.$m2-primary, 900);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
+// Dark theme overrides
+.dark {
+  @include mat.all-component-colors($my-dark-theme);
+
+  body {
+    background-color: mat.get-color-from-palette(palettes.$m2-primary, 900);
+    color: mat.get-color-from-palette(palettes.$m2-primary, 50);
+  }
+  
+  mat-toolbar {
+    padding-top: 0;
+    margin-top: 0;
+  }
+  
+  mat-sidenav {
+    padding-left: 0;
+    margin-left: 0;
+  }
+}

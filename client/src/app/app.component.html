@@ -1,0 +1,122 @@
+<!-- Full template -->
+<div>
+<app-notifications></app-notifications>
+
+<!-- Fullscreen layout for login page -->
+<div *ngIf="isLoginPage" class="fullscreen-container">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Regular layout with sidebar for authenticated pages -->
+<mat-sidenav-container *ngIf="!isLoginPage" class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav 
+    #sidenav 
+    mode="side" 
+    opened 
+    class="sidenav"
+    [fixedInViewport]="true"
+    fixedTopGap="0">
+    <mat-toolbar class="sidenav-header">
+      <span class="app-title">TimeTracking</span>
+    </mat-toolbar>
+    
+    <!-- Navigation menu -->
+    <mat-nav-list class="nav-list" *ngIf="isLoggedIn">
+      <mat-list-item 
+        routerLink="/clocking"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: false}"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">access_time</mat-icon>
+        <span matListItemTitle class="nav-text">Clock In/Out & Leave</span>
+      </mat-list-item>
+      
+      <mat-list-item 
+        routerLink="/absence-requests"
+        routerLinkActive="active-link"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">coffee</mat-icon>
+        <span matListItemTitle class="nav-text">Absence Requests</span>
+      </mat-list-item>
+      
+      <mat-list-item 
+        routerLink="/modify"
+        routerLinkActive="active-link"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">edit</mat-icon>
+        <span matListItemTitle class="nav-text">Modify Clocking</span>
+      </mat-list-item>
+      
+      <mat-list-item 
+        routerLink="/holiday"
+        routerLinkActive="active-link"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">beach_access</mat-icon>
+        <span matListItemTitle class="nav-text">Holiday Planning</span>
+      </mat-list-item>
+      
+      <mat-list-item 
+        routerLink="/home-office"
+        routerLinkActive="active-link"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">home_work</mat-icon>
+        <span matListItemTitle class="nav-text">Home Office</span>
+      </mat-list-item>
+      
+      <mat-list-item 
+        routerLink="/home-office-requests"
+        routerLinkActive="active-link"
+        class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">pending_actions</mat-icon>
+        <span matListItemTitle class="nav-text">Office Requests</span>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main content -->
+  <mat-sidenav-content class="content-container">
+    <mat-toolbar color="primary" class="main-toolbar" *ngIf="isLoggedIn">
+      <button 
+        mat-icon-button 
+        class="menu-button"
+        (click)="sidenav.toggle()"
+        aria-label="Toggle navigation">
+        <mat-icon>menu</mat-icon>
+      </button>      <span class="toolbar-title">Dashboard</span>
+      <!-- Spacer to push toggle buttons to right -->
+      <span class="spacer"></span>      <!-- Clock Status Indicator -->
+      <app-clock-status-indicator></app-clock-status-indicator>
+      <!-- Username display -->
+      <span class="username" *ngIf="currentUser">{{ currentUser }}</span>
+      <!-- Logout button -->
+      <button 
+        mat-icon-button 
+        (click)="logout()" 
+        aria-label="Logout"
+        matTooltip="Logout"
+        *ngIf="currentUser">
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
+      <!-- Dark theme toggle button -->
+      <button 
+        mat-icon-button 
+        (click)="toggleTheme()" 
+        aria-label="Toggle dark theme">
+        <mat-icon>{{ isDarkTheme ? 'brightness_7' : 'brightness_4' }}</mat-icon>
+      </button>
+      <button
+        mat-icon-button 
+        (click)="settings()" 
+        aria-label="Logout"
+        matTooltip="Logout">
+        <mat-icon>settings</mat-icon>
+      </button>
+    </mat-toolbar>
+    
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+</div>

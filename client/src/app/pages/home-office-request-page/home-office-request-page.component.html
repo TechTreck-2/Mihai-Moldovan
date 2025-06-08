@@ -1,0 +1,46 @@
+<div class="view-container">
+  <div class="view-header">
+    <h2 class="view-title">Home Office Requests</h2>
+
+    <mat-button-toggle-group 
+      [(ngModel)]="activeComponent" 
+      (change)="toggleView(activeComponent)"
+      class="view-toggle"
+      aria-label="View Selection">
+      <mat-button-toggle value="table" class="toggle-button">
+        <mat-icon>view_list</mat-icon>
+        <span>Table View</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="calendar" class="toggle-button">
+        <mat-icon>calendar_today</mat-icon>
+        <span>Calendar View</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div class="view-content">
+    <div *ngIf="activeComponent === 'table'" class="table-container">
+      <app-generic-table 
+        [data]="(homeOfficeRequests$ | async) ?? []"
+        [displayedColumns]="columns"
+        [enableEdit]="true"
+        [enableDelete]="true"
+        [editHandler]="openEditPopup.bind(this)"
+        [deleteHandler]="deleteRequest.bind(this)"
+        [enableAdd]="true"
+        [addHandler]="openAddPopup.bind(this)"
+        [columnDisplayNames]="{
+          startDate: 'Start Date',
+          endDate: 'End date'
+        }"
+        ></app-generic-table>
+    </div>
+
+    <div *ngIf="activeComponent === 'calendar'" class="calendar-container">
+      <calendar [eventInputs]="(calendarEvents$ | async) ?? []"
+      (eventAdded)="onCalendarEventAdded($event)"
+      (eventDeleted)="onCalendarEventDeleted($event)"
+      (eventUpdated)="onCalendarEventUpdated($event)"></calendar>
+    </div>
+  </div>
+</div>

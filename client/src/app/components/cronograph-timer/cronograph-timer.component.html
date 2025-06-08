@@ -1,0 +1,56 @@
+<div class="cronograph">
+  <svg [attr.width]="SVG_SIZE" [attr.height]="SVG_SIZE" [attr.viewBox]="'0 0 ' + SVG_SIZE + ' ' + SVG_SIZE">
+    <defs>
+      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color: #4A90E2" />
+        <stop offset="100%" style="stop-color: #FF6B6B" />
+      </linearGradient>
+    </defs>
+    
+    <circle 
+      [attr.cx]="SVG_CENTER" 
+      [attr.cy]="SVG_CENTER" 
+      [attr.r]="RADIUS" 
+      class="progress-bg"
+    />
+    
+    <circle 
+      [attr.cx]="SVG_CENTER" 
+      [attr.cy]="SVG_CENTER" 
+      [attr.r]="RADIUS" 
+      class="progress-ring"
+      stroke="url(#progressGradient)"
+      [attr.stroke-dasharray]="CIRCUMFERENCE"
+      [attr.stroke-dashoffset]="strokeDashoffset()"
+    />
+    
+    <text 
+      [attr.x]="SVG_CENTER" 
+      [attr.y]="SVG_CENTER - 80" 
+      class="target-time"
+    >
+      Target: 8:00:00
+    </text>
+    
+    <text [attr.x]="SVG_CENTER" [attr.y]="SVG_CENTER - 20" class="time-value">
+      {{formatTimeUnit(hours())}}
+    </text>
+    <text [attr.x]="SVG_CENTER" [attr.y]="SVG_CENTER + 5" class="time-label">
+      HOURS
+    </text>
+    
+    <text [attr.x]="SVG_CENTER - 50" [attr.y]="SVG_CENTER + 50" class="time-value">
+      {{formatTimeUnit(minutes())}}
+    </text>
+    <text [attr.x]="SVG_CENTER - 50" [attr.y]="SVG_CENTER + 75" class="time-label">
+      MIN
+    </text>
+    
+    <text [attr.x]="SVG_CENTER + 50" [attr.y]="SVG_CENTER + 50" class="time-value">
+      {{formatTimeUnit(seconds())}}
+    </text>
+    <text [attr.x]="SVG_CENTER + 50" [attr.y]="SVG_CENTER + 75" class="time-label">
+      SEC
+    </text>
+  </svg>
+</div>

@@ -1,0 +1,56 @@
+.cronograph {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 30px;
+}
+
+.progress-bg {
+  fill: none;
+  stroke: #f0f0f0;
+  stroke-width: 8;
+}
+
+.progress-ring {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.time-value {
+  font-size: 36px;
+  font-weight: 500;
+  fill: #333;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.time-label {
+  font-size: 14px;
+  font-weight: 400;
+  fill: #666;
+  text-anchor: middle;
+}
+
+.target-time {
+  font-size: 14px;
+  font-weight: 400;
+  fill: #666;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+:host-context(body.dark) .time-value{
+  fill: white;
+}
+
+:host-context(body.dark) .time-label{
+  fill: white;
+}
+
+:host-context(body.dark) .target-time{
+  fill: white;
+}

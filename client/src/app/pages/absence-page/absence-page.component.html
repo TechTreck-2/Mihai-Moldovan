@@ -1,0 +1,18 @@
+<div class="table-container">
+  <app-generic-table
+    [displayedColumns]="displayedColumns" 
+    [data]="absenceRequests" 
+    [pageSizeOptions]="[5, 10, 20]"
+    [editHandler]="editAbsenceRequests.bind(this)"
+    [deleteHandler]="deleteAbsenceRequest.bind(this)"
+    [enableEdit]="true"
+    [enableDelete]="true"
+    [enableAdd]="true"
+    [addHandler]="openAbsencePopup.bind(this)"
+    [columnDisplayNames]="{
+      startTime: 'Start Time',
+      endTime: 'End Time',
+      description: 'Description'
+    }">
+  </app-generic-table>
+</div>

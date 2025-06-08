@@ -1,0 +1,250 @@
+// Assuming your theme file is at src/styles/themes.scss
+@use '@angular/material' as mat;
+@use '../../../../styles.scss' as theme; // Adjust path based on your project structure
+
+// Get colors from your custom theme
+$primary: mat.get-color-from-palette(theme.$my-primary, 500);
+$accent: mat.get-color-from-palette(theme.$my-accent, 500);
+$warn: mat.get-color-from-palette(theme.$my-warn, 500);
+$background-light: #ffffff;
+$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
+$text-primary-light: rgba(0, 0, 0, 0.87);
+$text-primary-dark: rgba(255, 255, 255, 0.87);
+$text-secondary-light: #5f6368;
+$text-secondary-dark: rgba(255, 255, 255, 0.7);
+$divider-light: #e0e0e0;
+$divider-dark: rgba(255, 255, 255, 0.12);
+
+.generic-table-container {
+  font-family: 'Roboto', sans-serif;
+  color: $text-primary-light;
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .add-button {
+      @include mat.button-theme(theme.$my-theme); // Use imported theme
+      background-color: $primary;
+      color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+      padding: 8px 16px;
+      border-radius: 8px;
+
+      mat-icon {
+        margin-right: 8px;
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba($primary, 0.2);
+      }
+    }
+  }
+
+  .table-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    background: $background-light;
+    border: 1px solid $divider-light;
+
+    .data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+
+      .no-data-row {
+        .no-data-cell {
+          padding: 24px;
+          text-align: center;
+          color: $text-secondary-light;
+          border-bottom: 1px solid $divider-light;
+        }
+      }
+
+      .header-row {
+        background-color: mat.get-color-from-palette(theme.$my-primary, 50);
+
+        .column-header,
+        .actions-header {
+          color: $text-primary-light;
+          border-bottom: 2px solid mat.get-color-from-palette(theme.$my-primary, 200);
+          border-right: 1px solid mat.get-color-from-palette(theme.$my-primary, 100);
+        }
+      }
+
+      .data-row {
+        &:hover {
+          background-color: rgba($primary, 0.04);
+        }
+
+        .column-cell {
+          color: $text-primary-light;
+          border-right: 1px solid $divider-light;
+
+          .cell-content {
+            max-width: 250px;
+          }
+        }
+
+        .actions-cell {
+          border-right: 1px solid $divider-light;
+
+          .action-buttons {
+            .divider {
+              background-color: $divider-light;
+            }
+
+            .edit-button {
+              color: $primary;
+              
+              &:hover {
+                background-color: rgba($primary, 0.08);
+              }
+            }
+
+            .delete-button {
+              color: $warn;
+              
+              &:hover {
+                background-color: rgba($warn, 0.08);
+              }
+            }
+          }
+        }
+      }
+
+      .data-row:nth-child(even) {
+        background-color: rgba($primary, 0.02);
+      }
+
+      .custom-paginator {
+        background-color: mat.get-color-from-palette(theme.$my-primary, 50);
+        border-top: 1px solid $divider-light;
+      }
+    }
+  }
+
+  // Context Menu Styles
+  .context-menu {
+    position: absolute; // Positioning for popup
+    z-index: 1000; // Display on top of other elements
+    background: $background-light;
+    border: 1px solid $divider-light;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 8px 0;
+
+    button {
+      width: 100%;
+      text-align: left;
+      padding: 8px 16px;
+      color: $text-primary-light;
+      background: none;
+      border: none;
+      cursor: pointer;
+      
+      &:hover {
+        background: rgba($primary, 0.05);
+      }
+    }
+  }
+}
+
+// Dark mode styles using :host-context(body.dark)
+:host-context(body.dark) {
+  .generic-table-container {
+    color: $text-primary-dark;
+
+    .table-header {
+      .add-button {
+        @include mat.button-theme(theme.$my-dark-theme); // Use dark theme for buttons
+        background-color: $primary;
+        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+      }
+    }
+
+    .table-wrapper {
+      background: $background-dark;
+      border-color: $divider-dark;
+
+      .data-table {
+        .no-data-row {
+          .no-data-cell {
+            color: $text-secondary-dark;
+            border-bottom-color: $divider-dark;
+          }
+        }
+
+        .header-row {
+          background-color: mat.get-color-from-palette(theme.$my-primary, 900);
+          
+          .column-header,
+          .actions-header {
+            color: #ffffff; // Set header text to white in dark mode
+            border-bottom-color: mat.get-color-from-palette(theme.$my-primary, 700);
+            border-right-color: mat.get-color-from-palette(theme.$my-primary, 800);
+          }
+        }
+
+        .data-row {
+          &:hover {
+            background-color: rgba($primary, 0.12);
+          }
+
+          .column-cell {
+            color: #ffffff; // Set cell text to white in dark mode
+            border-right-color: $divider-dark;
+          }
+
+          .actions-cell {
+            border-right-color: $divider-dark;
+
+            .action-buttons {
+              .divider {
+                background-color: $divider-dark;
+              }
+
+              .edit-button {
+                &:hover {
+                  background-color: rgba($primary, 0.12);
+                }
+              }
+
+              .delete-button {
+                &:hover {
+                  background-color: rgba($warn, 0.12);
+                }
+              }
+            }
+          }
+        }
+
+        .data-row:nth-child(even) {
+          background-color: rgba($primary, 0.06);
+        }
+
+        .custom-paginator {
+          background-color: mat.get-color-from-palette(theme.$my-primary, 900);
+          border-top-color: $divider-dark;
+        }
+      }
+    }
+
+    .context-menu {
+      background: $background-dark;
+      border-color: $divider-dark;
+
+      button {
+        color: #ffffff; // Ensure text is white in dark mode
+        
+        &:hover {
+          background: rgba($primary, 0.12);
+        }
+      }
+    }
+  }
+}

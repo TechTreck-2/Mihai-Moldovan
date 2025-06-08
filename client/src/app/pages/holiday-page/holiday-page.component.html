@@ -1,0 +1,65 @@
+<app-notifications></app-notifications>
+<div class="holiday-planner-container">
+    <div class="top-section">
+      <!-- Filter section -->
+      <div class="filter-container">
+        <div class="filter-content">
+          <div class="filter-header">
+            <h2>Holiday Planner</h2>
+          </div>
+  
+          <div class="date-picker-group">
+            <mat-form-field appearance="fill">
+              <mat-label>Start Date</mat-label>
+              <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="startDate">
+              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #startDatePicker></mat-datepicker>
+            </mat-form-field>
+  
+            <mat-form-field appearance="fill">
+              <mat-label>End Date</mat-label>
+              <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate">
+              <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #endDatePicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          
+          <button mat-raised-button color="primary" (click)="applyFilter()">Apply Filter</button>
+        </div>
+      </div>
+  
+      <!-- Summary card section -->
+      <div class="holiday-summary dark">
+        <div class="holiday-summary-text">
+          <p>Total Days: <span>{{ holidayDays.length }}</span></p>
+          <p>Planned Days: <span>{{ getPlannedDays() }}</span></p>
+          <p>Days Left to Plan: <span>{{ getUnplannedDays() }}</span></p>
+        </div>
+  
+        <div class="holiday-summary-squares">
+          <div class="holiday-visualizer">
+            <div *ngFor="let day of holidayDays" 
+                 [ngClass]="{'day-square': true, 'planned': day.planned, 'unplanned': !day.planned}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <app-generic-table 
+  [data]="holidays"
+  [displayedColumns]="columns"
+  [enableEdit]="true"
+  [enableDelete]="true"
+  [editHandler]="openEditPopup.bind(this)"
+  [deleteHandler]="deleteRequest.bind(this)"
+  [enableAdd]="true"
+  [addHandler]="openAddPopup.bind(this)"
+  [columnDisplayNames]="{
+    holidayName: 'Holiday Name',
+    startDate: 'Start Date',
+    endDate: 'End Date'
+  }">
+</app-generic-table>
+  </div>
+  

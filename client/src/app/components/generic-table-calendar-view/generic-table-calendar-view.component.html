@@ -1,0 +1,23 @@
+<div>
+    <mat-button-toggle-group [(ngModel)]="activeComponent" (change)="toggleView(activeComponent)">
+      <mat-button-toggle value="table">Table View</mat-button-toggle>
+      <mat-button-toggle value="calendar">Calendar View</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+  
+  <div *ngIf="activeComponent === 'table'">
+    <app-generic-table 
+      [data]="data"
+      [displayedColumns]="columns"
+      [enableEdit]="enableEdit"
+      [enableDelete]="enableDelete"
+      [editHandler]="editHandler"
+      [deleteHandler]="deleteHandler"
+      [enableAdd]="enableAdd"
+      [addHandler]="addHandler">
+    </app-generic-table>
+  </div>
+  
+  <div *ngIf="activeComponent === 'calendar'">
+    <calendar [eventInputs]="calendarEvents"></calendar>
+  </div>

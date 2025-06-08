@@ -1,0 +1,105 @@
+<mat-card class="timer-card">
+  <mat-card-content>
+    <div class="card-content">
+      <div class="main-content">
+        <div class="timer-section">
+          <div class="timer-header">
+            <mat-icon class="timer-icon">timer</mat-icon>
+            <h2 class="mat-headline-6">Work Timer</h2>
+          </div>
+          
+          <div class="timer-wrapper">
+            <app-cronograph-timer 
+              #cronographTimer
+              [targetHours]="2" 
+              [targetMinutes]="0" 
+              [targetSeconds]="0"
+              primaryColor="#3f51b5"
+              secondaryColor="#ff4081"
+              tertiaryColor="#4caf50">
+            </app-cronograph-timer>
+          </div>
+
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" (click)="clockIn()">
+              <mat-icon>login</mat-icon>
+              Clock In
+            </button>
+            <button mat-raised-button color="warn" (click)="clockOut()">
+              <mat-icon>logout</mat-icon>
+              Clock Out
+            </button>
+          </div>
+        </div>        <mat-divider [vertical]="true"></mat-divider>
+        
+        <div class="stats-section">
+          <h2 class="mat-headline-6 stats-header">
+            <mat-icon>analytics</mat-icon>
+            Today's Summary
+          </h2>
+        
+          <div class="stats-grid">
+            <div class="stat-item">
+              <mat-icon class="stat-icon">event</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Current Date</div>
+                <div class="mat-body-2">{{ currentDate }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <mat-icon class="stat-icon">schedule</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Clock In Time</div>
+                <div class="mat-body-2">{{ currentClockInTime || '--:--' }}</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">schedule</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Clock Out Time</div>
+                <div class="mat-body-2">{{ currentClockOutTime || '--:--' }}</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon class="stat-icon">flag</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Daily Quota Progress</div>
+                <div class="mat-body-2">{{ formatTimeElapsed(timeClockedToday) }} / {{ formatTimeElapsed(quota) }}</div>
+              </div>
+            </div>
+            
+            <div class="stat-item">
+              <mat-icon class="stat-icon">calendar_view_week</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Weekly Progress</div>
+                <div class="mat-body-2">{{ formatTimeElapsed(timeClockedThisWeek) }} / {{ formatTimeElapsed(weeklyQuota) }}</div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="weeklyProgress"
+                  class="weekly-progress-bar">
+                </mat-progress-bar>
+              </div>
+            </div>
+            
+            <div class="stat-item week-info">
+              <mat-icon class="stat-icon">date_range</mat-icon>
+              <div class="stat-text">
+                <div class="mat-caption">Current Week</div>
+                <div class="mat-body-2">{{ currentWeekDates.start }} - {{ currentWeekDates.end }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider [vertical]="true"></mat-divider>
+
+        <div class="activity-section">
+          <app-recent-activity-stream></app-recent-activity-stream>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

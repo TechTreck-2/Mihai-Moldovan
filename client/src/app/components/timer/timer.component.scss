@@ -1,0 +1,198 @@
+@use '../../../styles.scss' as theme;
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
+
+mat-icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-card {
+  max-width: 1400px;
+  margin: 2rem auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  .card-content {
+    display: flex;
+    gap: 2rem;
+    padding: 32px;
+    flex-direction: column;
+  }.main-content {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+  .timer-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 1rem;
+
+    .timer-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+
+      .timer-icon {
+        color: #3f51b5;
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .action-buttons {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+
+      button {
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+  .stats-section {
+    flex: 1;
+    padding: 0 1rem;
+
+    .stats-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+
+      mat-icon {
+        color: #4caf50;
+        font-size: 28px;
+      }
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 1.5rem;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+
+        .stat-icon {
+          color: #666;
+          font-size: 24px;
+          padding: 8px;
+          background: white;
+          border-radius: 6px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-text {
+          flex: 1;
+
+          .mat-caption {
+            margin-bottom: 2px;
+          }
+
+          .mat-body-2 {
+            font-weight: 500;
+          }
+
+          .weekly-progress-bar {
+            margin-top: 8px;
+            height: 6px;
+            border-radius: 3px;
+          }
+        }
+
+        &.week-info {
+          .stat-text .mat-body-2 {
+            font-size: 0.85rem;
+            color: #666;
+          }
+        }
+      }
+    }
+  }  .activity-section {
+    flex: 1;
+    padding-left: 1rem;
+    max-height: 600px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  mat-divider {
+    margin: 0 -24px;
+    height: auto;
+  }
+}
+
+:host-context(body.dark) .timer-card{
+  .stats-section {
+
+    .stats-header {
+
+      mat-icon {
+        color: #4caf50;
+        font-size: 28px;
+      }
+    }
+
+    .stats-grid {
+
+      .stat-item {
+        background: #363738;
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .timer-card {
+    max-width: 1200px;
+    
+    .main-content {
+      gap: 2rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .timer-card {
+    .card-content {
+      padding: 16px;
+      
+      .main-content {
+        flex-direction: column;
+        gap: 1rem;
+        
+        .timer-section, .stats-section, .activity-section {
+          padding: 0;
+          flex: none;
+        }
+
+        .activity-section {
+          margin-top: 1rem;
+          max-height: 400px;
+        }
+
+        mat-divider {
+          width: auto;
+          margin: 24px 0;
+        }
+      }
+    }
+  }
+}

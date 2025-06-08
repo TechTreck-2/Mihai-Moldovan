@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Popup</h2>
+    <mat-dialog-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="data.fields?.length">
+        <div *ngFor="let field of data.fields">
+          <mat-form-field appearance="fill">
+            <mat-label>{{ field.label }}</mat-label>
+            <ng-container [ngSwitch]="field.type">
+              <!-- Datepicker case -->
+              <ng-container *ngSwitchCase="'date'">
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  [formControlName]="field.name"
+                  (dateChange)="onDateChange(field.name, $event)">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </ng-container>
+
+              <!-- Select case -->
+              <mat-select *ngSwitchCase="'select'" [formControlName]="field.name">
+                <mat-option *ngFor="let option of field.options" [value]="option.value">
+                  {{ option.viewValue }}
+                </mat-option>
+              </mat-select>
+
+              <!-- Default input case -->
+              <input
+                *ngSwitchDefault
+                matInput
+                [formControlName]="field.name"
+                [type]="field.type">
+            </ng-container>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <ng-container *ngIf="data.embeddedComponent">
+        <ng-container *ngComponentOutlet="data.embeddedComponent; injector: embeddedInjector"></ng-container>
+      </ng-container>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-button (click)="onSubmit()" [disabled]="!form.valid" *ngIf="data.fields?.length">Submit</button>
+    </mat-dialog-actions>

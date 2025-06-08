@@ -1,0 +1,80 @@
+<div class="generic-table-container">
+  <div class="table-header">
+    <button *ngIf="enableAdd" 
+            mat-flat-button 
+            color="primary" 
+            (click)="addHandler()"
+            class="add-button">
+      <mat-icon>add</mat-icon>
+      {{ addButtonLabel }}
+    </button>
+  </div>
+
+  <div class="table-wrapper mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort class="data-table">
+      <!-- Actions Column -->
+      <tr class="no-data-row" *matNoDataRow>
+        <td [attr.colspan]="computedColumns.length" class="no-data-cell">
+          No data available
+        </td>
+      </tr>
+      <ng-container *ngIf="enableEdit || enableDelete" matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+        <td mat-cell *matCellDef="let element" class="actions-cell" (contextmenu)="onRightClick($event, element)">
+          <div class="action-buttons">
+            <button *ngIf="enableEdit" 
+                    mat-button 
+                    (click)="editHandler(element)"
+                    class="edit-button">
+              <mat-icon>edit</mat-icon>
+              <span class="button-label">{{ editButtonLabel }}</span>
+            </button>
+            
+            <div *ngIf="enableEdit && enableDelete" class="divider"></div>
+            
+            <button *ngIf="enableDelete" 
+                    mat-button 
+                    (click)="deleteHandler(element)"
+                    class="delete-button">
+              <mat-icon>delete</mat-icon>
+              <span class="button-label">{{ deleteButtonLabel }}</span>
+            </button>
+          </div>
+          
+        </td>
+      </ng-container>
+
+      <!-- Data Columns with Custom Display Names and Sort Header -->
+      <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+        <th mat-header-cell 
+            *matHeaderCellDef 
+            mat-sort-header 
+            class="column-header">
+          {{ columnDisplayNames[column] || (column | titlecase) }}
+        </th>
+        <td mat-cell 
+            *matCellDef="let element" 
+            class="column-cell" 
+            (contextmenu)="onRightClick($event, element)">
+          <span class="cell-content">{{ element[column] }}</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: computedColumns" class="data-row"></tr>
+    </table>
+
+    <!-- Paginator -->
+    <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="custom-paginator">
+    </mat-paginator>
+  </div>
+
+  <!-- Context Menu -->
+  <div *ngIf="contextMenuVisible" 
+       class="context-menu" 
+       [style.top.px]="contextMenuPosition.y" 
+       [style.left.px]="contextMenuPosition.x">
+    <button mat-menu-item (click)="editHandler(contextMenuRow)">Edit</button>
+    <button mat-menu-item (click)="deleteHandler(contextMenuRow)">Delete</button>
+  </div>
+</div>
