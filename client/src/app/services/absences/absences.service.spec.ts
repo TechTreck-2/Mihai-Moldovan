@@ -82,28 +82,23 @@ describe('AbsencesService', () => {
     });
 
     it('should clear absences on user logout', () => {
-      // Initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush(mockAbsencePayloads);
 
       let currentAbsences: AbsenceRequest[] = [];
       service.absences$.subscribe(absences => currentAbsences = absences);
 
-      // Trigger logout
       userLogoutSubject.next();
 
       expect(currentAbsences).toEqual([]);
     });
 
     it('should reload absences on user login', () => {
-      // Initial load
       const initialReq = httpMock.expectOne('http://localhost:3000/absences');
       initialReq.flush([]);
 
-      // Trigger login
       userLoginSubject.next('testuser');
 
-      // Should trigger another load
       const loginReq = httpMock.expectOne('http://localhost:3000/absences');
       expect(loginReq.request.method).toBe('GET');
       loginReq.flush(mockAbsencePayloads);
@@ -112,19 +107,16 @@ describe('AbsencesService', () => {
 
   describe('createAbsence method', () => {
     beforeEach(() => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush([]);
     });
 
     it('should create absence with valid form data and expect correct backend payload', () => {
-      // Mock form data input
       const formDate = '2025-07-01';
       const formStartTime = '10:00';
       const formEndTime = '16:00';
       const formDescription = 'Personal leave';
 
-      // Expected backend payload
       const expectedPayload = {
         date: '2025-07-01',
         startTime: '10:00',
@@ -135,15 +127,12 @@ describe('AbsencesService', () => {
 
       service.createAbsence(formDate, formStartTime, formEndTime, formDescription);
 
-      // Verify POST request with correct payload
       const postReq = httpMock.expectOne('http://localhost:3000/absences');
       expect(postReq.request.method).toBe('POST');
       expect(postReq.request.body).toEqual(expectedPayload);
       
-      // Mock successful response
       postReq.flush({ id: 3, ...expectedPayload });
 
-      // Should trigger reload after creation
       const reloadReq = httpMock.expectOne('http://localhost:3000/absences');
       expect(reloadReq.request.method).toBe('GET');
       reloadReq.flush([{ id: 3, ...expectedPayload }]);
@@ -187,13 +176,11 @@ describe('AbsencesService', () => {
 
   describe('updateAbsence method', () => {
     beforeEach(() => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush(mockAbsencePayloads);
     });
 
     it('should update absence and convert request to backend payload format', () => {
-      // Mock updated absence request (what comes from the form/UI)
       const updatedRequest: AbsenceRequest = {
         id: 1,
         startDateTime: new Date('2025-06-25T10:30'),
@@ -202,7 +189,6 @@ describe('AbsencesService', () => {
         status: 'approved'
       };
 
-      // Expected backend payload format
       const expectedPayload = {
         id: 1,
         date: '2025-06-25',
@@ -214,14 +200,12 @@ describe('AbsencesService', () => {
 
       service.updateAbsence(updatedRequest);
 
-      // Verify PUT request with correct payload transformation
       const putReq = httpMock.expectOne('http://localhost:3000/absences/1');
       expect(putReq.request.method).toBe('PUT');
       expect(putReq.request.body).toEqual(expectedPayload);
       
       putReq.flush(expectedPayload);
 
-      // Should trigger reload after update
       const reloadReq = httpMock.expectOne('http://localhost:3000/absences');
       reloadReq.flush([expectedPayload]);
     });
@@ -263,7 +247,6 @@ describe('AbsencesService', () => {
         status: 'pending'
       };
 
-      // Note: Service uses startDateTime date for the payload
       const expectedPayload = {
         id: 3,
         date: '2025-07-01',
@@ -303,7 +286,6 @@ describe('AbsencesService', () => {
 
   describe('deleteAbsence method', () => {
     beforeEach(() => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush(mockAbsencePayloads);
     });
@@ -313,12 +295,10 @@ describe('AbsencesService', () => {
 
       service.deleteAbsence(absenceIdToDelete);
 
-      // Verify DELETE request
       const deleteReq = httpMock.expectOne(`http://localhost:3000/absences/${absenceIdToDelete}`);
       expect(deleteReq.request.method).toBe('DELETE');
       deleteReq.flush(null);
 
-      // Check that the absence was removed from local state
       let currentAbsences: AbsenceRequest[] = [];
       service.absences$.subscribe(absences => currentAbsences = absences);
 
@@ -335,7 +315,6 @@ describe('AbsencesService', () => {
       expect(deleteReq.request.method).toBe('DELETE');
       deleteReq.flush(null);
 
-      // Local state should remain unchanged since ID doesn't exist
       let currentAbsences: AbsenceRequest[] = [];
       service.absences$.subscribe(absences => currentAbsences = absences);
 
@@ -356,7 +335,6 @@ describe('AbsencesService', () => {
 
   describe('Data Transformation', () => {
     it('should correctly transform backend payload to frontend request format', () => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush(mockAbsencePayloads);
 
@@ -387,7 +365,6 @@ describe('AbsencesService', () => {
 
   describe('Error Handling', () => {
     beforeEach(() => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush([]);
     });
@@ -411,15 +388,12 @@ describe('AbsencesService', () => {
       const postReq = httpMock.expectOne('http://localhost:3000/absences');
       postReq.error(new ErrorEvent('Test error'));
 
-      // The error should be handled internally and not propagate
-      // The service should continue to function normally
       expect(service.absences$).toBeDefined();
     });
   });
 
   describe('Observable Behavior', () => {
     beforeEach(() => {
-      // Handle initial load
       const req = httpMock.expectOne('http://localhost:3000/absences');
       req.flush(mockAbsencePayloads);
     });
@@ -428,7 +402,6 @@ describe('AbsencesService', () => {
       let emittedAbsences: AbsenceRequest[][] = [];
       service.absences$.subscribe(absences => emittedAbsences.push([...absences]));
 
-      // Create new absence
       service.createAbsence('2025-07-01', '09:00', '17:00', 'New absence');
 
       const postReq = httpMock.expectOne('http://localhost:3000/absences');

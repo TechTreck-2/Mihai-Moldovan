@@ -32,7 +32,6 @@ describe('AuthService', () => {
     });    it('should initialize with correct authentication state when token exists', () => {
       localStorageServiceMock.getData.and.returnValue('mock-token');
       
-      // Create a new TestBed with the mock that returns a token
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -51,7 +50,6 @@ describe('AuthService', () => {
     });    it('should initialize with correct authentication state when no token exists', () => {
       localStorageServiceMock.getData.and.returnValue(null);
       
-      // Create a new TestBed with the mock that returns null
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -72,17 +70,14 @@ describe('AuthService', () => {
 
   describe('login method - Form Data to Backend Payload', () => {
     it('should transform login form data to correct backend payload and handle successful response', () => {
-      // Mock form data (what user enters in login form)
       const formUsername = 'testuser@example.com';
       const formPassword = 'securePassword123';
       
-      // Expected backend payload
       const expectedLoginPayload = {
         username: 'testuser@example.com',
         password: 'securePassword123'
       };
 
-      // Mock successful backend response
       const mockAuthResponse = {
         access_token: 'jwt-token-12345'
       };
@@ -92,13 +87,10 @@ describe('AuthService', () => {
       let loginResult: boolean | undefined;
       service.login(formUsername, formPassword).subscribe(result => loginResult = result);
 
-      // Verify API call with correct payload transformation
       expect(apiServiceMock.post).toHaveBeenCalledWith('/auth/login', expectedLoginPayload);
       
-      // Verify successful result
       expect(loginResult).toBe(true);
       
-      // Verify token and user storage
       expect(localStorageServiceMock.saveData).toHaveBeenCalledWith('JWT_TOKEN', 'jwt-token-12345');
       expect(localStorageServiceMock.saveData).toHaveBeenCalledWith('CURRENT_USER', 'testuser@example.com');
     });
@@ -164,11 +156,9 @@ describe('AuthService', () => {
 
   describe('register method - Form Data to Backend Payload', () => {
     it('should transform registration form data to correct backend payload', () => {
-      // Mock registration form data
       const formUsername = 'newuser@example.com';
       const formPassword = 'newPassword123!';
       
-      // Expected backend payload
       const expectedRegisterPayload = {
         username: 'newuser@example.com',
         password: 'newPassword123!'
@@ -179,7 +169,6 @@ describe('AuthService', () => {
       let registerResult: boolean | undefined;
       service.register(formUsername, formPassword).subscribe(result => registerResult = result);
 
-      // Verify API call with correct payload transformation
       expect(apiServiceMock.post).toHaveBeenCalledWith('/auth/register', expectedRegisterPayload);
       expect(registerResult).toBe(true);
     });
@@ -216,7 +205,6 @@ describe('AuthService', () => {
     beforeEach(() => {
       localStorageServiceMock.getData.and.returnValue('mock-token');
       
-      // Reset and reconfigure TestBed for logout tests
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
@@ -231,7 +219,6 @@ describe('AuthService', () => {
       let logoutEvents: void[] = [];
       let authStates: boolean[] = [];
       
-      // Subscribe to observables before calling logout
       service.userLogout$.subscribe(() => logoutEvents.push(undefined));
       service.isAuthenticated$.subscribe(state => authStates.push(state));
 
@@ -304,12 +291,10 @@ describe('AuthService', () => {
       let authStates: boolean[] = [];
       service.isAuthenticated$.subscribe(state => authStates.push(state));
 
-      // Simulate login
       const mockResponse = { access_token: 'new-token' };
       apiServiceMock.post.and.returnValue(of(mockResponse));
       service.login('user@test.com', 'password').subscribe();
 
-      // Simulate logout
       service.logout();
 
       expect(authStates).toEqual([false, true, false]);
@@ -350,14 +335,12 @@ describe('AuthService', () => {
     });
 
     it('should handle malformed API responses', () => {
-      // Response without access_token
       const malformedResponse = { user: 'test' };
       apiServiceMock.post.and.returnValue(of(malformedResponse as any));
 
       let loginResult: boolean | undefined;
       service.login('user@test.com', 'password').subscribe(result => loginResult = result);
 
-      // Should still attempt to process the response
       expect(loginResult).toBe(true);
     });
 
@@ -368,20 +351,16 @@ describe('AuthService', () => {
       let currentState: boolean = true;
       service.isAuthenticated$.subscribe(state => currentState = state);
 
-      // Initially should be false
       expect(currentState).toBe(false);
 
-      // Login
       const mockResponse = { access_token: 'token' };
       apiServiceMock.post.and.returnValue(of(mockResponse));
       service.login('user@test.com', 'password').subscribe();
       expect(currentState).toBe(true);
 
-      // Logout
       service.logout();
       expect(currentState).toBe(false);
 
-      // Second logout should not change state
       service.logout();
       expect(currentState).toBe(false);
     });

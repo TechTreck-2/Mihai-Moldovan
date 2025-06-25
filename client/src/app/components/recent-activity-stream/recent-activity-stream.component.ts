@@ -88,12 +88,11 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
   private lastFetchTimestamp: number = 0;
   private locallyUpdated: boolean = false;
   private readonly CACHE_KEY = 'recent-activities-cache';
-  private readonly FETCH_COOLDOWN_MS = 60000; // 1 minute cooldown between fetches
+  private readonly FETCH_COOLDOWN_MS = 60000;
 
   constructor(private clockingService: ClockingService) {}
 
   ngOnInit(): void {
-    // Try to load cached data first
     this.loadFromCache();
 
     this.subscription.add(
@@ -105,7 +104,6 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
           )
         )
         .subscribe(intervals => {
-          // If this is a fresh start or we have no cached data yet
           if (this.activities.length === 0 || this.shouldFetchData()) {
             this.cachedIntervals = [...intervals];
             this.generateActivities(intervals);
@@ -113,7 +111,6 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
             this.lastFetchTimestamp = Date.now();
             this.locallyUpdated = false;
           } else {
-            // Check if data has changed from our cached version
             const hasChanges = this.hasIntervalChanges(this.cachedIntervals, intervals);
             if (hasChanges) {
               this.cachedIntervals = [...intervals];
@@ -130,16 +127,13 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   private hasIntervalChanges(oldIntervals: ClockInterval[], newIntervals: ClockInterval[]): boolean {
-    // Quick length check
     if (oldIntervals.length !== newIntervals.length) {
       return true;
     }
 
-    // Sort both arrays by id for consistent comparison
     const sortedOld = [...oldIntervals].sort((a, b) => a.id.localeCompare(b.id));
     const sortedNew = [...newIntervals].sort((a, b) => a.id.localeCompare(b.id));
 
-    // Deep comparison of interval objects
     for (let i = 0; i < sortedOld.length; i++) {
       const old = sortedOld[i];
       const current = sortedNew[i];
@@ -156,11 +150,8 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
   }
 
   private shouldFetchData(): boolean {
-    // Always fetch if it's been more than the cooldown period since last fetch
     const timeSinceLastFetch = Date.now() - this.lastFetchTimestamp;
     
-    // Fetch if we've never fetched before, or if we have local updates pending, 
-    // or if the cooldown period has passed
     return this.lastFetchTimestamp === 0 || 
            this.locallyUpdated || 
            timeSinceLastFetch > this.FETCH_COOLDOWN_MS;
@@ -268,7 +259,6 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
     return `${activity.intervalId}-${activity.type}-${activity.timestamp}`;
   }
 
-  // Call this method when a local action occurs that would affect the activity list
   public markLocallyUpdated(): void {
     this.locallyUpdated = true;
   }

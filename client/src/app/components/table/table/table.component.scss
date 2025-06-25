@@ -1,8 +1,6 @@
-// Assuming your theme file is at src/styles/themes.scss
 @use '@angular/material' as mat;
-@use '../../../../styles.scss' as theme; // Adjust path based on your project structure
+@use '../../../../styles.scss' as theme;
 
-// Get colors from your custom theme
 $primary: mat.get-color-from-palette(theme.$my-primary, 500);
 $accent: mat.get-color-from-palette(theme.$my-accent, 500);
 $warn: mat.get-color-from-palette(theme.$my-warn, 500);
@@ -26,7 +24,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     margin-bottom: 24px;
 
     .add-button {
-      @include mat.button-theme(theme.$my-theme); // Use imported theme
+      @include mat.button-theme(theme.$my-theme);
       background-color: $primary;
       color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
       padding: 8px 16px;
@@ -129,10 +127,9 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     }
   }
 
-  // Context Menu Styles
   .context-menu {
-    position: absolute; // Positioning for popup
-    z-index: 1000; // Display on top of other elements
+    position: absolute;
+    z-index: 1000;
     background: $background-light;
     border: 1px solid $divider-light;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
@@ -154,14 +151,13 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 }
 
-// Dark mode styles using :host-context(body.dark)
 :host-context(body.dark) {
   .generic-table-container {
     color: $text-primary-dark;
 
     .table-header {
       .add-button {
-        @include mat.button-theme(theme.$my-dark-theme); // Use dark theme for buttons
+        @include mat.button-theme(theme.$my-dark-theme);
         background-color: $primary;
         color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
       }
@@ -184,7 +180,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
           
           .column-header,
           .actions-header {
-            color: #ffffff; // Set header text to white in dark mode
+            color: #ffffff;
             border-bottom-color: mat.get-color-from-palette(theme.$my-primary, 700);
             border-right-color: mat.get-color-from-palette(theme.$my-primary, 800);
           }
@@ -196,7 +192,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
           }
 
           .column-cell {
-            color: #ffffff; // Set cell text to white in dark mode
+            color: #ffffff;
             border-right-color: $divider-dark;
           }
 
@@ -239,7 +235,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       border-color: $divider-dark;
 
       button {
-        color: #ffffff; // Ensure text is white in dark mode
+        color: #ffffff;
         
         &:hover {
           background: rgba($primary, 0.12);

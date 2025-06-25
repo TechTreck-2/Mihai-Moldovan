@@ -81,9 +81,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.cleanupMouseTracking();
   }
   
-  /**
-   * Set up mouse movement tracking with throttling to improve performance
-   */
   private setupMouseTracking() {
     this.mouseMoveSubscription = fromEvent<MouseEvent>(document, 'mousemove')
       .pipe(throttleTime(30))
@@ -108,9 +105,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     }
   }
   
-  /**
-   * Updates gradient CSS variables based on mouse/touch position
-   */
   private updateGradientPosition(event: MouseEvent | Touch) {
     const x = (event.clientX / window.innerWidth) * 100;
     const y = (event.clientY / window.innerHeight) * 100;
@@ -122,9 +116,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     document.documentElement.style.setProperty('--mouse-y', (event.clientY / window.innerHeight).toString());
   }
   
-  /**
-   * Updates gradient position based on device orientation for mobile devices
-   */
   private updateGradientFromOrientation(event: DeviceOrientationEvent) {
     if (event.beta === null || event.gamma === null) return;
     
@@ -135,9 +126,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     document.documentElement.style.setProperty('--y-position', `${Math.min(100, Math.max(0, y))}%`);
   }
   
-  /**
-   * Cleanup subscriptions when component is destroyed
-   */
   private cleanupMouseTracking() {
     if (this.mouseMoveSubscription) {
       this.mouseMoveSubscription.unsubscribe();

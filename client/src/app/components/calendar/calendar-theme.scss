@@ -1,6 +1,4 @@
-// Calendar theme variables
 :host {
-  // Light theme defaults
   --mat-primary-color: #3f51b5;
   --mat-primary-darker: #303f9f;
   --mat-primary-lighter: rgba(63, 81, 181, 0.1);
@@ -18,7 +16,6 @@
 }
 
 :host-context(.dark) {
-  // Dark theme overrides
   --mat-primary-color: #5c6bc0;
   --mat-primary-darker: #3f51b5;
   --mat-primary-lighter: rgba(92, 107, 192, 0.1);
@@ -94,7 +91,6 @@
   }
 }
 
-// Custom styling for dark mode
 :host-context(.dark) {
   .events-card {
     background-color: #424242;

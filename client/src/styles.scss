@@ -27,10 +27,8 @@ $my-dark-theme: mat.define-dark-theme(
   )
 );
 
-// Include core Material styles
 @include mat.core();
 
-// Remove default spacing and add theme styles
 mat-toolbar {
   padding-top: 0;
   margin-top: 0;
@@ -41,10 +39,8 @@ mat-sidenav {
   margin-left: 0;
 }
 
-// Apply light theme
 @include mat.all-component-themes($my-theme);
 
-// Body background for light theme
 body {
   margin: 0;
   padding: 0;
@@ -59,7 +55,6 @@ body {
 }
 
 
-// Dark theme overrides
 .dark {
   @include mat.all-component-colors($my-dark-theme);
 

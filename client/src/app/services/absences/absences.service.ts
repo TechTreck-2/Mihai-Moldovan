@@ -61,8 +61,6 @@ export class AbsencesService implements OnDestroy {
       catchError(this.handleError)
     ).subscribe({
       error: (err) => {
-        // Error already logged and handled in handleError
-        // This prevents the error from being uncaught in tests
       }
     });
   }
@@ -81,8 +79,6 @@ export class AbsencesService implements OnDestroy {
       catchError(this.handleError)
     ).subscribe({
       error: (err) => {
-        // Error already logged and handled in handleError
-        // This prevents the error from being uncaught in tests
       }
     });
   }
@@ -94,8 +90,6 @@ export class AbsencesService implements OnDestroy {
       catchError(this.handleError)
     ).subscribe({
       error: (err) => {
-        // Error already logged and handled in handleError
-        // This prevents the error from being uncaught in tests
       }
     });
   }
@@ -108,8 +102,6 @@ export class AbsencesService implements OnDestroy {
       catchError(this.handleError)
     ).subscribe({
       error: (err) => {
-        // Error already logged and handled in handleError
-        // This prevents the error from being uncaught in tests
       }
     });
   }
@@ -139,10 +131,9 @@ export class AbsencesService implements OnDestroy {
   }
   private handleError(error: any) {
     console.error('API Error: ', error);
-    // Throw error with a flag to enable detection in tests
     return throwError(() => {
       const err = new Error('Something went wrong; please try again later.');
-      (err as any).isHandled = true; // Add flag for test detection
+      (err as any).isHandled = true;
       return err;
     });
   }

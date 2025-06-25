@@ -323,12 +323,12 @@ button[mat-raised-button] {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  height: 56px; /* Set fixed height for better vertical alignment */
+  height: 56px;
 }
 
 .search-input {
   flex-grow: 1;
-  margin-bottom: -1.34em; /* Adjust the form field's bottom margin to align properly */
+  margin-bottom: -1.34em;
 }
 
 .draggable-pin-container {
@@ -338,7 +338,7 @@ button[mat-raised-button] {
   z-index: 1001;
   display: flex;
   align-items: center;
-  height: 40px; /* Match the height of the search button */
+  height: 40px;
   
   &:active {
     cursor: grabbing;
@@ -388,7 +388,6 @@ button[mat-raised-button] {
   z-index: 1;
 }
 
-// Fix for the drag and drop to work over the map
 .cdk-drag-preview {
   z-index: 2000 !important;
 }

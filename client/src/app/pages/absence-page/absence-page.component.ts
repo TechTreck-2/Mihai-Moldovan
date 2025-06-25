@@ -54,7 +54,6 @@ export class AbsencePageComponent implements OnInit {
     return end <= start ? { endBeforeStart: true } : null;
   }
   openAbsencePopup(): void {
-    // Get today's date in YYYY-MM-DD format for the form
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0];
     
@@ -70,7 +69,7 @@ export class AbsencePageComponent implements OnInit {
       data: { 
         fields, 
         values: { 
-          date: formattedDate, // Pre-set the date to today
+          date: formattedDate,
           startTime: '', 
           endTime: '', 
           description: '' 
@@ -89,7 +88,6 @@ export class AbsencePageComponent implements OnInit {
     this.absenceService.deleteAbsence(row.id);
   }
   editAbsenceRequests(row: any): void {
-    // Check if the absence is from today
     const absenceDate = new Date(row.startDateTime);
     const today = new Date();
     const isToday = absenceDate.getDate() === today.getDate() && 

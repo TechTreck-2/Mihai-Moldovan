@@ -17,7 +17,7 @@ import { trigger, state, style, animate, transition } from "@angular/animations"
   ],
 })
 export class SandAnimationComponent implements OnInit, OnDestroy {
-  @Input() duration = 60000 // Default 1 minute
+  @Input() duration = 60000
 
   animationState = "start"
   isPaused = false
@@ -45,11 +45,9 @@ export class SandAnimationComponent implements OnInit, OnDestroy {
     this.animationState = "start"
     this.animationParams = { duration: this.duration }
 
-    // Use requestAnimationFrame for smoother animation
     this.startTime = performance.now() - this.elapsedTime
     this.animate()
 
-    // Start a timer to update digital display
     this.timer = setInterval(() => {
       if (!this.isPaused) {
         const currentTime = performance.now()
@@ -62,7 +60,6 @@ export class SandAnimationComponent implements OnInit, OnDestroy {
       }
     }, 100)
 
-    // Trigger the animation
     setTimeout(() => {
       this.animationState = "end"
     }, 50)
@@ -98,7 +95,6 @@ export class SandAnimationComponent implements OnInit, OnDestroy {
 
     this.isPaused = false
 
-    // Adjust start time to account for pause duration
     const pauseDuration = performance.now() - this.pauseTime
     this.startTime += pauseDuration
 

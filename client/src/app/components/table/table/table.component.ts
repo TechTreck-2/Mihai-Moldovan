@@ -38,7 +38,6 @@ export class GenericTableComponent implements OnChanges, AfterViewInit {
   @Input() deleteHandler: (row: any) => void = () => {};
   @Input() deleteButtonLabel: string = 'Delete';
 
-  // New input for custom display names
   @Input() columnDisplayNames: { [key: string]: string } = {};
 
   @HostListener('document:click', ['$event'])

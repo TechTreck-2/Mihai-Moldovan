@@ -82,10 +82,8 @@ export class GenericPopupComponent {
         initialValue = new Date(initialValue);
       }
       
-      // Create form control
       const control = this.fb.control(initialValue, field.validators || []);
       
-      // If this is a today-only date field, disable it
       if (field.type === 'date' && field.label.toLowerCase().includes('today only')) {
         control.disable();
       }
@@ -108,7 +106,6 @@ export class GenericPopupComponent {
   }
   onSubmit(): void {
     if (this.form.valid) {
-      // Get form value including disabled controls
       const formValue = { ...this.form.getRawValue() };
       
       this.data.fields?.forEach(field => {

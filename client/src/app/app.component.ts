@@ -63,16 +63,14 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Check if current route is login page
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
       this.isLoginPage = event.urlAfterRedirects === '/login';
     });
 
-    // Subscribe to theme changes
     this.themeService.isDarkTheme$.subscribe(isDark => {
-      this.isDarkTheme = isDark; // Update local state
+      this.isDarkTheme = isDark;
       if (this.isBrowser) {
         if (isDark) {
           this.renderer.addClass(document.body, 'dark');
@@ -82,12 +80,10 @@ export class AppComponent implements OnInit {
       }
     });
 
-    // Subscribe to authentication state
     this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isLoggedIn = isAuthenticated;
       this.currentUser = this.authService.getCurrentUser();
       
-      // If not logged in, redirect to login page
       if (!isAuthenticated && this.isBrowser) {
         this.router.navigate(['/login']);
       }
@@ -96,7 +92,7 @@ export class AppComponent implements OnInit {
 
   @HostBinding('class.dark-theme')
   get darkThemeClass() {
-    return this.isDarkTheme; // Use local state for HostBinding
+    return this.isDarkTheme;
   }
 
   toggleTheme() {
