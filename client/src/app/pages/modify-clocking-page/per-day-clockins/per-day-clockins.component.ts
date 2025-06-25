@@ -69,9 +69,8 @@ export class DayClockinsTableComponent implements OnInit {
       if (result && result.startTime) {
         const duration = result.endTime ? Math.floor(
           (new Date(result.endTime).getTime() - new Date(result.startTime).getTime()) / 1000
-        ) : 0;
-        const newInterval: ClockInterval = {
-          id: Date.now(),
+        ) : 0;        const newInterval: ClockInterval = {
+          id: Date.now().toString(),
           startTime: result.startTime,
           endTime: result.endTime || null,
           duration: duration

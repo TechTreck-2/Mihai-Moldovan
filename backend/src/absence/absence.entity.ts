@@ -3,8 +3,8 @@ import { User } from '../users/user.entity';
 
 @Entity()
 export class Absence {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: string;
 
   @Column()
   date: string;

@@ -37,10 +37,11 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   registerForm: FormGroup;
   isLoggingIn = false;
-  isRegistering = false;
-  hidePassword = true;
-  returnUrl: string = '/';
-  currentYear: number = new Date().getFullYear();
+  isRegistering = false;  hidePassword = true;
+  returnUrl: string = '/';  currentYear: number = new Date().getFullYear();
+  errorMessage: string = '';
+  successMessage: string = '';
+  sessionExpiredMessage: string = '';
   
   private mouseMoveSubscription: Subscription | null = null;
   
@@ -49,20 +50,23 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
-  ) {
+    private snackBar: MatSnackBar  ) {
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required]],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
     
     this.registerForm = this.formBuilder.group({
-      username: ['', [Validators.required]],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
+      this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    // Check if user was redirected due to session expiration
+    if (this.route.snapshot.queryParams['sessionExpired']) {
+      this.sessionExpiredMessage = 'Session expired. Please log in again.';
+    }
     
     if (this.authService.isLoggedIn()) {
       this.router.navigate([this.returnUrl]);
@@ -140,8 +144,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       this.mouseMoveSubscription = null;
     }
   }
-  
-  onLoginSubmit(): void {
+    onLoginSubmit(): void {
     if (this.loginForm.invalid) {
       return;
     }
@@ -149,12 +152,13 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.isLoggingIn = true;
     
     const { username, password } = this.loginForm.value;
-    
-    this.authService.login(username, password).subscribe(success => {
+    this.authService.login(username, password).subscribe(result => {
       this.isLoggingIn = false;
-      if (success) {
+      if (result.success) {
+        this.errorMessage = '';
         this.router.navigate([this.returnUrl]);
       } else {
+        this.errorMessage = result.message || 'Invalid credentials';
         this.snackBar.open('Login failed. Please check your credentials.', 'Close', {
           duration: 5000,
           panelClass: 'error-snackbar'
@@ -162,8 +166,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
-  onRegisterSubmit(): void {
+    onRegisterSubmit(): void {
     if (this.registerForm.invalid) {
       return;
     }
@@ -171,17 +174,20 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.isRegistering = true;
     
     const { username, password } = this.registerForm.value;
-    
-    this.authService.register(username, password).subscribe(success => {
+    this.authService.register(username, password).subscribe(result => {
       this.isRegistering = false;
-      if (success) {
+      if (result.success) {
+        this.successMessage = 'Registration successful';
+        this.errorMessage = '';
         this.snackBar.open('Registration successful! Please login.', 'Close', {
           duration: 5000,
           panelClass: 'success-snackbar'
         });
         this.loginForm.patchValue({ username });
       } else {
-        this.snackBar.open('Registration failed. Username may be taken.', 'Close', {
+        this.errorMessage = result.message || 'Registration failed. Username may be taken.';
+        this.successMessage = '';
+        this.snackBar.open(result.message || 'Registration failed. Username may be taken.', 'Close', {
           duration: 5000,
           panelClass: 'error-snackbar'
         });

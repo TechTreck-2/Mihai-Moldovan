@@ -42,7 +42,6 @@ mat-card-header {
   height: 64px;
   width: 64px;
   margin-bottom: 8px;
-  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
@@ -105,6 +104,39 @@ mat-card-footer {
 .footer-content {
   text-align: center;
   color: #666;
+  font-size: 14px;
+}
+
+.session-expired-message {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.success-message {
+  background-color: #d1edff;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
   font-size: 14px;
 }
 

@@ -4,7 +4,8 @@
             mat-flat-button 
             color="primary" 
             (click)="addHandler()"
-            class="add-button">
+            class="add-button"
+            data-cy="add-request-button">
       <mat-icon>add</mat-icon>
       {{ addButtonLabel }}
     </button>
@@ -25,7 +26,8 @@
             <button *ngIf="enableEdit" 
                     mat-button 
                     (click)="editHandler(element)"
-                    class="edit-button">
+                    class="edit-button"
+                    data-cy="edit-request-button">
               <mat-icon>edit</mat-icon>
               <span class="button-label">{{ editButtonLabel }}</span>
             </button>
@@ -35,7 +37,8 @@
             <button *ngIf="enableDelete" 
                     mat-button 
                     (click)="deleteHandler(element)"
-                    class="delete-button">
+                    class="delete-button"
+                    data-cy="delete-request-button">
               <mat-icon>delete</mat-icon>
               <span class="button-label">{{ deleteButtonLabel }}</span>
             </button>
@@ -58,10 +61,8 @@
             (contextmenu)="onRightClick($event, element)">
           <span class="cell-content">{{ element[column] }}</span>
         </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
-      <tr mat-row *matRowDef="let row; columns: computedColumns" class="data-row"></tr>
+      </ng-container>      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: computedColumns" class="data-row" data-cy="table-row"></tr>
     </table>
 
     <!-- Paginator -->

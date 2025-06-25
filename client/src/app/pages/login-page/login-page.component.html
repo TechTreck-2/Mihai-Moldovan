@@ -1,112 +1,132 @@
 <div class="login-container">
-  <mat-card class="login-card">
+  <mat-card class="login-card" data-cy="login-card">
     <mat-card-header>
       <div class="logo-container">
-        <img src="assets/logo.png" alt="TimeTracking Logo" class="logo" onerror="this.src='assets/clock-icon.png'; this.onerror='';">
-        <h1 class="login-title">TimeTracking</h1>
+        <img src="assets/login-page/logo-purple.png" alt="TimeTracking Logo" class="logo" onerror="this.src='assets/clock-icon.png'; this.onerror='';" data-cy="login-logo">
+        <h1 class="login-title" data-cy="login-title">TimeTracking</h1>
       </div>
     </mat-card-header>
-    
+
     <mat-card-content>
       <mat-tab-group animationDuration="300ms" mat-align-tabs="center">
-        <mat-tab label="Login">
+          <mat-tab label="Login" data-cy="login-tab">
           <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()" class="login-form">
+
+            <div *ngIf="sessionExpiredMessage" class="session-expired-message" data-cy="session-expired-message">
+              {{ sessionExpiredMessage }}
+            </div>
+
+            <div *ngIf="errorMessage" class="error-message" data-cy="error-message">
+              {{ errorMessage }}
+            </div>
+
             <mat-form-field appearance="outline" class="full-width-field">
               <mat-label>Username</mat-label>
-              <input matInput formControlName="username" placeholder="Enter your username" autocomplete="username">
+              <input matInput formControlName="username" placeholder="Enter your username" autocomplete="username" data-cy="username-input">
               <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="loginForm.get('username')?.hasError('required')">Username is required</mat-error>
+              <mat-error *ngIf="loginForm.get('username')?.hasError('required')" data-cy="username-required-error">Username is required</mat-error>
+              <mat-error *ngIf="loginForm.get('username')?.hasError('email')" data-cy="username-email-error">Please enter a valid email</mat-error>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline" class="full-width-field">
               <mat-label>Password</mat-label>
-              <input 
-                matInput 
-                [type]="hidePassword ? 'password' : 'text'" 
-                formControlName="password" 
-                placeholder="Enter your password" 
-                autocomplete="current-password">
-              <button 
-                type="button" 
-                mat-icon-button 
-                matSuffix 
-                (click)="hidePassword = !hidePassword">
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                data-cy="password-input">
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hidePassword = !hidePassword"
+                data-cy="password-toggle">
                 <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
-              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
-              <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')" data-cy="password-required-error">Password is required</mat-error>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')" data-cy="password-minlength-error">Password must be at least 6 characters</mat-error>
             </mat-form-field>
-            
-            <button 
-              mat-raised-button 
-              color="primary" 
-              type="submit" 
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
               class="full-width-button"
-              [disabled]="loginForm.invalid || isLoggingIn">
-              <mat-spinner *ngIf="isLoggingIn" [diameter]="20" class="spinner-margin"></mat-spinner>
+              [disabled]="loginForm.invalid || isLoggingIn"
+              data-cy="login-button">
+              <mat-spinner *ngIf="isLoggingIn" [diameter]="20" class="spinner-margin" data-cy="login-spinner"></mat-spinner>
               <span *ngIf="!isLoggingIn">Login</span>
             </button>
           </form>
         </mat-tab>
-        
-        <mat-tab label="Register">
+
+        <mat-tab label="Register" data-cy="register-tab">
           <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()" class="register-form">
+
+            <div *ngIf="successMessage" class="success-message" data-cy="registration-success">
+              {{ successMessage }}
+            </div>
+
+            <div *ngIf="errorMessage" class="error-message" data-cy="registration-error-message">
+              {{ errorMessage }}
+            </div>
+
             <mat-form-field appearance="outline" class="full-width-field">
               <mat-label>Username</mat-label>
-              <input matInput formControlName="username" placeholder="Choose a username" autocomplete="username">
+              <input matInput formControlName="username" placeholder="Choose a username" autocomplete="username" data-cy="register-username-input">
               <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="registerForm.get('username')?.hasError('required')">Username is required</mat-error>
+              <mat-error *ngIf="registerForm.get('username')?.hasError('required')" data-cy="register-username-required-error">Username is required</mat-error>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline" class="full-width-field">
               <mat-label>Password</mat-label>
-              <input 
-                matInput 
-                [type]="hidePassword ? 'password' : 'text'" 
-                formControlName="password" 
-                placeholder="Enter a password" 
-                autocomplete="new-password">
-              <button 
-                type="button" 
-                mat-icon-button 
-                matSuffix 
-                (click)="hidePassword = !hidePassword">
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Enter a password"
+                autocomplete="new-password"
+                data-cy="register-password-input">
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hidePassword = !hidePassword"
+                data-cy="register-password-toggle">
                 <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
-              <mat-error *ngIf="registerForm.get('password')?.hasError('required')">Password is required</mat-error>
-              <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
+              <mat-error *ngIf="registerForm.get('password')?.hasError('required')" data-cy="register-password-required-error">Password is required</mat-error>
+              <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')" data-cy="register-password-minlength-error">Password must be at least 6 characters</mat-error>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline" class="full-width-field">
               <mat-label>Confirm Password</mat-label>
-              <input 
-                matInput 
-                [type]="hidePassword ? 'password' : 'text'" 
-                formControlName="confirmPassword" 
-                placeholder="Confirm your password" 
-                autocomplete="new-password">
-              <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Password confirmation is required</mat-error>
-              <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('mismatch')">Passwords don't match</mat-error>
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                autocomplete="new-password"
+                data-cy="register-confirm-password-input">
+              <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')" data-cy="register-confirm-password-required-error">Password confirmation is required</mat-error>
+              <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('mismatch')" data-cy="password-mismatch-error">Passwords don't match</mat-error>
             </mat-form-field>
-            
-            <button 
-              mat-raised-button 
-              color="primary" 
-              type="submit" 
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
               class="full-width-button"
-              [disabled]="registerForm.invalid || isRegistering">
-              <mat-spinner *ngIf="isRegistering" [diameter]="20" class="spinner-margin"></mat-spinner>
+              [disabled]="registerForm.invalid || isRegistering"
+              data-cy="register-button">
+              <mat-spinner *ngIf="isRegistering" [diameter]="20" class="spinner-margin" data-cy="register-spinner"></mat-spinner>
               <span *ngIf="!isRegistering">Register</span>
             </button>
           </form>
         </mat-tab>
       </mat-tab-group>
     </mat-card-content>
-    
-    <mat-card-footer>
-      <div class="footer-content">
-        <p>{{currentYear}}
-      </div>
-    </mat-card-footer>
   </mat-card>
 </div>

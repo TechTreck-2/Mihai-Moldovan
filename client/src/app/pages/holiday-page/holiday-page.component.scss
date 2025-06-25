@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use '../../../styles.scss' as theme;
+@use '../../../palettes.scss' as palettes;
 
 $primary: mat.get-color-from-palette(theme.$my-primary, 500);
 $accent: mat.get-color-from-palette(theme.$my-accent, 500);
@@ -18,17 +19,13 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   flex-direction: column;
   gap: 20px;
   padding: 20px;
-  background: $background-light;
   color: $text-primary-light;
 
   .top-section {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
-  }
-
-  .filter-container {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 50);
+  }  .filter-container {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -79,13 +76,11 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       }
     }
   }
-
   .holiday-summary {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: $background-light;
     padding: 20px;
     border: 1px solid $divider-light;
     border-radius: 8px;
@@ -137,23 +132,17 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 }
 
 :host-context(body.dark) .holiday-planner-container {
-  background: $background-dark;
-  color: $text-primary-dark;
-
-  .filter-container {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 800);
+  color: $text-primary-dark;  .filter-container {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
     .filter-content {
-      .filter-header {
-        h2 {
+      .filter-header {        h2 {
           color: $text-primary-dark;
         }
       }
 
       .date-picker-group {
-        .mat-form-field {
-          ::ng-deep .mat-form-field-label,
+        .mat-form-field {          ::ng-deep .mat-form-field-label,
           ::ng-deep .mat-input-element {
             color: $text-primary-dark !important;
           }
@@ -178,19 +167,12 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         }
       }
     }
-  }
-
-  .holiday-summary {
-    background-color: mat.get-color-from-palette(mat.$grey-palette, 800);
+  }  .holiday-summary {
     border-color: $divider-dark;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-
-    .holiday-summary-text {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);.holiday-summary-text {
       p {
-        color: $text-primary-dark;
-
-        span {
-          color: mat.get-color-from-palette(theme.$my-primary, 300);
+        color: $text-primary-dark;        span {
+          color: $primary;
         }
       }
     }

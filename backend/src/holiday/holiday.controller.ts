@@ -17,14 +17,13 @@ export class HolidayController {
   createHoliday(@Body() holiday: Holiday, @Request() req) {
     return this.holidayService.create(holiday, req.user);
   }
-
   @Put(':id')
-  updateHoliday(@Param('id') id: number, @Body() holiday: Partial<Holiday>, @Request() req) {
+  updateHoliday(@Param('id') id: string, @Body() holiday: Partial<Holiday>, @Request() req) {
     return this.holidayService.update(id, holiday, req.user);
   }
 
   @Delete(':id')
-  deleteHoliday(@Param('id') id: number, @Request() req) {
+  deleteHoliday(@Param('id') id: string, @Request() req) {
     return this.holidayService.delete(id, req.user);
   }
 }

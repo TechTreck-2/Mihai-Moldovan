@@ -75,18 +75,22 @@ export class GenericPopupComponent {
     private fb: FormBuilder,
     private injector: Injector
   ) {
-    this.form = this.fb.group({});
-    data.fields?.forEach(field => {
+    this.form = this.fb.group({});    data.fields?.forEach(field => {
       let initialValue = data.values?.[field.name] || '';
       
       if (field.type === 'date' && initialValue) {
         initialValue = new Date(initialValue);
       }
       
-      this.form.addControl(
-        field.name,
-        this.fb.control(initialValue, field.validators || [])
-      );
+      // Create form control
+      const control = this.fb.control(initialValue, field.validators || []);
+      
+      // If this is a today-only date field, disable it
+      if (field.type === 'date' && field.label.toLowerCase().includes('today only')) {
+        control.disable();
+      }
+      
+      this.form.addControl(field.name, control);
     });
 
     this.embeddedInjector = Injector.create({
@@ -102,10 +106,10 @@ export class GenericPopupComponent {
       this.form.get(fieldName)?.setValue(isoDate, { emitEvent: false });
     }
   }
-
   onSubmit(): void {
     if (this.form.valid) {
-      const formValue = { ...this.form.value };
+      // Get form value including disabled controls
+      const formValue = { ...this.form.getRawValue() };
       
       this.data.fields?.forEach(field => {
         if (field.type === 'date' && formValue[field.name]) {

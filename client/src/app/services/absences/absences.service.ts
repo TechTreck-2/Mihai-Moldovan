@@ -54,15 +54,18 @@ export class AbsencesService implements OnDestroy {
   ngOnDestroy(): void {
     this.authSubscriptions.unsubscribe();
   }
-
   private loadAbsences(): void {
     this.http.get<AbsencePayload[]>(this.apiUrl).pipe(
       map(payloads => payloads.map(this.mapPayloadToRequest)),
       tap(absences => this.absencesSubject.next(absences)),
       catchError(this.handleError)
-    ).subscribe();
+    ).subscribe({
+      error: (err) => {
+        // Error already logged and handled in handleError
+        // This prevents the error from being uncaught in tests
+      }
+    });
   }
-
 
   createAbsence(date: string, startTime: string, endTime: string, description: string): void {
     const payload: AbsencePayload = {
@@ -76,18 +79,26 @@ export class AbsencesService implements OnDestroy {
     this.http.post<AbsencePayload>(this.apiUrl, payload).pipe(
       tap(() => this.loadAbsences()),
       catchError(this.handleError)
-    ).subscribe();
+    ).subscribe({
+      error: (err) => {
+        // Error already logged and handled in handleError
+        // This prevents the error from being uncaught in tests
+      }
+    });
   }
-
 
   updateAbsence(updatedAbsence: AbsenceRequest): void {
     const payload = this.mapRequestToPayload(updatedAbsence);
     this.http.put<AbsencePayload>(`${this.apiUrl}/${updatedAbsence.id}`, payload).pipe(
       tap(() => this.loadAbsences()),
       catchError(this.handleError)
-    ).subscribe();
+    ).subscribe({
+      error: (err) => {
+        // Error already logged and handled in handleError
+        // This prevents the error from being uncaught in tests
+      }
+    });
   }
-
   deleteAbsence(id: number): void {
     this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => {
@@ -95,7 +106,12 @@ export class AbsencesService implements OnDestroy {
         this.absencesSubject.next(currentAbsences);
       }),
       catchError(this.handleError)
-    ).subscribe();
+    ).subscribe({
+      error: (err) => {
+        // Error already logged and handled in handleError
+        // This prevents the error from being uncaught in tests
+      }
+    });
   }
 
 
@@ -121,9 +137,13 @@ export class AbsencesService implements OnDestroy {
       status: request.status
     };
   }
-
   private handleError(error: any) {
     console.error('API Error: ', error);
-    return throwError(() => new Error('Something went wrong; please try again later.'));
+    // Throw error with a flag to enable detection in tests
+    return throwError(() => {
+      const err = new Error('Something went wrong; please try again later.');
+      (err as any).isHandled = true; // Add flag for test detection
+      return err;
+    });
   }
 }

@@ -53,8 +53,11 @@ export class AbsencePageComponent implements OnInit {
     const end = new Date(`1970-01-01T${endTime}:00`);
     return end <= start ? { endBeforeStart: true } : null;
   }
-
   openAbsencePopup(): void {
+    // Get today's date in YYYY-MM-DD format for the form
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    
     const fields: PopupField[] = [
       { name: 'date', label: 'Date', type: 'date', validators: [] },
       { name: 'startTime', label: 'Start Time', type: 'time', validators: [] },
@@ -64,7 +67,15 @@ export class AbsencePageComponent implements OnInit {
 
     const dialogRef = this.dialog.open(GenericPopupComponent, {
       width: '400px',
-      data: { fields, values: { date: '', startTime: '', endTime: '', description: '' } }
+      data: { 
+        fields, 
+        values: { 
+          date: formattedDate, // Pre-set the date to today
+          startTime: '', 
+          endTime: '', 
+          description: '' 
+        } 
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -77,10 +88,16 @@ export class AbsencePageComponent implements OnInit {
   deleteAbsenceRequest(row: any): void {
     this.absenceService.deleteAbsence(row.id);
   }
-
   editAbsenceRequests(row: any): void {
+    // Check if the absence is from today
+    const absenceDate = new Date(row.startDateTime);
+    const today = new Date();
+    const isToday = absenceDate.getDate() === today.getDate() && 
+                   absenceDate.getMonth() === today.getMonth() && 
+                   absenceDate.getFullYear() === today.getFullYear();
+    
     const fields: PopupField[] = [
-      { name: 'date', label: 'Date', type: 'date', validators: [] },
+      { name: 'date', label: isToday ? 'Date (Today Only)' : 'Date', type: 'date', validators: [] },
       { name: 'startTime', label: 'Start Time', type: 'time', validators: [] },
       { name: 'endTime', label: 'End Time', type: 'time', validators: [this.timeOrderValidator] },
       { name: 'description', label: 'Description', type: 'text', validators: [] },

@@ -1,89 +1,76 @@
-<div class="calendar-app-container">
-  <mat-sidenav-container class="calendar-app-sidenav-container">
-    <mat-sidenav #sidenav mode="side" opened class="calendar-app-sidenav">
-      <div class="calendar-app-sidebar-header">
-        <h1 class="mat-headline-5">Event Calendar</h1>
-      </div>
-      <mat-divider></mat-divider>
-      <div class="calendar-app-sidebar-content">
-        <div class="calendar-app-sidebar-section">
-          <mat-slide-toggle 
-            [checked]="calendarVisible" 
-            (change)="handleCalendarToggle()" 
-            color="primary">
-            Show Calendar
-          </mat-slide-toggle>
-        </div>
-        <div class="calendar-app-sidebar-section">
-          <mat-slide-toggle 
-            [checked]="calendarOptions?.weekends" 
-            (change)="handleWeekendsToggle()" 
-            color="primary">
-            Show Weekends
-          </mat-slide-toggle>
-        </div>
-        <mat-divider></mat-divider>
-        <div class="calendar-app-sidebar-section">
-          <h2 class="mat-title events-header">
-            All Events ({{ currentEvents.length }})
-          </h2>
-          <mat-card class="events-card">
-            <mat-card-content>
-              <div class="events-list-container">
-                <mat-list class="events-list">
-                  <mat-list-item *ngFor="let event of currentEvents" class="event-item">
-                    <div class="event-content">
-                      <div class="event-info">
-                        <div class="event-date">{{ event.startStr | date:'MMM d, y' }}</div>
-                        <div class="event-title">{{ event.title }}</div>
-                      </div>
-                      <div class="event-actions">
-                        <button mat-icon-button class="event-icon" (click)="editEvent(event)">
-                          <mat-icon>edit</mat-icon>
+<div class="calendar-app-container" data-cy="calendar-component">
+    <mat-sidenav-container class="calendar-app-sidenav-container">
+        <mat-sidenav #sidenav mode="side" opened class="calendar-app-sidenav">
+            <div class="calendar-app-sidebar-header">
+                <h1 class="mat-headline-5">Event Calendar</h1>
+            </div>
+            <mat-divider></mat-divider><div class="calendar-app-sidebar-content">
+                <div class="calendar-app-sidebar-section">                    <mat-slide-toggle
+                        [checked]="calendarOptions.weekends"
+                        (change)="handleWeekendsToggle()"
+                        color="primary">
+                        Show Weekends
+                    </mat-slide-toggle>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="calendar-app-sidebar-section">
+                    <h2 class="mat-title events-header">
+                        All Events ({{ currentEvents.length }})
+                    </h2>
+                    <mat-card class="events-card">
+                        <mat-card-content>
+                            <div class="events-list-container">
+                                <mat-list class="events-list">
+                                    <mat-list-item *ngFor="let event of currentEvents" class="event-item">
+                                        <div class="event-content">
+                                            <div class="event-info">
+                                                <div class="event-date">{{ event.startStr | date:'MMM d, y' }}</div>
+                                                <div class="event-title">{{ event.title }}</div>
+                                            </div>
+                                            <div class="event-actions">
+                                                <button mat-icon-button class="event-icon" (click)="editEvent(event)">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                                <button mat-icon-button class="event-icon event-icon--delete" (click)="deleteEvent(event)">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                                <button mat-icon-button class="event-icon" (click)="jumpToEvent(event)">
+                                                    <mat-icon>location_on</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </mat-list-item>
+                                    <mat-list-item *ngIf="currentEvents.length === 0" class="no-events">
+                                        <div>No events scheduled</div>
+                                    </mat-list-item>
+                                </mat-list>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-sidenav>
+
+        <mat-sidenav-content class="calendar-app-main-content">
+            <mat-card class="calendar-card">
+                <mat-card-content>
+                    <div *ngIf="lastSelectInfo" class="add-event-container">
+                        <mat-form-field appearance="fill" class="add-event-input">
+                            <mat-label>New Event Title</mat-label>
+                            <input matInput [(ngModel)]="newEventTitle" placeholder="e.g., Team Meeting" />
+                        </mat-form-field>
+                        <button mat-raised-button color="primary" (click)="addEventFromSelection()" class="add-event-button">
+                            Add Event
                         </button>
-                        <button mat-icon-button class="event-icon event-icon--delete" (click)="deleteEvent(event)">
-                          <mat-icon>delete</mat-icon>
-                        </button>
-                        <button mat-icon-button class="event-icon" (click)="jumpToEvent(event)">
-                          <mat-icon>location_on</mat-icon>
-                        </button>
-                      </div>
+                    </div>                    <div *ngIf="calendarOptions">
+                        <full-calendar
+                            #fullcalendar
+                            [options]="calendarOptions"
+                            class="calendar-component">
+                        </full-calendar>
                     </div>
-                  </mat-list-item>
-                  <mat-list-item *ngIf="currentEvents.length === 0" class="no-events">
-                    <div>No events scheduled</div>
-                  </mat-list-item>
-                </mat-list>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </div>
-    </mat-sidenav>
-    
-    <mat-sidenav-content class="calendar-app-main-content">
-      <mat-card class="calendar-card">
-        <mat-card-content>
-          <div *ngIf="lastSelectInfo" class="add-event-container">
-            <mat-form-field appearance="outline">
-              <mat-label>Event Title</mat-label>
-              <input matInput [(ngModel)]="newEventTitle" placeholder="Enter event title" />
-            </mat-form-field>
-            <button mat-raised-button color="primary" (click)="addEventFromSelection()">
-              Add Event
-            </button>
-          </div>
-          
-          <div *ngIf="calendarOptions">
-            <full-calendar 
-              #fullcalendar
-              *ngIf="calendarVisible"
-              [options]="calendarOptions"
-              class="calendar-component">
-            </full-calendar>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+                </mat-card-content>
+            </mat-card>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </div>

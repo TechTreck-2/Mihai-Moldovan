@@ -87,14 +87,15 @@
       <!-- Spacer to push toggle buttons to right -->
       <span class="spacer"></span>      <!-- Clock Status Indicator -->
       <app-clock-status-indicator></app-clock-status-indicator>
-      <!-- Username display -->
-      <span class="username" *ngIf="currentUser">{{ currentUser }}</span>
+      <mat-divider [vertical]="true"> </mat-divider>      <!-- Username display -->
+      <span class="username" *ngIf="currentUser" data-cy="user-menu">{{ currentUser }}</span>
       <!-- Logout button -->
       <button 
         mat-icon-button 
         (click)="logout()" 
         aria-label="Logout"
         matTooltip="Logout"
+        data-cy="logout-button"
         *ngIf="currentUser">
         <mat-icon>exit_to_app</mat-icon>
       </button>

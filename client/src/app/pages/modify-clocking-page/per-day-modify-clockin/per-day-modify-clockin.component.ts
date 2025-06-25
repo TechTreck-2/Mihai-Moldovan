@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf, CommonModule } from '@angular/common';
 
 export interface PopupField {
   name: string;
@@ -22,10 +22,9 @@ export interface ClockInPopupData {
   };
 }
 
-@Component({
-  selector: 'app-custom-popup',
+@Component({  selector: 'app-custom-popup',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, FormsModule, NgFor],
+  imports: [MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, FormsModule, NgFor, NgIf, CommonModule],
   template: `
     <h2 mat-dialog-title>Custom Popup</h2>
     <mat-dialog-content>

@@ -19,15 +19,14 @@ export class ClockingService {
     const newClocking = this.clockingRepository.create({ ...clocking, user });
     return this.clockingRepository.save(newClocking);
   }
-
-  async update(id: number, updatedClocking: Partial<Clocking>, user: User): Promise<Clocking> {
+  async update(id: string, updatedClocking: Partial<Clocking>, user: User): Promise<Clocking> {
     const clocking = await this.clockingRepository.findOne({ where: { id, user: { id: user.id } } });
     if (!clocking) throw new Error('Clocking not found');
     Object.assign(clocking, updatedClocking);
     return this.clockingRepository.save(clocking);
   }
 
-  async delete(id: number, user: User): Promise<void> {
+  async delete(id: string, user: User): Promise<void> {
     const clocking = await this.clockingRepository.findOne({ where: { id, user: { id: user.id } } });
     if (!clocking) throw new Error('Clocking not found');
     await this.clockingRepository.remove(clocking);

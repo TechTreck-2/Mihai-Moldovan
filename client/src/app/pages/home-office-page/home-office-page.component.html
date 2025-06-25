@@ -1,26 +1,42 @@
-<div class="container mat-elevation-z4">
-  <div class="map-container">
-    <div id="map" class="map"></div>
-    <div class="spinner-overlay" *ngIf="loading">
-      <mat-spinner></mat-spinner>
+<div class="container mat-elevation-z4" data-cy="home-office-container">
+  <div class="left-panel">    <div class="map-search-container">
+      <div class="search-bar-container">
+        <mat-form-field appearance="outline" class="search-input">
+          <mat-label>Search address</mat-label>
+          <input matInput type="text" [(ngModel)]="searchAddress" placeholder="Enter an address to search" [disabled]="confirmingAddress" data-cy="search-address-input">
+          <button mat-icon-button matSuffix (click)="searchAddressOnMap()" [disabled]="!searchAddress.trim() || confirmingAddress" data-cy="search-button">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+        <div class="draggable-pin-container" [class.disabled]="confirmingAddress" cdkDrag (cdkDragEnded)="onPinDropped($event)" data-cy="draggable-pin">
+          <img [src]="isDarkMode ? 'assets/dark_mode_pin.svg' : 'assets/pin.svg'" alt="Draggable pin" class="draggable-pin" cdkDragHandle>
+          <span class="pin-tooltip">Drag pin to map</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="map-container" data-cy="map-container">
+      <div id="map" class="map"></div>
+      <div class="spinner-overlay" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+      </div>
     </div>
   </div>
-
-  <div *ngIf="confirmingAddress" class="floating-panel mat-elevation-z8">
+  <div *ngIf="confirmingAddress" class="floating-panel mat-elevation-z8" data-cy="confirmation-panel">
     <h3>Add New Office</h3>
-    <p class="current-address">
+    <p class="current-address" data-cy="current-address">
       <mat-icon>place</mat-icon>
       <span>{{ currentAddress }}</span>
     </p>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Office Name</mat-label>
-      <input matInput type="text" [(ngModel)]="newOfficeName" placeholder="Enter office name">
+      <input matInput type="text" [(ngModel)]="newOfficeName" placeholder="Enter office name" data-cy="office-name-input">
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Description</mat-label>
-      <textarea matInput [(ngModel)]="newOfficeDescription" placeholder="Enter office description" rows="3"></textarea>
+      <textarea matInput [(ngModel)]="newOfficeDescription" placeholder="Enter office description" rows="3" data-cy="office-description-input"></textarea>
     </mat-form-field>
 
     <p class="location-coordinates" *ngIf="pendingLocation">
@@ -33,60 +49,38 @@
     </p>
 
     <div class="action-buttons">
-      <button mat-raised-button color="warn" (click)="cancelAddOffice()">
+      <button mat-raised-button color="warn" (click)="cancelAddOffice()" data-cy="cancel-add-button">
         Cancel
       </button>
-      <button mat-raised-button color="primary" (click)="confirmAddOffice()">
+      <button mat-raised-button color="primary" (click)="confirmAddOffice()" data-cy="confirm-add-button">
         Add Office
       </button>
     </div>
-  </div>
-  <mat-card class="office-list">
+  </div>  <mat-card class="office-list" data-cy="office-list">
     <mat-card-title>Offices</mat-card-title>
     <div class="office-items-container">
-      <div *ngIf="locations.length <= 0" class="empty-state">
+      <div *ngIf="locations.length <= 0" class="empty-state" data-cy="empty-state">
         Nothing here
       </div>
-        <div *ngFor="let location of locations" class="office-item mat-elevation-z1" (click)="focusOnLocation(location)">
+        <div *ngFor="let location of locations" class="office-item mat-elevation-z1" (click)="focusOnLocation(location)" data-cy="office-item">
         <div class="office-details">
-          <h3 #addressElement [ngClass]="{'marquee': isOverflowing}">
+          <h3 #addressElement [ngClass]="{'marquee': isOverflowing}" data-cy="office-name">
             <span>{{ location.name }}</span>
           </h3>
-          <p class="office-description">{{ location.description }}</p>
+          <p class="office-description" data-cy="office-description">{{ location.description }}</p>
           <p class="office-coords">
             Lat: {{ location.lat.toFixed(4) }}, Lng: {{ location.lng.toFixed(4) }}
           </p>
         </div>
         <div class="office-actions" (click)="$event.stopPropagation()">
-          <button mat-icon-button color="primary" (click)="editLocation(location)">
+          <button mat-icon-button color="primary" (click)="editLocation(location)" data-cy="edit-office-button">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteLocation(location)">
+          <button mat-icon-button color="warn" (click)="deleteLocation(location)" data-cy="delete-office-button">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
       </div>
-    </div>
-
-    <div class="add-office">
-      <h4>Add Office by Address</h4>
-      <div class="address-input-container">
-        <mat-form-field appearance="outline" class="address-input">
-          <mat-label>Enter address</mat-label>
-          <input matInput type="text" [(ngModel)]="addressInput" [disabled]="confirmingAddress" />
-        </mat-form-field>
-        <button mat-raised-button color="accent" (click)="searchAddressByInput()" [disabled]="!addressInput.trim() || confirmingAddress">
-          Search
-        </button>
-      </div>
-    </div>
-
-    <div class="add-office">
-      <h4>Add Office by Map Click</h4>
-      <button mat-raised-button color="primary" (click)="addingByMap = true" [disabled]="addingByMap || confirmingAddress">
-        <mat-icon>add_location</mat-icon>
-        Click on Map to Add Office
-      </button>
     </div>
   </mat-card>
 </div>

@@ -1,23 +1,25 @@
 <h2 mat-dialog-title>Popup</h2>
-    <mat-dialog-content>
+    <mat-dialog-content data-cy="popup-dialog">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="data.fields?.length">
         <div *ngFor="let field of data.fields">
           <mat-form-field appearance="fill">
             <mat-label>{{ field.label }}</mat-label>
-            <ng-container [ngSwitch]="field.type">
-              <!-- Datepicker case -->
+            <ng-container [ngSwitch]="field.type">              <!-- Datepicker case -->
               <ng-container *ngSwitchCase="'date'">
                 <input
                   matInput
                   [matDatepicker]="picker"
                   [formControlName]="field.name"
-                  (dateChange)="onDateChange(field.name, $event)">
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  (dateChange)="onDateChange(field.name, $event)"
+                  [readonly]="field.label.toLowerCase().includes('today only')"
+                  [attr.data-cy]="'popup-field-' + field.name">
+                <mat-datepicker-toggle matSuffix [for]="picker" 
+                  [disabled]="field.label.toLowerCase().includes('today only')"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
               </ng-container>
 
               <!-- Select case -->
-              <mat-select *ngSwitchCase="'select'" [formControlName]="field.name">
+              <mat-select *ngSwitchCase="'select'" [formControlName]="field.name" [attr.data-cy]="'popup-field-' + field.name">
                 <mat-option *ngFor="let option of field.options" [value]="option.value">
                   {{ option.viewValue }}
                 </mat-option>
@@ -28,8 +30,17 @@
                 *ngSwitchDefault
                 matInput
                 [formControlName]="field.name"
-                [type]="field.type">
+                [type]="field.type"
+                [attr.data-cy]="'popup-field-' + field.name">
             </ng-container>
+            <mat-error *ngIf="form.get(field.name)?.errors" [attr.data-cy]="'popup-field-' + field.name + '-error'">
+              <ng-container *ngIf="form.get(field.name)?.errors?.['required']">
+                {{ field.label }} is required
+              </ng-container>
+              <ng-container *ngIf="form.get(field.name)?.errors?.['endBeforeStart']">
+                End time must be after start time
+              </ng-container>
+            </mat-error>
           </mat-form-field>
         </div>
       </form>
@@ -39,6 +50,6 @@
       </ng-container>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-button (click)="onSubmit()" [disabled]="!form.valid" *ngIf="data.fields?.length">Submit</button>
+      <button mat-button (click)="onCancel()" data-cy="popup-cancel-button">Cancel</button>
+      <button mat-button (click)="onSubmit()" [disabled]="!form.valid" *ngIf="data.fields?.length" data-cy="popup-save-button">Submit</button>
     </mat-dialog-actions>

@@ -1,54 +1,142 @@
-.main-card {
-    margin: 16px;
-    width: calc(100% - 32px);
-  }
-  
-  .layout-container {
+@use '@angular/material' as mat;
+@use '../../../styles.scss' as theme;
+@use '../../../palettes.scss' as palettes;
+
+$primary: mat.get-color-from-palette(theme.$my-primary, 500);
+$accent: mat.get-color-from-palette(theme.$my-accent, 500);
+$warn: mat.get-color-from-palette(theme.$my-warn, 500);
+$background-light: #ffffff;
+$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
+$text-primary-light: rgba(0, 0, 0, 0.87);
+$text-primary-dark: rgba(255, 255, 255, 0.87);
+$text-secondary-light: #5f6368;
+$text-secondary-dark: rgba(255, 255, 255, 0.7);
+$divider-light: #e0e0e0;
+$divider-dark: rgba(255, 255, 255, 0.12);
+
+.modify-clocking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  color: $text-primary-light;
+
+  .top-section {
     display: flex;
-    flex-direction: row;
-    gap: 24px;
-    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
   }
-  
-  .filter-section {
-    flex: 0 0 300px;
-    order: 1;
-  }
-  
-  .table-section {
+
+  .filter-container {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     flex: 1;
-    order: 2;
-    min-width: 0;
-  }
-  
-  .filter-card,
-  .table-card {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .filter-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .filter-field {
-    width: 100%;
-  }
-  
-  @media (max-width: 800px) {
-    .layout-container {
+    min-width: 300px;
+
+    .filter-content {
+      display: flex;
       flex-direction: column;
-    }
-    
-    .filter-section {
-      flex: 0 0 auto;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    
-    .table-section {
-      width: 100%;
+      gap: 20px;
+
+      .filter-header {
+        h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 500;
+          color: $text-primary-light;
+        }
+      }
+
+      .date-picker-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+
+        .mat-form-field {
+          flex: 1;
+
+          ::ng-deep .mat-form-field-label,
+          ::ng-deep .mat-input-element {
+            color: $text-primary-light !important;
+          }
+
+          ::ng-deep .mat-form-field-underline {
+            background-color: $divider-light !important;
+          }
+        }
+      }
+
+      button {
+        @include mat.button-theme(theme.$my-theme);
+        background-color: $primary;
+        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        align-self: flex-start;
+
+        &:hover {
+          background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+        }
+      }
     }
   }
+  .table-container {
+    .table-header {
+      h2 {
+        margin: 0 0 20px 0;
+        font-size: 20px;
+        font-weight: 500;
+        color: $text-primary-light;
+      }
+    }
+  }
+}
+
+:host-context(body.dark) .modify-clocking-container {
+  color: $text-primary-dark;
+
+  .filter-container {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    .filter-content {
+      .filter-header {
+        h2 {
+          color: $text-primary-dark;
+        }
+      }
+
+      .date-picker-group {
+        .mat-form-field {
+          ::ng-deep .mat-form-field-label,
+          ::ng-deep .mat-input-element {
+            color: $text-primary-dark !important;
+          }
+
+          ::ng-deep .mat-form-field-underline {
+            background-color: $divider-dark !important;
+          }
+
+          ::ng-deep .mat-datepicker-toggle {
+            color: $text-primary-dark !important;
+          }
+        }
+      }
+
+      button {
+        @include mat.button-theme(theme.$my-dark-theme);
+        background-color: $primary;
+        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+
+        &:hover {
+          background-color: mat.get-color-from-palette(theme.$my-primary, 400);
+        }
+      }
+    }
+  }
+  .table-container {
+    .table-header {
+      h2 {
+        color: $text-primary-dark;
+      }
+    }
+  }
+}

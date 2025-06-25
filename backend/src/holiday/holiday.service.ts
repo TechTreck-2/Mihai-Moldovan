@@ -19,15 +19,14 @@ export class HolidayService {
     const newHoliday = this.holidayRepository.create({ ...holiday, user });
     return this.holidayRepository.save(newHoliday);
   }
-
-  async update(id: number, updatedHoliday: Partial<Holiday>, user: User): Promise<Holiday> {
+  async update(id: string, updatedHoliday: Partial<Holiday>, user: User): Promise<Holiday> {
     const holiday = await this.holidayRepository.findOne({ where: { id, user } });
     if (!holiday) throw new Error('Holiday not found');
     Object.assign(holiday, updatedHoliday);
     return this.holidayRepository.save(holiday);
   }
 
-  async delete(id: number, user: User): Promise<void> {
+  async delete(id: string, user: User): Promise<void> {
     const holiday = await this.holidayRepository.findOne({ where: { id, user } });
     if (!holiday) throw new Error('Holiday not found');
     await this.holidayRepository.remove(holiday);

@@ -7,14 +7,14 @@ import { ApiService } from '../api/api.service';
 import { AuthService } from '../auth/auth.service';
 
 export interface ClockInterval {
-  id: number;
+  id: string;
   startTime: string;
   endTime?: string | null;
   duration?: number;
 }
 
 interface ClockingPayload {
-  id?: number;
+  id?: string;
   date: string;
   startTime: string;
   endTime?: string;
@@ -217,8 +217,7 @@ export class ClockingService implements OnDestroy {
       )
       .subscribe();
   }
-
-  deleteClockInterval(id: number): void {
+  deleteClockInterval(id: string): void {
     this.apiService.delete<void>(`${this.apiUrl}/${id}`)
       .pipe(
         tap(() => {

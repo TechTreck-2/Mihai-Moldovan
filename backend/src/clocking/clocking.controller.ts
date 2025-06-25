@@ -43,14 +43,12 @@ export class ClockingController {
   clockOut(@Request() req) {
     return this.clockingService.completeActive(req.user);
   }
-
   @Put(':id')
-  updateClocking(@Param('id') id: number, @Body() clocking: Partial<Clocking>, @Request() req) {
+  updateClocking(@Param('id') id: string, @Body() clocking: Partial<Clocking>, @Request() req) {
     return this.clockingService.update(id, clocking, req.user);
   }
-
   @Delete(':id')
-  deleteClocking(@Param('id') id: number, @Request() req) {
+  deleteClocking(@Param('id') id: string, @Request() req) {
     return this.clockingService.delete(id, req.user);
   }
 }

@@ -1,17 +1,18 @@
-<div class="view-container">
+<div class="view-container" data-cy="home-office-requests-container">
   <div class="view-header">
-    <h2 class="view-title">Home Office Requests</h2>
+    <h2 class="view-title" data-cy="view-title">Home Office Requests</h2>
 
     <mat-button-toggle-group 
       [(ngModel)]="activeComponent" 
       (change)="toggleView(activeComponent)"
       class="view-toggle"
+      data-cy="view-toggle"
       aria-label="View Selection">
-      <mat-button-toggle value="table" class="toggle-button">
+      <mat-button-toggle value="table" class="toggle-button" data-cy="table-view-toggle">
         <mat-icon>view_list</mat-icon>
         <span>Table View</span>
       </mat-button-toggle>
-      <mat-button-toggle value="calendar" class="toggle-button">
+      <mat-button-toggle value="calendar" class="toggle-button" data-cy="calendar-view-toggle">
         <mat-icon>calendar_today</mat-icon>
         <span>Calendar View</span>
       </mat-button-toggle>
@@ -19,7 +20,7 @@
   </div>
 
   <div class="view-content">
-    <div *ngIf="activeComponent === 'table'" class="table-container">
+    <div *ngIf="activeComponent === 'table'" class="table-container" data-cy="table-container">
       <app-generic-table 
         [data]="(homeOfficeRequests$ | async) ?? []"
         [displayedColumns]="columns"
@@ -33,14 +34,15 @@
           startDate: 'Start Date',
           endDate: 'End date'
         }"
-        ></app-generic-table>
+        data-cy="generic-table"></app-generic-table>
     </div>
 
-    <div *ngIf="activeComponent === 'calendar'" class="calendar-container">
+    <div *ngIf="activeComponent === 'calendar'" class="calendar-container" data-cy="calendar-container">
       <calendar [eventInputs]="(calendarEvents$ | async) ?? []"
       (eventAdded)="onCalendarEventAdded($event)"
       (eventDeleted)="onCalendarEventDeleted($event)"
-      (eventUpdated)="onCalendarEventUpdated($event)"></calendar>
+      (eventUpdated)="onCalendarEventUpdated($event)"
+      data-cy="calendar-component"></calendar>
     </div>
   </div>
 </div>

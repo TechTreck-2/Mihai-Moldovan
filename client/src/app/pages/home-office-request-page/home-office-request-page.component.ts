@@ -110,8 +110,7 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
         ],
         values: {},
       }
-    }).afterClosed().subscribe(result => {
-      if (result) {
+    }).afterClosed().subscribe(result => {      if (result) {
         const newRequest: HomeOfficeRequest = {
           id: Date.now(),
           startDate: this.datePipe.transform(new Date(result.startTime), this.dateFormat) || '',

@@ -16,6 +16,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+
+
   
 @Component({
   selector: 'calendar',
@@ -23,7 +27,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
   standalone: true,
   imports: [
     FullCalendarModule, NgFor, NgIf, MatCardModule, MatSidenavModule,
-    MatDividerModule, MatSliderModule, MatSlideToggleModule, MatListModule, DatePipe, MatIconModule, FormsModule, MatFormFieldModule
+    MatDividerModule, MatSliderModule, MatSlideToggleModule, MatListModule, DatePipe, MatIconModule, FormsModule, MatFormFieldModule, MatButtonModule, MatInputModule
   ],
   styleUrls: ['./calendar.component.scss']
 })
@@ -33,10 +37,8 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   @Output() eventAdded = new EventEmitter<EventApi>();
   @Output() eventDeleted = new EventEmitter<EventApi>();
   @Output() eventUpdated = new EventEmitter<EventApi>();
-
   @ViewChild('fullcalendar') fullCalendar!: FullCalendarComponent;
   
-  calendarVisible = true;
   calendarOptions!: CalendarOptions;
   currentEvents: EventApi[] = [];
   clipboardEvents: EventApi[] = [];
@@ -148,9 +150,10 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
       alert('Please select a date range to copy events from.');
       return;
     }
-    const { start, end } = this.lastSelectInfo;
-    this.clipboardEvents = this.currentEvents.filter(event => {
-      if (!event.start || !event.end) return false;
+    const { start, end } = this.lastSelectInfo;    this.clipboardEvents = this.currentEvents.filter(event => {
+      if (!event.start || !event.end) {
+        return false;
+      }
       return event.start >= start && event.end <= end;
     });
     alert(`Copied ${this.clipboardEvents.length} event(s).`);
@@ -193,9 +196,9 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
         start: newStart,
         end: newEnd,
         allDay: event.allDay
-      });
-      if(pastedEvent)
+      });      if(pastedEvent) {
         this.eventAdded.emit(pastedEvent);
+      }
     });
     alert(`Pasted ${eventsWithStart.length} event(s).`);
   }
@@ -214,13 +217,8 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   handleEventDrop(dropInfo: EventDropArg) {
     this.eventUpdated.emit(dropInfo.event);
   }
-  
-  handleEventResize(resizeInfo: any) {
+    handleEventResize(resizeInfo: any) {
     this.eventUpdated.emit(resizeInfo.event);
-  }
-  
-  handleCalendarToggle() {
-    this.calendarVisible = !this.calendarVisible;
   }
   
   handleWeekendsToggle() {

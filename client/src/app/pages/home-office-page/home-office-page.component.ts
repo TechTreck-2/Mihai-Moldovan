@@ -26,7 +26,8 @@ import { ThemeService } from '../../services/theme-service/theme-service.service
 import {ProgressSpinnerMode, MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { GenericPopupComponent, PopupField } from '../../components/popup/popup/popup.component';
-import { Subscription } from 'rxjs'; // Import Subscription
+import { Subscription } from 'rxjs';
+import { DragDropModule, CdkDragEnd } from '@angular/cdk/drag-drop';
 
 
 @Component({
@@ -44,12 +45,13 @@ import { Subscription } from 'rxjs'; // Import Subscription
     MatInputModule,
     MatDividerModule,
     CommonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    DragDropModule
   ],
   templateUrl: './home-office-page.component.html',
   styleUrls: ['./home-office-page.component.scss']
 })
-export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy { // Implement OnInit and OnDestroy
+export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('tooltip') tooltipElement!: ElementRef;
   @ViewChildren('addressElement') addressElements!: QueryList<ElementRef>;
 
@@ -64,6 +66,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   confirmingAddress: boolean = false;
   nextId: number = 0;
   addressInput: string = '';
+  searchAddress: string = '';
   currentAddress: string = '';
   pendingLocation: Partial<Location> | null = null;
   newOfficeDescription: string = '';
@@ -74,7 +77,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   isDarkMode: boolean = false;
 
   locations: Location[] = [];
-  private officeSubscription: Subscription = new Subscription(); // Add subscription property
+  private officeSubscription: Subscription = new Subscription();
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -83,18 +86,21 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     private themeService: ThemeService,
     private dialog: MatDialog
   ) {}
-
-  ngOnInit(): void { // Add ngOnInit
+  ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Subscribe to office updates
       this.officeSubscription.add(
         this.homeOfficeService.offices$.subscribe(locations => {
           this.locations = locations;
           this.nextId = this.locations.reduce((max, loc) => Math.max(max, loc.id), 0) + 1;
-          // If map is initialized, update markers
           if (this.map && this.vectorSource) {
             this.updateMarkers();
           }
+        })
+      );
+      
+      this.officeSubscription.add(
+        this.themeService.isDarkTheme$.subscribe(isDark => {
+          this.isDarkMode = isDark;
         })
       );
     }
@@ -103,9 +109,6 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
 
-      // Remove initial location fetching, it's handled by ngOnInit subscription
-      // this.locations = this.homeOfficeService.getOffices(); 
-      // this.nextId = this.locations.reduce((max, loc) => Math.max(max, loc.id), 0) + 1
       this.initMap();
 
       this.officeSubscription.add(
@@ -114,10 +117,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
           this.updateMapTheme(isDark);
         })
       );
-      // Remove theme subscription, moved to ngOnInit
-      // this.themeService.isDarkTheme$.subscribe(isDark => { ... });
 
-      // Keep marquee logic if needed, or adjust based on dynamic content
       this.addressElements.changes.subscribe(() => {
         this.addressElements.forEach((el: ElementRef) => {
           if (el.nativeElement.scrollWidth > el.nativeElement.clientWidth) {
@@ -130,7 +130,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     }
   }
 
-  ngOnDestroy(): void { // Add ngOnDestroy
+  ngOnDestroy(): void {
     this.officeSubscription.unsubscribe();
     if (this.map) {
       this.map.setTarget(undefined);
@@ -203,9 +203,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
       }
     });
 
-    // Remove marker creation loop, handled by updateMarkers
-    // this.locations.forEach(location => { ... });
-    this.updateMarkers(); // Call updateMarkers after map setup
+    this.updateMarkers();
   }
 
   private updateMapTheme(isDark: boolean): void {
@@ -293,9 +291,9 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   }
 
   private updateMarkers(): void {
-    if (!this.vectorSource || !this.map) return; // Check if map and source are ready
-    this.vectorSource.clear(); // Clear existing markers
-    this.markersMap = {}; // Reset markers map
+    if (!this.vectorSource || !this.map) return;
+    this.vectorSource.clear();
+    this.markersMap = {};
     this.locations.forEach(location => {
       this.createMarker(location);
     });
@@ -303,8 +301,6 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
 
   addLocation(location: Location): void {
     this.homeOfficeService.addOffice(location);
-    // this.locations = this.homeOfficeService.getOffices(); // Remove direct update
-    // this.createMarker(location); // Marker creation handled by subscription
     this.snackBar.open('Office added successfully', 'Close', { duration: 3000 });
   }
 
@@ -333,12 +329,8 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
           description: result.description
         };
         
-        // Service update triggers subscription, which updates map
         this.homeOfficeService.updateOffice(updatedLocation);
         
-        // Remove direct marker update
-        // const marker = this.markersMap[location.id];
-        // if (marker) { ... }
         
         this.snackBar.open('Office updated successfully', 'Close', { duration: 3000 });
       }
@@ -346,12 +338,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   }
 
   deleteLocation(location: Location): void {
-    // Service update triggers subscription, which updates map
     this.homeOfficeService.deleteOffice(location.id);
-    // Remove direct location and marker updates
-    // this.locations = this.homeOfficeService.getOffices();
-    // const marker = this.markersMap[location.id];
-    // if (marker) { ... }
   }
   forwardGeocode(address: string): Promise<{ lat: number, lon: number }> {
     const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(address)}`;
@@ -390,17 +377,86 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     }
   }
 
+  searchAddressOnMap(): void {
+    if (!this.searchAddress.trim()) {
+      return;
+    }
+    
+    this.loading = true;
+    this.geocodeAddress(this.searchAddress).then(result => {
+      if (result) {
+        const { lat, lng, address } = result;
+        this.updateTempMarker(lat, lng);
+        this.currentAddress = address;
+        this.newOfficeName = address;
+        this.pendingLocation = { lat, lng };
+        this.confirmingAddress = true;
+        
+        this.map.getView().animate({
+          center: fromLonLat([lng, lat]),
+          zoom: 15,
+          duration: 1000
+        });
+      } else {
+        this.snackBar.open('Address not found', 'Close', { duration: 3000 });
+      }
+      this.loading = false;
+    }).catch(err => {
+      console.error('Geocoding failed', err);
+      this.snackBar.open('Failed to find address', 'Close', { duration: 3000 });
+      this.loading = false;
+    });
+  }
+  onPinDropped(event: CdkDragEnd): void {
+    const element = event.source.element.nativeElement;
+    const rect = element.getBoundingClientRect();
+    
+    const mapContainer = document.querySelector('.map-container') as HTMLElement;
+    const mapRect = mapContainer.getBoundingClientRect();
+    
+    if (
+      rect.left >= mapRect.left && 
+      rect.right <= mapRect.right &&
+      rect.top >= mapRect.top &&
+      rect.bottom <= mapRect.bottom
+    ) {
+      const pixelCoords = [
+        rect.left + rect.width / 2 - mapRect.left,
+        rect.top + rect.height / 2 - mapRect.top
+      ];
+      
+      const coordinate = this.map.getEventCoordinate({
+        clientX: mapRect.left + pixelCoords[0],
+        clientY: mapRect.top + pixelCoords[1]
+      } as MouseEvent);
+      
+      const [lon, lat] = toLonLat(coordinate);
+      
+      this.updateTempMarker(lat, lon);
+      this.reverseGeocode(lat, lon).then(address => {
+        this.currentAddress = address || `Location at ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        this.newOfficeName = this.currentAddress;
+        this.pendingLocation = { lat, lng: lon };
+        this.confirmingAddress = true;
+      }).catch(err => {
+        console.error('Reverse geocoding failed', err);
+        this.snackBar.open('Failed to get address information', 'Close', { duration: 3000 });
+      });
+    }
+    
+    event.source._dragRef.reset();
+    element.style.transform = 'translate3d(0px, 0px, 0px)';
+  }
+
   confirmAddOffice(): void {
     if (this.pendingLocation && this.newOfficeName) {
-      const newOffice: Omit<Location, 'id'> = { // Use Omit<Location, 'id'> for adding
+      const newOffice: Omit<Location, 'id'> = {
         name: this.newOfficeName,
         lat: this.pendingLocation.lat!,
         lng: this.pendingLocation.lng!,
         description: this.newOfficeDescription || ''
       };
-      // Service update triggers subscription
       this.homeOfficeService.addOffice(newOffice);
-      // this.addLocation(newOffice); // Remove direct call
       this.resetAddressForm();
     }
   }
@@ -411,13 +467,10 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
 
   focusOnLocation(location: Location): void {
     if (this.map && location) {
-      // Center the map on the selected location
       this.map.getView().setCenter(fromLonLat([location.lng, location.lat]));
       
-      // Set zoom level to provide a good view of the location
       this.map.getView().setZoom(15);
       
-      // Optional: Show a brief notification
       this.snackBar.open(`Looking at ${location.name}`, 'Close', { 
         duration: 2000,
         horizontalPosition: 'center',
@@ -438,5 +491,51 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     this.newOfficeName = '';
     this.newOfficeDescription = '';
     this.currentAddress = '';
+  }
+
+  private geocodeAddress(address: string): Promise<{ lat: number; lng: number; address: string } | null> {
+    return new Promise((resolve, reject) => {
+      
+      setTimeout(() => {
+        const mockGeocodingResults: { [key: string]: { lat: number; lng: number } } = {
+          'new york': { lat: 40.7128, lng: -74.006 },
+          'los angeles': { lat: 34.0522, lng: -118.2437 },
+          'chicago': { lat: 41.8781, lng: -87.6298 },
+          'san francisco': { lat: 37.7749, lng: -122.4194 },
+          'miami': { lat: 25.7617, lng: -80.1918 },
+        };
+        
+        const lowerCaseAddress = address.toLowerCase();
+        
+        const exactMatch = mockGeocodingResults[lowerCaseAddress];
+        if (exactMatch) {
+          resolve({
+            lat: exactMatch.lat,
+            lng: exactMatch.lng,
+            address: address
+          });
+          return;
+        }
+          for (const key of Object.keys(mockGeocodingResults)) {
+          if (lowerCaseAddress.includes(key) || key.includes(lowerCaseAddress)) {
+            resolve({
+              lat: mockGeocodingResults[key].lat,
+              lng: mockGeocodingResults[key].lng,
+              address: address // Return the original address instead of the key
+            });
+            return;
+          }
+        }
+        
+        const randomLat = 40 + (Math.random() - 0.5) * 10;
+        const randomLng = -100 + (Math.random() - 0.5) * 50;
+        
+        resolve({
+          lat: randomLat,
+          lng: randomLng,
+          address: address
+        });
+      }, 1000);
+    });
   }
 }

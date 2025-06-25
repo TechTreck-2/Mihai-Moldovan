@@ -16,7 +16,7 @@ interface ActivityItem {
   icon: string;
   color: string;
   timestamp: number;
-  intervalId: number;
+  intervalId: string;
 }
 
 @Component({
@@ -84,9 +84,18 @@ interface ActivityItem {
 export class RecentActivityStreamComponent implements OnInit, OnDestroy {
   activities: ActivityItem[] = [];
   private subscription = new Subscription();
+  private cachedIntervals: ClockInterval[] = [];
+  private lastFetchTimestamp: number = 0;
+  private locallyUpdated: boolean = false;
+  private readonly CACHE_KEY = 'recent-activities-cache';
+  private readonly FETCH_COOLDOWN_MS = 60000; // 1 minute cooldown between fetches
 
   constructor(private clockingService: ClockingService) {}
+
   ngOnInit(): void {
+    // Try to load cached data first
+    this.loadFromCache();
+
     this.subscription.add(
       this.clockingService.clockIntervals$
         .pipe(
@@ -96,14 +105,89 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
           )
         )
         .subscribe(intervals => {
-          this.generateActivities(intervals);
+          // If this is a fresh start or we have no cached data yet
+          if (this.activities.length === 0 || this.shouldFetchData()) {
+            this.cachedIntervals = [...intervals];
+            this.generateActivities(intervals);
+            this.saveToCache(intervals);
+            this.lastFetchTimestamp = Date.now();
+            this.locallyUpdated = false;
+          } else {
+            // Check if data has changed from our cached version
+            const hasChanges = this.hasIntervalChanges(this.cachedIntervals, intervals);
+            if (hasChanges) {
+              this.cachedIntervals = [...intervals];
+              this.generateActivities(intervals);
+              this.saveToCache(intervals);
+              this.locallyUpdated = false;
+            }
+          }
         })
     );
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
-  }  private generateActivities(intervals: ClockInterval[]): void {
+  }
+  private hasIntervalChanges(oldIntervals: ClockInterval[], newIntervals: ClockInterval[]): boolean {
+    // Quick length check
+    if (oldIntervals.length !== newIntervals.length) {
+      return true;
+    }
+
+    // Sort both arrays by id for consistent comparison
+    const sortedOld = [...oldIntervals].sort((a, b) => a.id.localeCompare(b.id));
+    const sortedNew = [...newIntervals].sort((a, b) => a.id.localeCompare(b.id));
+
+    // Deep comparison of interval objects
+    for (let i = 0; i < sortedOld.length; i++) {
+      const old = sortedOld[i];
+      const current = sortedNew[i];
+
+      if (old.id !== current.id ||
+          old.startTime !== current.startTime ||
+          old.endTime !== current.endTime ||
+          old.duration !== current.duration) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private shouldFetchData(): boolean {
+    // Always fetch if it's been more than the cooldown period since last fetch
+    const timeSinceLastFetch = Date.now() - this.lastFetchTimestamp;
+    
+    // Fetch if we've never fetched before, or if we have local updates pending, 
+    // or if the cooldown period has passed
+    return this.lastFetchTimestamp === 0 || 
+           this.locallyUpdated || 
+           timeSinceLastFetch > this.FETCH_COOLDOWN_MS;
+  }
+
+  private saveToCache(intervals: ClockInterval[]): void {
+    try {
+      localStorage.setItem(this.CACHE_KEY, JSON.stringify(intervals));
+    } catch (error) {
+      console.warn('Failed to cache recent activities:', error);
+    }
+  }
+
+  private loadFromCache(): void {
+    try {
+      const cached = localStorage.getItem(this.CACHE_KEY);
+      if (cached) {
+        const intervals = JSON.parse(cached) as ClockInterval[];
+        this.cachedIntervals = intervals;
+        this.generateActivities(intervals);
+      }
+    } catch (error) {
+      console.warn('Failed to load cached activities:', error);
+    }
+  }
+
+  private generateActivities(intervals: ClockInterval[]): void {
     if (!intervals || intervals.length === 0) {
       this.activities = [];
       return;
@@ -130,12 +214,11 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
 
         activities.push({
           type: 'clock-in',
-          time: startTimeString,
-          date: startDate,
+          time: startTimeString,          date: startDate,
           icon: 'login',
           color: '#4caf50',
           timestamp: startTime.getTime(),
-          intervalId: interval.id
+          intervalId: interval.id.toString()
         });
 
         if (interval.endTime) {
@@ -154,11 +237,10 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
             type: 'clock-out',
             time: endTimeString,
             date: endDate,
-            duration: duration,
-            icon: 'logout',
+            duration: duration,            icon: 'logout',
             color: '#f44336',
             timestamp: endTime.getTime(),
-            intervalId: interval.id
+            intervalId: interval.id.toString()
           });
         }
       } catch (error) {
@@ -181,7 +263,13 @@ export class RecentActivityStreamComponent implements OnInit, OnDestroy {
       return `${minutes}m`;
     }
   }
+
   trackByActivity(index: number, activity: ActivityItem): string {
     return `${activity.intervalId}-${activity.type}-${activity.timestamp}`;
+  }
+
+  // Call this method when a local action occurs that would affect the activity list
+  public markLocallyUpdated(): void {
+    this.locallyUpdated = true;
   }
 }

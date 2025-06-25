@@ -14,9 +14,8 @@ export class HomeOfficeController {
   getAllLocations(@Request() req) {
     return this.homeOfficeService.getAllLocations(req.user);
   }
-
   @Get('locations/:id')
-  getLocationById(@Param('id') id: number, @Request() req) {
+  getLocationById(@Param('id') id: string, @Request() req) {
     return this.homeOfficeService.getLocationById(id, req.user);
   }
 
@@ -26,12 +25,12 @@ export class HomeOfficeController {
   }
 
   @Put('locations/:id')
-  updateLocation(@Param('id') id: number, @Body() location: Partial<HomeOfficeLocation>, @Request() req) {
+  updateLocation(@Param('id') id: string, @Body() location: Partial<HomeOfficeLocation>, @Request() req) {
     return this.homeOfficeService.updateLocation(id, location, req.user);
   }
 
   @Delete('locations/:id')
-  deleteLocation(@Param('id') id: number, @Request() req) {
+  deleteLocation(@Param('id') id: string, @Request() req) {
     return this.homeOfficeService.deleteLocation(id, req.user);
   }
 
@@ -40,9 +39,8 @@ export class HomeOfficeController {
   getAllRequests(@Request() req) {
     return this.homeOfficeService.getAllRequests(req.user);
   }
-
   @Get('requests/:id')
-  getRequestById(@Param('id') id: number, @Request() req) {
+  getRequestById(@Param('id') id: string, @Request() req) {
     return this.homeOfficeService.getRequestById(id, req.user);
   }
 
@@ -50,14 +48,13 @@ export class HomeOfficeController {
   createRequest(@Body() request: HomeOfficeRequest, @Request() req) {
     return this.homeOfficeService.createRequest(request, req.user);
   }
-
   @Put('requests/:id')
-  updateRequest(@Param('id') id: number, @Body() request: Partial<HomeOfficeRequest>, @Request() req) {
+  updateRequest(@Param('id') id: string, @Body() request: Partial<HomeOfficeRequest>, @Request() req) {
     return this.homeOfficeService.updateRequest(id, request, req.user);
   }
 
   @Delete('requests/:id')
-  deleteRequest(@Param('id') id: number, @Request() req) {
+  deleteRequest(@Param('id') id: string, @Request() req) {
     return this.homeOfficeService.deleteRequest(id, req.user);
   }
 }

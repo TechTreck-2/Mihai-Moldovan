@@ -14,12 +14,10 @@ export class HomeOfficeService {
     private requestRepository: Repository<HomeOfficeRequest>,
   ) {}
 
-  // Location methods
   async getAllLocations(user: User): Promise<HomeOfficeLocation[]> {
     return this.locationRepository.find({ where: { user: { id: user.id } } });
   }
-
-  async getLocationById(id: number, user: User): Promise<HomeOfficeLocation> {
+  async getLocationById(id: string, user: User): Promise<HomeOfficeLocation> {
     const location = await this.locationRepository.findOne({ where: { id, user: { id: user.id } } });
     if (!location) {
       throw new Error(`Location with ID ${id} not found.`);
@@ -35,7 +33,7 @@ export class HomeOfficeService {
     return this.locationRepository.save(newLocation);
   }
 
-  async updateLocation(id: number, location: Partial<HomeOfficeLocation>, user: User): Promise<HomeOfficeLocation> {
+  async updateLocation(id: string, location: Partial<HomeOfficeLocation>, user: User): Promise<HomeOfficeLocation> {
     await this.locationRepository.update(
       { id, user: { id: user.id } },
       location
@@ -43,7 +41,7 @@ export class HomeOfficeService {
     return this.getLocationById(id, user);
   }
 
-  async deleteLocation(id: number, user: User): Promise<void> {
+  async deleteLocation(id: string, user: User): Promise<void> {
     await this.locationRepository.delete({ id, user: { id: user.id } });
   }
 
@@ -51,8 +49,7 @@ export class HomeOfficeService {
   async getAllRequests(user: User): Promise<HomeOfficeRequest[]> {
     return this.requestRepository.find({ where: { user: { id: user.id } } });
   }
-
-  async getRequestById(id: number, user: User): Promise<HomeOfficeRequest> {
+  async getRequestById(id: string, user: User): Promise<HomeOfficeRequest> {
     const request = await this.requestRepository.findOne({ where: { id, user: { id: user.id } } });
     if (!request) {
       throw new Error(`Request with ID ${id} not found.`);
@@ -68,15 +65,15 @@ export class HomeOfficeService {
     return this.requestRepository.save(newRequest);
   }
 
-  async updateRequest(id: number, request: Partial<HomeOfficeRequest>, user: User): Promise<HomeOfficeRequest> {
+  async updateRequest(id: string, request: Partial<HomeOfficeRequest>, user: User): Promise<HomeOfficeRequest> {
     await this.requestRepository.update(
       { id, user: { id: user.id } },
       request
     );
-    return this.getRequestById(id, user);
+    return this.getRequestById(id, user); // :)
   }
 
-  async deleteRequest(id: number, user: User): Promise<void> {
+  async deleteRequest(id: string, user: User): Promise<void> {
     await this.requestRepository.delete({ id, user: { id: user.id } });
   }
 }

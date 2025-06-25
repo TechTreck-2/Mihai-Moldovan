@@ -3,8 +3,8 @@ import { User } from '../users/user.entity';
 
 @Entity()
 export class Holiday {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: string;
 
   @Column()
   startDate: string;

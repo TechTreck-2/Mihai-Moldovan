@@ -17,14 +17,13 @@ export class AbsenceController {
   createAbsence(@Body() absence: Absence, @Request() req) {
     return this.absenceService.create(absence, req.user);
   }
-
   @Put(':id')
-  updateAbsence(@Param('id') id: number, @Body() absence: Partial<Absence>, @Request() req) {
+  updateAbsence(@Param('id') id: string, @Body() absence: Partial<Absence>, @Request() req) {
     return this.absenceService.update(id, absence, req.user);
   }
 
   @Delete(':id')
-  deleteAbsence(@Param('id') id: number, @Request() req) {
+  deleteAbsence(@Param('id') id: string, @Request() req) {
     return this.absenceService.delete(id, req.user);
   }
 }

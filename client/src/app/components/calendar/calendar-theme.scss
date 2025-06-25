@@ -1,0 +1,114 @@
+// Calendar theme variables
+:host {
+  // Light theme defaults
+  --mat-primary-color: #3f51b5;
+  --mat-primary-darker: #303f9f;
+  --mat-primary-lighter: rgba(63, 81, 181, 0.1);
+  --mat-accent-color: #ff4081;
+  --mat-warn-color: #f44336;
+  --mat-warn-lighter: rgba(244, 67, 54, 0.04);
+  --mat-text-primary: rgba(0, 0, 0, 0.87);
+  --mat-text-secondary: rgba(0, 0, 0, 0.54);
+  --mat-text-hint: rgba(0, 0, 0, 0.38);
+  --mat-divider-color: rgba(0, 0, 0, 0.12);
+  --mat-card-highlighted: rgba(63, 81, 181, 0.05);
+  --mat-background: #f5f5f5;
+  --mat-card-background: #ffffff;
+  --mat-icon-color: rgba(0, 0, 0, 0.54);
+}
+
+:host-context(.dark) {
+  // Dark theme overrides
+  --mat-primary-color: #5c6bc0;
+  --mat-primary-darker: #3f51b5;
+  --mat-primary-lighter: rgba(92, 107, 192, 0.1);
+  --mat-accent-color: #ff4081;
+  --mat-warn-color: #f44336;
+  --mat-warn-lighter: rgba(244, 67, 54, 0.08);
+  --mat-text-primary: rgba(255, 255, 255, 0.87);
+  --mat-text-secondary: rgba(255, 255, 255, 0.6);
+  --mat-text-hint: rgba(255, 255, 255, 0.38);
+  --mat-divider-color: rgba(255, 255, 255, 0.12);
+  --mat-card-highlighted: rgba(92, 107, 192, 0.1);
+  --mat-background: #303030;
+  --mat-card-background: #424242;
+  --mat-icon-color: rgba(255, 255, 255, 0.7);
+  
+  .calendar-app-sidenav {
+    background-color: #424242;
+  }
+  
+  .calendar-app-main-content {
+    background-color: #303030;
+  }
+  
+  .calendar-app-sidebar-header {
+    background-color: rgba(92, 107, 192, 0.1);
+    
+    h1 {
+      color: rgba(255, 255, 255, 0.87);
+    }
+  }
+  
+  .event-item {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  ::ng-deep {
+    .fc {
+      .fc-button {
+        background-color: #5c6bc0;
+        border-color: #5c6bc0;
+        
+        &:hover {
+          background-color: #3f51b5;
+          border-color: #3f51b5;
+        }
+        
+        &.fc-button-active {
+          background-color: #3f51b5;
+          border-color: #3f51b5;
+        }
+      }
+      
+      .fc-day {
+        border-color: rgba(255, 255, 255, 0.12) !important;
+      }
+      
+      .fc-col-header-cell {
+        border-color: rgba(255, 255, 255, 0.12) !important;
+      }
+      
+      .fc-day-today {
+        background-color: rgba(92, 107, 192, 0.15) !important;
+      }
+      
+      .fc-daygrid-day-number {
+        color: rgba(255, 255, 255, 0.87);
+      }
+      
+      .fc-col-header-cell-cushion {
+        color: rgba(255, 255, 255, 0.87);
+      }
+    }
+  }
+}
+
+// Custom styling for dark mode
+:host-context(.dark) {
+  .events-card {
+    background-color: #424242;
+  }
+  
+  .calendar-card {
+    background-color: #424242;
+  }
+  
+  .add-event-container {
+    background-color: rgba(92, 107, 192, 0.1);
+  }
+  
+  .no-events {
+    color: rgba(255, 255, 255, 0.5);
+  }
+}

@@ -24,7 +24,7 @@ export class UsersService {
 
   async updateUser(id: number, updateData: Partial<User>): Promise<User> {
     await this.userRepository.update(id, updateData);
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id: String(id) } });
     if (!user) {
       throw new Error(`User with id ${id} not found`);
     }
@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   async findById(id: number): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id: String(id) } });
     return user ?? undefined;
   }
 

@@ -1,177 +1,232 @@
 .calendar-app-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-app-sidenav-container {
-  flex: 1;
-  height: 100%;
+    flex: 1;
+    height: 100%;
 }
 
 .calendar-app-sidenav {
-  width: 320px;
-  border-right: none;
-  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+    width: 320px;
+    border-right: none;
+    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-app-sidebar-header {
-  padding: 16px;
-  h1 {
+    padding: 16px;
+}
+
+.calendar-app-sidebar-header h1 {
     margin: 0;
     font-weight: 400;
-  }
 }
 
 .calendar-app-sidebar-content {
-  padding: 0 16px;
+    padding: 0 16px;
 }
 
 .calendar-app-sidebar-section {
-  margin: 24px 0;
+    margin: 24px 0;
 }
 
 .calendar-app-main-content {
-  padding: 24px;
+    padding: 24px;
 }
 
 .calendar-card {
-  margin-bottom: 24px;
-  border-radius: 8px;
-  overflow: hidden;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.add-event-container {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.add-event-input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.add-event-button {
+    height: 56px;
+    flex-shrink: 0;
 }
 
 .events-header {
-  margin-bottom: 16px;
-  font-weight: 500;
+    margin-bottom: 16px;
+    font-weight: 500;
 }
 
 .events-card {
-  max-height: 400px;
-  overflow: hidden;
-  border-radius: 8px;
+    max-height: 400px;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .events-list-container {
-  max-height: 350px;
-  overflow-y: auto;
+    max-height: 350px;
+    overflow-y: auto;
 }
 
 .events-list {
-  padding: 0;
+    padding: 0;
 }
 
 .event-item {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  height: auto !important;
-  padding: 12px 0;
-  
-  &:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    height: auto !important;
+    padding: 16px 0;
+    min-height: 60px;
+}
+
+.event-item:last-child {
     border-bottom: none;
-  }
 }
 
 .event-content {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+    min-height: 40px;
 }
 
 .event-info {
-  flex: 1;
-  cursor: pointer;
-  min-width: 0;
+    flex: 1;
+    cursor: pointer;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .event-date {
-  font-weight: 500;
-  color: #3f51b5;
-  margin-bottom: 4px;
-  font-size: 0.875rem;
+    font-weight: 500;
+    color: #6750a4;
+    margin-bottom: 4px;
+    font-size: 0.875rem;
 }
 
 .event-title {
-  color: rgba(0, 0, 0, 0.87);
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .event-actions {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-  flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+    align-items: center;
 }
 
 .event-icon {
-  color: rgba(0, 0, 0, 0.54);
-  transition: color 0.2s ease;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0px;
-  border-radius: 5px;
-  
-  &:hover {
-    color: #3f51b5;
-    background-color: rgba(63, 81, 181, 0.04);
-  }
-  
-  mat-icon {
+    color: #6750a4;
+    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+}
+
+.event-icon:hover {
+    color: #ffffff;
+    background-color: #6750a4;
+}
+
+.event-icon--delete:hover {
+    color: #ffffff;
+    background-color: #ff5449;
+}
+
+.event-icon mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-  }
 }
 
 .no-events {
-  color: rgba(0, 0, 0, 0.54);
-  font-style: italic;
+    color: rgba(0, 0, 0, 0.54);
+    font-style: italic;
 }
 
-.calendar-component {
-  ::ng-deep {
-    .fc {
-      max-width: 100%;
-      
-      .fc-toolbar-title {
-        font-size: 1.5rem;
-      }
-      
-      .fc-button {
-        background-color: #3f51b5;
-        border-color: #3f51b5;
-        
-        &:hover {
-          background-color: #303f9f;
-          border-color: #303f9f;
-        }
-        
-        &.fc-button-active {
-          background-color: #303f9f;
-          border-color: #303f9f;
-        }
-      }
-      
-      .fc-event {
-        border-radius: 4px;
-        padding: 2px 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        
-        &:hover {
-          filter: brightness(0.9);
-        }
-      }
-      
-      .fc-day-today {
-        background-color: rgba(63, 81, 181, 0.1) !important;
-      }
+.calendar-component ::ng-deep .fc {
+    max-width: 100%;
+}
+
+.calendar-component ::ng-deep .fc .fc-toolbar-title {
+    font-size: 1.5rem;
+}
+
+.calendar-component ::ng-deep .fc .fc-button {
+    background-color: #6750a4;
+    border-color: #6750a4;
+}
+
+.calendar-component ::ng-deep .fc .fc-button:hover {
+    background-color: #5f499c;
+    border-color: #5f499c;
+}
+
+.calendar-component ::ng-deep .fc .fc-button.fc-button-active {
+    background-color: #5f499c;
+    border-color: #5f499c;
+}
+
+.calendar-component ::ng-deep .fc .fc-event {
+    border-radius: 4px;
+    padding: 2px 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-component ::ng-deep .fc .fc-event:hover {
+    filter: brightness(0.9);
+}
+
+.calendar-component ::ng-deep .fc .fc-day-today {
+    background-color: rgba(103, 80, 164, 0.1) !important;
+}
+
+// Dark mode overrides
+:host-context(body.dark) {
+    .event-date {
+        color: #9585bf;
     }
-  }
+    
+    .event-title {
+        color: rgba(255, 255, 255, 0.87);
+    }
+    
+    .event-icon {
+        color: #9585bf;
+    }
+    
+    .event-icon:hover {
+        color: #ffffff;
+        background-color: #6750a4;
+    }
+    
+    .event-icon--delete:hover {
+        color: #ffffff;
+        background-color: #ff5449;
+    }
+    
+    .no-events {
+        color: rgba(255, 255, 255, 0.54);
+    }
 }

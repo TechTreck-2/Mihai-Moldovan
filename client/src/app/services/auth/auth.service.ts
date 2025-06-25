@@ -30,8 +30,7 @@ export class AuthService {
   ) { 
     this.isAuthenticatedSubject.next(this.hasToken());
   }
-
-  login(username: string, password: string): Observable<boolean> {
+  login(username: string, password: string): Observable<{ success: boolean; message?: string }> {
     return this.apiService.post<AuthResponse>('/auth/login', { username, password })
       .pipe(
         tap(response => {
@@ -40,21 +39,22 @@ export class AuthService {
           this.isAuthenticatedSubject.next(true);
           this.userLoginSubject.next(username);
         }),
-        map(() => true),
+        map(() => ({ success: true })),
         catchError(error => {
           console.error('Login error:', error);
-          return of(false);
+          const errorMessage = error.error?.message || 'Login failed';
+          return of({ success: false, message: errorMessage });
         })
       );
   }
-
-  register(username: string, password: string): Observable<boolean> {
+  register(username: string, password: string): Observable<{ success: boolean; message?: string }> {
     return this.apiService.post<any>('/auth/register', { username, password })
       .pipe(
-        map(() => true),
+        map(() => ({ success: true })),
         catchError(error => {
           console.error('Registration error:', error);
-          return of(false);
+          const errorMessage = error.error?.message || 'Registration failed';
+          return of({ success: false, message: errorMessage });
         })
       );
   }

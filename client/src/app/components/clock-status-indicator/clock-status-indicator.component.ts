@@ -1,40 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
 import { Subscription } from 'rxjs';
 import { ClockStatusService, ClockStatus } from '../../services/clock-status/clock-status.service';
 
 @Component({
   selector: 'app-clock-status-indicator',
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatChipsModule
-  ],
-  template: `
+    MatTooltipModule
+  ],template: `
     <div class="clock-status-container" *ngIf="clockStatus">
-      <mat-chip 
-        class="status-chip"
+      <span 
+        class="status-text"
         [class.clocked-in]="clockStatus.isClockedIn"
         [class.clocked-out]="!clockStatus.isClockedIn"
         [matTooltip]="getTooltipText()">
-        
-        <mat-icon class="status-icon">
-          {{ clockStatus.isClockedIn ? 'schedule' : 'schedule_off' }}
-        </mat-icon>
-        
-        <span class="status-text">
-          {{ clockStatus.isClockedIn ? 'Clocked In' : 'Clocked Out' }}
-        </span>
-        
-        <span class="status-time" *ngIf="clockStatus.isClockedIn && clockStatus.currentClockInTime">
-          {{ clockStatus.currentClockInTime }}
-        </span>
-      </mat-chip>
+        {{ clockStatus.isClockedIn ? 'Clocked In' : 'Clocked Out' }}
+      </span>
     </div>
   `,
   styleUrls: ['./clock-status-indicator.component.scss']
@@ -56,9 +39,10 @@ export class ClockStatusIndicatorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
-
   getTooltipText(): string {
-    if (!this.clockStatus) return '';
+    if (!this.clockStatus) {
+      return '';
+    }
     
     if (this.clockStatus.isClockedIn) {
       return `Currently clocked in since ${this.clockStatus.currentClockInTime}`;

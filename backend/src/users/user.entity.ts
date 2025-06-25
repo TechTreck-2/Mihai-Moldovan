@@ -6,8 +6,8 @@ import { UserPreferences } from 'src/user-preferences/entities/user-preference.e
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: string;
 
   @Column({ unique: true })
   username: string;

@@ -24,13 +24,12 @@ export class AuthInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token}`
         }
       });
-    }
-    
-    return next.handle(request).pipe(
+    }    return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        // Only redirect on 401 if it's not a login or register request
+        if (error.status === 401 && !request.url.includes('/auth/login') && !request.url.includes('/auth/register')) {
           this.authService.logout();
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login'], { queryParams: { sessionExpired: 'true' } });
         }
         return throwError(() => error);
       })

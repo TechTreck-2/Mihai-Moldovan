@@ -12,6 +12,7 @@ import { NotificationComponent } from './components/notification/notification.co
 import { ThemeService } from './services/theme-service/theme-service.service';
 import { AuthService } from './services/auth/auth.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth/auth.interceptor';
 import { filter } from 'rxjs/operators';
@@ -28,6 +29,7 @@ import { ClockStatusIndicatorComponent } from './components/clock-status-indicat
     MatButtonModule,
     MatListModule,
     MatTooltipModule,
+    MatDividerModule,
     RouterModule,
     NotificationComponent,
     HttpClientModule,

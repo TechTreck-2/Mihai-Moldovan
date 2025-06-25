@@ -3,8 +3,8 @@ import { User } from '../../users/user.entity';
 
 @Entity()
 export class HomeOfficeLocation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: string;
 
   @Column()
   name: string;
