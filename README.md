@@ -1,7 +1,5 @@
 # TechTrek Time Tracking
 
-This is a full-stack time tracking application built with Angular for the frontend and NestJS for the backend.
-
 ## Project Structure
 
 The project is organized as a monorepo (no nx) with two main parts:
