@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostBinding, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Subscription, filter, take } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { TimerService } from '../../services/timer/timer.service';
 import { ClockingService, ClockInterval } from '../../services/clocking/clocking.service';
@@ -11,6 +11,7 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProgressBarMode, MatProgressBarModule } from '@angular/material/progress-bar';
 import { RecentActivityStreamComponent } from '../recent-activity-stream/recent-activity-stream.component';
+import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
 
 @Component({
   selector: 'app-timer',
@@ -25,7 +26,6 @@ import { RecentActivityStreamComponent } from '../recent-activity-stream/recent-
     MatProgressBarModule,
     RecentActivityStreamComponent,
   ],
-  providers: [DatePipe],
   templateUrl: './timer.component.html',
   styleUrls: ['./timer.component.scss']
 })
@@ -40,7 +40,7 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
   currentClockOutTime: string | null = null;
   timeClockedToday: number = 0;
   quota: number = 8 * 3600;
-  currentDate: string = new Date().toDateString();
+  currentDate: string = '';
 
   timeClockedThisWeek: number = 0;
   weeklyQuota: number = 40 * 3600;
@@ -52,9 +52,12 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
     private timerService: TimerService,
     private clockingService: ClockingService,
     private snackBar: MatSnackBar,
-    private datePipe: DatePipe,
+    private dateFormattingService: DateFormattingService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.currentDate = this.dateFormattingService.formatDateDisplay(new Date());
+    this.currentWeekDates = this.getCurrentWeekDates(new Date());
+  }
 
   ngOnInit(): void {
     this.timerSubscription = this.timerService.timeElapsed$.subscribe(time => {
@@ -75,11 +78,13 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
       )
       .subscribe(intervals => {
-        if (!this.viewInitialized) return;
+        if (!this.viewInitialized) {
+          return;
+        }
 
         const clockInData = localStorage.getItem('clockInData');
         const now = new Date();
-        const today = now.toDateString();
+        const todayISO = this.dateFormattingService.formatDateISO(now);
 
         this.updateTimeClockedToday(intervals);
 
@@ -87,12 +92,12 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
           const { startTime, offset } = JSON.parse(clockInData);
           const startTimeDate = new Date(startTime);
 
-          if (startTimeDate.toDateString() === today) {
+          if (this.dateFormattingService.formatDateISO(startTimeDate) === todayISO) {
             const elapsedSinceStart = Math.floor((now.getTime() - startTimeDate.getTime()) / 1000);
             const totalElapsed = elapsedSinceStart + (offset || 0);
 
             this.timeElapsed = totalElapsed;
-            this.currentClockInTime = startTimeDate.toLocaleTimeString();
+            this.currentClockInTime = this.dateFormattingService.formatTimeShort(startTimeDate);
             this.currentClockOutTime = null;
 
             if (this.cronographTimer) {
@@ -101,32 +106,32 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           } else {
             localStorage.removeItem('clockInData');
-            this.initializeBasedOnIntervals(intervals, today);
+            this.initializeBasedOnIntervals(intervals, todayISO);
           }
         } else {
-          this.initializeBasedOnIntervals(intervals, today);
+          this.initializeBasedOnIntervals(intervals, todayISO);
         }
         this.cdr.detectChanges();
       });
   }
 
-  private initializeBasedOnIntervals(intervals: ClockInterval[], today: string): void {
+  private initializeBasedOnIntervals(intervals: ClockInterval[], todayISO: string): void {
      const todayElapsedSeconds = intervals
-       .filter(interval => new Date(interval.startTime).toDateString() === today)
+       .filter(interval => this.dateFormattingService.formatDateISO(new Date(interval.startTime)) === todayISO)
        .reduce((total, interval) => total + (interval.duration || 0), 0);
 
      this.timeElapsed = todayElapsedSeconds;
 
      const todaysIntervals = intervals
-        .filter(interval => new Date(interval.startTime).toDateString() === today)
+        .filter(interval => this.dateFormattingService.formatDateISO(new Date(interval.startTime)) === todayISO)
         .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
      const lastIntervalToday = todaysIntervals[0];
      const isActive = lastIntervalToday && !lastIntervalToday.endTime;
 
      if (lastIntervalToday) {
-        this.currentClockInTime = new Date(lastIntervalToday.startTime).toLocaleTimeString();
-        this.currentClockOutTime = lastIntervalToday.endTime ? new Date(lastIntervalToday.endTime).toLocaleTimeString() : null;
+        this.currentClockInTime = this.dateFormattingService.formatTimeShort(new Date(lastIntervalToday.startTime));
+        this.currentClockOutTime = lastIntervalToday.endTime ? this.dateFormattingService.formatTimeShort(new Date(lastIntervalToday.endTime)) : null;
      } else {
         this.currentClockInTime = null;
         this.currentClockOutTime = null;
@@ -145,7 +150,7 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
         const totalElapsed = elapsedSinceStart + offset;
 
         this.timeElapsed = totalElapsed;
-        this.currentClockInTime = startTimeDate.toLocaleTimeString();
+        this.currentClockInTime = this.dateFormattingService.formatTimeShort(startTimeDate);
         this.currentClockOutTime = null;
 
         localStorage.setItem('clockInData', JSON.stringify({
@@ -161,19 +166,20 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   updateTimeClockedToday(intervals: ClockInterval[]): void {
-    const today = new Date().toDateString();
+    const now = new Date();
+    const todayISO = this.dateFormattingService.formatDateISO(now);
     this.timeClockedToday = intervals
-      .filter(interval => new Date(interval.startTime).toDateString() === today)
+      .filter(interval => this.dateFormattingService.formatDateISO(new Date(interval.startTime)) === todayISO)
       .reduce((total, interval) => {
           if (!interval.endTime) {
-              const now = new Date().getTime();
+              const nowTime = now.getTime();
               const start = new Date(interval.startTime).getTime();
-              return total + Math.max(0, Math.floor((now - start) / 1000));
+              return total + Math.max(0, Math.floor((nowTime - start) / 1000));
           }
           return total + (interval.duration || 0);
       }, 0);
 
-    this.currentDate = today;
+    this.currentDate = this.dateFormattingService.formatDateDisplay(now);
     
     this.updateWeeklyProgress(intervals);
   }
@@ -212,27 +218,23 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
     endOfWeek.setHours(23, 59, 59, 999);
 
     return {
-      start: startOfWeek.toDateString(),
-      end: endOfWeek.toDateString()
+      start: this.dateFormattingService.formatDateDisplay(startOfWeek),
+      end: this.dateFormattingService.formatDateDisplay(endOfWeek)
     };
   }
 
-
-  /**
-   * Clocks in by starting a new interval.
-   */
   clockIn(): void {
     const currentIntervals = this.clockingService.getCurrentClockIntervals();
-    const today = new Date().toDateString();
+    const now = new Date();
+    const todayISO = this.dateFormattingService.formatDateISO(now);
     const offset = currentIntervals
-        .filter(interval => new Date(interval.startTime).toDateString() === today && interval.endTime)
+        .filter(interval => this.dateFormattingService.formatDateISO(new Date(interval.startTime)) === todayISO && interval.endTime)
         .reduce((total, interval) => total + (interval.duration || 0), 0);
 
     if (this.clockingService.clockIn()) {
-      const now = new Date();
       this.timeClockedToday = offset;
       this.cronographTimer.startTimer(this.timeClockedToday * 1000);
-      this.currentClockInTime = now.toLocaleTimeString();
+      this.currentClockInTime = this.dateFormattingService.formatTimeShort(now);
       this.currentClockOutTime = null;
 
       localStorage.setItem('clockInData', JSON.stringify({
@@ -247,10 +249,6 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
      this.cdr.detectChanges();
   }
 
-
-  /**
-   * Clocks out by finishing the current open interval.
-   */
   clockOut(): void {
     if (this.clockingService.clockOut()) {
       this.cronographTimer.stopTimer();
@@ -266,9 +264,6 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * Formats time in seconds to HH:MM:SS format
-   */
   formatTimeElapsed(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);

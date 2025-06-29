@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, ValidationErrors, Validators } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { GenericPopupComponent, PopupField } from '../../components/popup/popup/popup.component';
 import { AbsencesService, AbsenceRequest } from '../../services/absences/absences.service';
 import { GenericTableComponent } from '../../components/table/table/table.component';
@@ -11,11 +17,21 @@ import { GenericTableComponent } from '../../components/table/table/table.compon
   templateUrl: './absence-page.component.html',
   styleUrls: ['./absence-page.component.scss'],
   standalone: true,
-  imports: [GenericTableComponent]
+  imports: [
+    GenericTableComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule
+  ]
 })
 export class AbsencePageComponent implements OnInit {
   absenceRequests: any[] = [];
   displayedColumns: string[] = ['date', 'startTime', 'endTime', 'description'];
+  startDate: Date | null = null;
+  endDate: Date | null = null;
 
   constructor(public dialog: MatDialog, private absenceService: AbsencesService) {}
 
@@ -58,10 +74,10 @@ export class AbsencePageComponent implements OnInit {
     const formattedDate = today.toISOString().split('T')[0];
     
     const fields: PopupField[] = [
-      { name: 'date', label: 'Date', type: 'date', validators: [] },
-      { name: 'startTime', label: 'Start Time', type: 'time', validators: [] },
-      { name: 'endTime', label: 'End Time', type: 'time', validators: [this.timeOrderValidator] },
-      { name: 'description', label: 'Description', type: 'text', validators: [] },
+      { name: 'date', label: 'Date', type: 'date', validators: [Validators.required] },
+      { name: 'startTime', label: 'Start Time', type: 'time', validators: [Validators.required] },
+      { name: 'endTime', label: 'End Time', type: 'time', validators: [Validators.required, this.timeOrderValidator] },
+      { name: 'description', label: 'Description', type: 'text', validators: [Validators.required] },
     ];
 
     const dialogRef = this.dialog.open(GenericPopupComponent, {
@@ -95,10 +111,10 @@ export class AbsencePageComponent implements OnInit {
                    absenceDate.getFullYear() === today.getFullYear();
     
     const fields: PopupField[] = [
-      { name: 'date', label: isToday ? 'Date (Today Only)' : 'Date', type: 'date', validators: [] },
-      { name: 'startTime', label: 'Start Time', type: 'time', validators: [] },
-      { name: 'endTime', label: 'End Time', type: 'time', validators: [this.timeOrderValidator] },
-      { name: 'description', label: 'Description', type: 'text', validators: [] },
+      { name: 'date', label: isToday ? 'Date (Today Only)' : 'Date', type: 'date', validators: [Validators.required] },
+      { name: 'startTime', label: 'Start Time', type: 'time', validators: [Validators.required] },
+      { name: 'endTime', label: 'End Time', type: 'time', validators: [Validators.required, this.timeOrderValidator] },
+      { name: 'description', label: 'Description', type: 'text', validators: [Validators.required] },
     ];
 
     const startDate = new Date(row.startDateTime);
@@ -133,5 +149,9 @@ export class AbsencePageComponent implements OnInit {
         this.absenceService.updateAbsence(updatedAbsenceRequest);
       }
     });
+  }
+
+  applyFilter(): void {
+    console.log('Filter applied with start date:', this.startDate, 'and end date:', this.endDate);
   }
 }

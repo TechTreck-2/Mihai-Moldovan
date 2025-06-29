@@ -18,7 +18,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-
+import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
+import { ConsistentDatePipe } from '../../pipes/consistent-date.pipe';
 
   
 @Component({
@@ -27,7 +28,7 @@ import { MatInputModule } from '@angular/material/input';
   standalone: true,
   imports: [
     FullCalendarModule, NgFor, NgIf, MatCardModule, MatSidenavModule,
-    MatDividerModule, MatSliderModule, MatSlideToggleModule, MatListModule, DatePipe, MatIconModule, FormsModule, MatFormFieldModule, MatButtonModule, MatInputModule
+    MatDividerModule, MatSliderModule, MatSlideToggleModule, MatListModule, MatIconModule, FormsModule, MatFormFieldModule, MatButtonModule, MatInputModule, ConsistentDatePipe
   ],
   styleUrls: ['./calendar.component.scss']
 })
@@ -37,6 +38,7 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   @Output() eventAdded = new EventEmitter<EventApi>();
   @Output() eventDeleted = new EventEmitter<EventApi>();
   @Output() eventUpdated = new EventEmitter<EventApi>();
+  @Output() eventEditRequested = new EventEmitter<EventApi>();
   @ViewChild('fullcalendar') fullCalendar!: FullCalendarComponent;
   
   calendarOptions!: CalendarOptions;
@@ -50,7 +52,12 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   copyShortcutUsed = false;
   pasteShortcutUsed = false;
   
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  private pendingOperations = new Set<string>();
+  
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private dateFormattingService: DateFormattingService
+  ) {
     if (isPlatformBrowser(this.platformId)) {
       this.calendarOptions = {
         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
@@ -77,17 +84,28 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   
   ngAfterViewInit(): void {
     const calendarApi = this.fullCalendar?.getApi();
-    if (calendarApi) {
+    if (calendarApi && this.eventInputs.length > 0) {
+      calendarApi.removeAllEvents();
       this.eventInputs.forEach(event => calendarApi.addEvent(event));
+      calendarApi.render();
     }
-    calendarApi.refetchEvents();
   }
   
   ngOnChanges(changes: SimpleChanges) {
     if (changes['eventInputs'] && !changes['eventInputs'].firstChange) {
       const calendarApi = this.fullCalendar?.getApi();
       if (calendarApi) {
-        calendarApi.setOption('events', this.eventInputs);
+        calendarApi.removeAllEvents();
+        
+        const eventsToAdd = this.eventInputs.filter(event => 
+          !event.id || !this.pendingOperations.has(String(event.id))
+        );
+        
+        eventsToAdd.forEach(event => {
+          calendarApi.addEvent(event);
+        });
+        
+        calendarApi.render();
       } else {
         this.calendarOptions = {
           ...this.calendarOptions,
@@ -205,8 +223,19 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
 
   handleEventClick(clickInfo: EventClickArg) {
     if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'?`)) {
+      const eventId = clickInfo.event.id;
+      
+      if (eventId) {
+        this.pendingOperations.add(eventId);
+      }
+      
       this.eventDeleted.emit(clickInfo.event);
-      clickInfo.event.remove();
+      
+      setTimeout(() => {
+        if (eventId) {
+          this.pendingOperations.delete(eventId);
+        }
+      }, 2000);
     }
   }
   
@@ -215,10 +244,34 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   }
   
   handleEventDrop(dropInfo: EventDropArg) {
+    const eventId = dropInfo.event.id;
+    
+    if (eventId) {
+      this.pendingOperations.add(eventId);
+    }
+    
     this.eventUpdated.emit(dropInfo.event);
+    
+    setTimeout(() => {
+      if (eventId) {
+        this.pendingOperations.delete(eventId);
+      }
+    }, 1000);
   }
     handleEventResize(resizeInfo: any) {
+    const eventId = resizeInfo.event.id;
+    
+    if (eventId) {
+      this.pendingOperations.add(eventId);
+    }
+    
     this.eventUpdated.emit(resizeInfo.event);
+    
+    setTimeout(() => {
+      if (eventId) {
+        this.pendingOperations.delete(eventId);
+      }
+    }, 1000);
   }
   
   handleWeekendsToggle() {
@@ -232,11 +285,23 @@ export class CalendarComponent implements OnChanges, AfterViewInit {
   }
   
   editEvent(event: EventApi): void {
+    this.eventEditRequested.emit(event);
   }
   
   deleteEvent(event: EventApi): void {
-    event.remove();
+    const eventId = event.id;
+    
+    if (eventId) {
+      this.pendingOperations.add(eventId);
+    }
+    
     this.eventDeleted.emit(event);
+    
+    setTimeout(() => {
+      if (eventId) {
+        this.pendingOperations.delete(eventId);
+      }
+    }, 1000);
   }
   
   jumpToEvent(event: EventApi): void {

@@ -26,7 +26,6 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }    return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Only redirect on 401 if it's not a login or register request
         if (error.status === 401 && !request.url.includes('/auth/login') && !request.url.includes('/auth/register')) {
           this.authService.logout();
           this.router.navigate(['/login'], { queryParams: { sessionExpired: 'true' } });

@@ -133,14 +133,35 @@
 .event-icon {
     color: #6750a4;
     transition: all 0.2s ease;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     border: none;
     border-radius: 5px;
     background: transparent;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    
+    .mat-mdc-button-touch-target {
+        display: none !important;
+    }
+    
+    .mat-mdc-button-persistent-ripple {
+        display: none !important;
+    }
+    
+    .mdc-button__label {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
 }
 
 .event-icon:hover {
@@ -154,9 +175,15 @@
 }
 
 .event-icon mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
 }
 
 .no-events {

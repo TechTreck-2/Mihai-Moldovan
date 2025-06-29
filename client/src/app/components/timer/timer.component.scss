@@ -181,6 +181,7 @@ mat-icon{
         .timer-section, .stats-section, .activity-section {
           padding: 0;
           flex: none;
+          width: 100%;
         }
 
         .activity-section {
@@ -189,7 +190,7 @@ mat-icon{
         }
 
         mat-divider {
-          width: auto;
+          width: 100%;
           margin: 24px 0;
         }
       }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { GenericTableComponent } from '../../components/table/table/table.component';
-import { ClockingComponent } from '../../components/clocking/clocking.component';
 import { ClockingService, ClockInterval } from '../../services/clocking/clocking.service';
 import { GenericPopupComponent } from '../../components/popup/popup/popup.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,13 +13,13 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
 
 @Component({
   selector: 'app-modify-clocking-page',
   standalone: true,
   imports: [
     GenericTableComponent,
-    ClockingComponent,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -44,7 +43,8 @@ export class ModifyClockingPageComponent implements OnInit {
 
   constructor(
     private clockingService: ClockingService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private dateFormattingService: DateFormattingService
   ) {}
 
   ngOnInit(): void {
@@ -70,7 +70,7 @@ export class ModifyClockingPageComponent implements OnInit {
   ): { date: string; intervals: ClockInterval[]; count: number; length: string }[] {
     const groups: { [date: string]: ClockInterval[] } = {};
     intervals.forEach(interval => {
-      const date = new Date(interval.startTime).toDateString();
+      const date = this.dateFormattingService.formatDateISO(new Date(interval.startTime));
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -79,7 +79,7 @@ export class ModifyClockingPageComponent implements OnInit {
   
     const allDates: { date: string; intervals: ClockInterval[]; count: number; length: string }[] = [];
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toDateString();
+      const dateStr = this.dateFormattingService.formatDateISO(d);
       const intervalsForDate = groups[dateStr] || [];
       const timeWorkedMs = intervalsForDate.reduce((total, interval) => {
         if (interval.endTime) {
@@ -91,7 +91,7 @@ export class ModifyClockingPageComponent implements OnInit {
       const formattedDuration = this.formatDuration(timeWorkedMs);
       
       allDates.push({ 
-        date: dateStr, 
+        date: this.dateFormattingService.formatDateDisplay(d), 
         intervals: intervalsForDate, 
         count: intervalsForDate.length, 
         length: formattedDuration 

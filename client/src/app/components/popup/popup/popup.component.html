@@ -4,7 +4,7 @@
         <div *ngFor="let field of data.fields">
           <mat-form-field appearance="fill">
             <mat-label>{{ field.label }}</mat-label>
-            <ng-container [ngSwitch]="field.type">              <!-- Datepicker case -->
+            <ng-container [ngSwitch]="field.type">
               <ng-container *ngSwitchCase="'date'">
                 <input
                   matInput
@@ -18,14 +18,12 @@
                 <mat-datepicker #picker></mat-datepicker>
               </ng-container>
 
-              <!-- Select case -->
               <mat-select *ngSwitchCase="'select'" [formControlName]="field.name" [attr.data-cy]="'popup-field-' + field.name">
                 <mat-option *ngFor="let option of field.options" [value]="option.value">
                   {{ option.viewValue }}
                 </mat-option>
               </mat-select>
 
-              <!-- Default input case -->
               <input
                 *ngSwitchDefault
                 matInput
@@ -33,7 +31,7 @@
                 [type]="field.type"
                 [attr.data-cy]="'popup-field-' + field.name">
             </ng-container>
-            <mat-error *ngIf="form.get(field.name)?.errors" [attr.data-cy]="'popup-field-' + field.name + '-error'">
+            <mat-error *ngIf="form.get(field.name)?.errors && (form.get(field.name)?.dirty || form.get(field.name)?.touched)" [attr.data-cy]="'popup-field-' + field.name + '-error'">
               <ng-container *ngIf="form.get(field.name)?.errors?.['required']">
                 {{ field.label }} is required
               </ng-container>

@@ -19,5 +19,10 @@
   </div>
   
   <div *ngIf="activeComponent === 'calendar'">
-    <calendar [eventInputs]="calendarEvents"></calendar>
+    <calendar 
+      [eventInputs]="calendarEvents"
+      (eventAdded)="onCalendarEventAdded($event)"
+      (eventDeleted)="onCalendarEventDeleted($event)"
+      (eventUpdated)="onCalendarEventUpdated($event)">
+    </calendar>
   </div>

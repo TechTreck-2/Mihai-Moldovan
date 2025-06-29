@@ -5,6 +5,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { DateFormattingService } from '../../../services/date-formatting/date-formatting.service';
 
 @Component({
   selector: 'app-generic-table',
@@ -54,6 +55,8 @@ export class GenericTableComponent implements OnChanges, AfterViewInit {
   contextMenuPosition = { x: 0, y: 0 };
   contextMenuRow: any;
 
+  constructor(private dateFormattingService: DateFormattingService) {}
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data']) {
       this.dataSource.data = this.data;
@@ -82,5 +85,40 @@ export class GenericTableComponent implements OnChanges, AfterViewInit {
 
   closeContextMenu(): void {
     this.contextMenuVisible = false;
+  }
+
+  formatCellValue(value: any, column: string): string {
+    if (!value) {
+      return '';
+    }
+
+    if (this.isDateColumn(column) && this.isDateString(value)) {
+      return this.dateFormattingService.formatTableDate(value);
+    }
+
+    if (this.isTimeColumn(column) && this.isDateString(value)) {
+      return this.dateFormattingService.formatTimeShort(value);
+    }
+
+    return value.toString();
+  }
+
+  private isDateColumn(column: string): boolean {
+    const dateColumns = ['date', 'startdate', 'enddate', 'createdat', 'updatedat', 'timestamp'];
+    return dateColumns.includes(column.toLowerCase()) || column.toLowerCase().includes('date');
+  }
+
+  private isTimeColumn(column: string): boolean {
+    const timeColumns = ['time', 'starttime', 'endtime'];
+    return timeColumns.includes(column.toLowerCase()) || column.toLowerCase().includes('time');
+  }
+
+  private isDateString(value: any): boolean {
+    if (typeof value !== 'string') {
+      return false;
+    }
+    
+    const dateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
+    return dateRegex.test(value) && !isNaN(Date.parse(value));
   }
 }

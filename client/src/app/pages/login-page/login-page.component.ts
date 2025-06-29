@@ -63,7 +63,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     }, { validators: this.passwordMatchValidator });
       this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     
-    // Check if user was redirected due to session expiration
     if (this.route.snapshot.queryParams['sessionExpired']) {
       this.sessionExpiredMessage = 'Session expired. Please log in again.';
     }

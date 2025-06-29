@@ -25,6 +25,9 @@
 .content-container {
   display: flex;
   flex-direction: column;
+  @media (max-width: 768px) {
+    padding-bottom: 56px; /* height of bottom nav */
+  }
 }
 
 .main-toolbar {
@@ -61,7 +64,7 @@
 .nav-item {
   height: 48px !important;
   margin: 4px 0 4px 0 !important; /* Changed from 4px 8px to remove side margins */
-  border-radius: 4px;
+  border-radius: 0 !important; 
   overflow: hidden;
   &:hover {
       box-shadow: 0 4px 12px rgba(94, 50, 105, 0.2);
@@ -84,6 +87,51 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+/* Hide and disable desktop sidenav on small screens */
+.desktop-sidenav {
+  @media (max-width: 768px) {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Disable menu toggle button on mobile */
+.menu-button {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+/* Show bottom nav on mobile, hide on desktop */
+.show-on-mobile {
+  display: none !important;
+  @media (max-width: 768px) {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    justify-content: space-around;
+    z-index: 3;
+  }
+}
+
+/* Hide Dashboard text on mobile override */
+@media (max-width: 768px) {
+  .toolbar-title {
+    display: none !important;
+  }
+}
+
+/* Hide clock status & username on mobile */
+@media (max-width: 768px) {
+  .main-toolbar app-clock-status-indicator,
+  .main-toolbar .username {
+    display: none !important;
+  }
 }
 
 body.dark {

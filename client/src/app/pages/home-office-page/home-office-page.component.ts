@@ -12,7 +12,7 @@ import Point from 'ol/geom/Point';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Icon, Style } from 'ol/style';
 import Overlay from 'ol/Overlay';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,8 +52,8 @@ import { DragDropModule, CdkDragEnd } from '@angular/cdk/drag-drop';
   styleUrls: ['./home-office-page.component.scss']
 })
 export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('tooltip') tooltipElement!: ElementRef;
-  @ViewChildren('addressElement') addressElements!: QueryList<ElementRef>;
+   @ViewChild('tooltip') tooltipElement!: ElementRef;
+   @ViewChildren('addressElement') addressElements!: QueryList<ElementRef>;
 
   private map!: Map;
   private vectorSource!: VectorSource;
@@ -106,10 +106,16 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     }
   }
 
+  // Handler to update OpenLayers map size on window resize
+  private resizeMapHandler = () => this.map?.updateSize();
+  
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
 
       this.initMap();
+
+      // ensure map redraws on window resize
+      window.addEventListener('resize', this.resizeMapHandler);
 
       this.officeSubscription.add(
         this.themeService.isDarkTheme$.subscribe(isDark => {
@@ -135,6 +141,8 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     if (this.map) {
       this.map.setTarget(undefined);
     }
+    // remove resize listener
+    window.removeEventListener('resize', this.resizeMapHandler);
   }
 
   private initMap(): void {
@@ -172,9 +180,10 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     this.map.addOverlay(this.overlay);
 
     this.map.on('pointermove', evt => {
-      const feature = this.map.forEachFeatureAtPixel(evt.pixel, feature => feature);
+      const { pixel, coordinate } = evt;
+      const feature = this.map.forEachFeatureAtPixel(pixel, f => f);
       if (feature && feature.get('description')) {
-        const coordinate = evt.coordinate;
+        // coordinate extracted above
         tooltip.innerHTML = feature.get('description');
         this.overlay.setPosition(coordinate);
         tooltip.style.display = 'block';
@@ -208,7 +217,9 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
 
   private updateMapTheme(isDark: boolean): void {
     this.isDarkMode = isDark;
-    if (!this.tileLayer) return;
+    if (!this.tileLayer) {
+      return;
+    }
 
     const newSource = isDark
       ? new XYZ({
@@ -291,7 +302,9 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   }
 
   private updateMarkers(): void {
-    if (!this.vectorSource || !this.map) return;
+    if (!this.vectorSource || !this.map) {
+      return;
+    }
     this.vectorSource.clear();
     this.markersMap = {};
     this.locations.forEach(location => {
@@ -306,8 +319,8 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
 
   editLocation(location: Location): void {
     const fields: PopupField[] = [
-      { name: 'name', label: 'Office Name', type: 'text', validators: [] },
-      { name: 'description', label: 'Description', type: 'text', validators: [] }
+      { name: 'name', label: 'Office Name', type: 'text', validators: [Validators.required] },
+      { name: 'description', label: 'Description', type: 'text', validators: [Validators.required] }
     ];
   
     const dialogRef = this.dialog.open(GenericPopupComponent, {

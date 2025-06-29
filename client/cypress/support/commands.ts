@@ -11,19 +11,10 @@
 declare global {
   namespace Cypress {
     interface Chainable {
-      /**
-       * Custom command to login a user
-       */
       login(username: string, password: string): Chainable<void>
       
-      /**
-       * Custom command to mock backend API responses
-       */
       mockApiResponse(method: string, url: string, response: any, statusCode?: number): Chainable<void>
       
-      /**
-       * Custom command to wait for Angular to finish loading
-       */
       waitForAngular(): Chainable<void>
     }
   }

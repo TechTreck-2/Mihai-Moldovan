@@ -14,7 +14,7 @@
     #sidenav 
     mode="side" 
     opened 
-    class="sidenav"
+    class="sidenav desktop-sidenav"
     [fixedInViewport]="true"
     fixedTopGap="0">
     <mat-toolbar class="sidenav-header">
@@ -118,6 +118,28 @@
     <main class="content">
       <router-outlet></router-outlet>
     </main>
+
+    <!-- Bottom navigation for mobile -->
+    <mat-toolbar color="primary" class="bottom-nav show-on-mobile">
+      <button mat-icon-button routerLink="/clocking" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:false}">
+        <mat-icon>access_time</mat-icon>
+      </button>
+      <button mat-icon-button routerLink="/absence-requests" routerLinkActive="active-link">
+        <mat-icon>coffee</mat-icon>
+      </button>
+      <button mat-icon-button routerLink="/modify" routerLinkActive="active-link">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button routerLink="/holiday" routerLinkActive="active-link">
+        <mat-icon>beach_access</mat-icon>
+      </button>
+      <button mat-icon-button routerLink="/home-office" routerLinkActive="active-link">
+        <mat-icon>home_work</mat-icon>
+      </button>
+      <button mat-icon-button routerLink="/home-office-requests" routerLinkActive="active-link">
+        <mat-icon>pending_actions</mat-icon>
+      </button>
+    </mat-toolbar>
   </mat-sidenav-content>
 </mat-sidenav-container>
 </div>

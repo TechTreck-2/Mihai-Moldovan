@@ -4,15 +4,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { DatePipe, NgClass, NgFor } from '@angular/common';
+import { ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors, Validators } from '@angular/forms';
+import { NgClass, NgFor } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { GenericTableComponent } from '../../components/table/table/table.component';
 import { GenericPopupComponent, PopupField } from '../../components/popup/popup/popup.component';
 import { NotificationComponent } from '../../components/notification/notification.component';
 import { NotificationsService } from '../../services/notifications/notifications.service';
 import { HolidayService, Holiday } from '../../services/holiday/holiday.service';
-import { calculateWorkingDays, formatToISODate } from '../../utils/date-utils';
+import { calculateWorkingDays } from '../../utils/date-utils';
+import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
 
 @Component({
   selector: 'app-holiday-page',
@@ -28,8 +29,7 @@ import { calculateWorkingDays, formatToISODate } from '../../utils/date-utils';
     GenericTableComponent,
     NgFor,
     NgClass,
-    NotificationComponent,
-    DatePipe
+    NotificationComponent
   ],
   templateUrl: './holiday-page.component.html',
   styleUrls: ['./holiday-page.component.scss'],
@@ -47,7 +47,8 @@ export class HolidayPageComponent implements OnInit {
   constructor(
     private notificationService: NotificationsService,
     private holidayService: HolidayService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private dateFormattingService: DateFormattingService
   ) {}
 
   ngOnInit() {
@@ -105,21 +106,21 @@ export class HolidayPageComponent implements OnInit {
     if (!startDate || !endDate) {
       return null;
     }
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = this.dateFormattingService.fromDateInput(startDate) || new Date(startDate);
+    const end = this.dateFormattingService.fromDateInput(endDate) || new Date(endDate);
     return end <= start ? { endBeforeStart: true } : null;
   }
 
   openAddPopup(): void {
     const fields: PopupField[] = [
-      { name: 'startDate', label: 'Start Date', type: 'date', validators: [] },
+      { name: 'startDate', label: 'Start Date', type: 'date', validators: [Validators.required] },
       { 
         name: 'endDate', 
         label: 'End Date', 
         type: 'date', 
-        validators: [this.dateOrderValidator] 
+        validators: [Validators.required, this.dateOrderValidator] 
       },
-      { name: 'holidayName', label: 'Holiday Name', type: 'text', validators: [] },
+      { name: 'holidayName', label: 'Holiday Name', type: 'text', validators: [Validators.required] },
     ];
 
     const dialogRef = this.dialog.open(GenericPopupComponent, {
@@ -133,8 +134,8 @@ export class HolidayPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const newHoliday: Omit<Holiday, 'id'> = {
-          startDate: this.formatDate(new Date(result.startDate)),
-          endDate: this.formatDate(new Date(result.endDate)),
+          startDate: this.dateFormattingService.formatDateISO(this.dateFormattingService.fromDateInput(result.startDate) || new Date()),
+          endDate: this.dateFormattingService.formatDateISO(this.dateFormattingService.fromDateInput(result.endDate) || new Date()),
           holidayName: result.holidayName,
         };
         this.holidayService.addHoliday(newHoliday);
@@ -144,19 +145,19 @@ export class HolidayPageComponent implements OnInit {
 
   openEditPopup(holiday: Holiday): void {
     const fields: PopupField[] = [
-      { name: 'startDate', label: 'Start Date', type: 'date', validators: [] },
+      { name: 'startDate', label: 'Start Date', type: 'date', validators: [Validators.required] },
       { 
         name: 'endDate', 
         label: 'End Date', 
         type: 'date', 
-        validators: [this.dateOrderValidator] 
+        validators: [Validators.required, this.dateOrderValidator] 
       },
-      { name: 'holidayName', label: 'Holiday Name', type: 'text', validators: [] },
+      { name: 'holidayName', label: 'Holiday Name', type: 'text', validators: [Validators.required] },
     ];
 
     const formattedValues = {
-      startDate: new Date(holiday.startDate).toISOString().split('T')[0],
-      endDate: new Date(holiday.endDate).toISOString().split('T')[0],
+      startDate: this.dateFormattingService.formatForDateInput(holiday.startDate),
+      endDate: this.dateFormattingService.formatForDateInput(holiday.endDate),
       holidayName: holiday.holidayName
     };
 
@@ -172,8 +173,8 @@ export class HolidayPageComponent implements OnInit {
       if (result) {
         const updatedHoliday: Holiday = {
           id: holiday.id,
-          startDate: this.formatDate(new Date(result.startDate)),
-          endDate: this.formatDate(new Date(result.endDate)),
+          startDate: this.dateFormattingService.formatDateISO(this.dateFormattingService.fromDateInput(result.startDate) || new Date()),
+          endDate: this.dateFormattingService.formatDateISO(this.dateFormattingService.fromDateInput(result.endDate) || new Date()),
           holidayName: result.holidayName,
         };
         this.holidayService.updateHoliday(updatedHoliday);
@@ -186,6 +187,6 @@ export class HolidayPageComponent implements OnInit {
   }
 
   private formatDate(date: Date): string {
-    return formatToISODate(date);
+    return this.dateFormattingService.formatDateISO(date);
   }
 }

@@ -1,10 +1,10 @@
 import { Component, Input, Injector, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { GenericTableComponent } from '../../../components/table/table/table.component';
 import { MatButton } from '@angular/material/button';
 import { ClockInPopupComponent, ClockInPopupData } from '../per-day-modify-clockin/per-day-modify-clockin.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ClockingService, ClockInterval } from '../../../services/clocking/clocking.service';
+import { DateFormattingService } from '../../../services/date-formatting/date-formatting.service';
 
 @Component({
   selector: 'app-day-clockins-table',
@@ -28,12 +28,12 @@ export class DayClockinsTableComponent implements OnInit {
   displayedColumns: string[] = ['startTime', 'endTime'];
 
   formattedData: any[] = [];
-  datePipe: DatePipe = new DatePipe('en-US');
 
   constructor(
     private injector: Injector,
     public dialog: MatDialog,
-    private clockingService: ClockingService
+    private clockingService: ClockingService,
+    private dateFormattingService: DateFormattingService
   ) {
     this.data = this.injector.get('embeddedData', []);
     console.log('Received data in embedded component:', this.data);
@@ -46,8 +46,8 @@ export class DayClockinsTableComponent implements OnInit {
   formatData() {
     this.formattedData = this.data.map(interval => ({
       ...interval,
-      startTime: this.datePipe.transform(interval.startTime, 'shortTime'),
-      endTime: interval.endTime ? this.datePipe.transform(interval.endTime, 'shortTime') : null
+      startTime: this.dateFormattingService.formatTimeShort(interval.startTime),
+      endTime: interval.endTime ? this.dateFormattingService.formatTimeShort(interval.endTime) : null
     }));
   }
 
@@ -101,7 +101,7 @@ export class DayClockinsTableComponent implements OnInit {
       if (result && result.startTime) {
         const startTime = new Date(result.startTime);
         const day = new Date(this.day);
-        if (startTime.toDateString() === day.toDateString()) {
+        if (this.dateFormattingService.formatDateISO(startTime) === this.dateFormattingService.formatDateISO(day)) {
           const duration = result.endTime ? Math.floor(
             (new Date(result.endTime).getTime() - new Date(result.startTime).getTime()) / 1000
           ) : 0;

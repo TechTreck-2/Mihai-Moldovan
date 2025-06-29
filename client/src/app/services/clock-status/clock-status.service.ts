@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { ClockingService, ClockInterval } from '../clocking/clocking.service';
+import { DateFormattingService } from '../date-formatting/date-formatting.service';
 
 export interface ClockStatus {
   isClockedIn: boolean;
@@ -20,23 +21,26 @@ export class ClockStatusService {
 
   clockStatus$: Observable<ClockStatus> = this.clockStatusSubject.asObservable();
 
-  constructor(private clockingService: ClockingService) {
+  constructor(
+    private clockingService: ClockingService,
+    private dateFormattingService: DateFormattingService
+  ) {
     this.clockingService.clockIntervals$.subscribe(intervals => {
       this.updateClockStatus(intervals);
     });
   }
 
   private updateClockStatus(intervals: ClockInterval[]): void {
-    const today = new Date().toDateString();
+    const todayISO = this.dateFormattingService.formatDateISO(new Date());
     const todaysIntervals = intervals.filter(interval => 
-      new Date(interval.startTime).toDateString() === today
+      this.dateFormattingService.formatDateISO(new Date(interval.startTime)) === todayISO
     );
 
     const activeSession = todaysIntervals.find(interval => !interval.endTime);
     
     const status: ClockStatus = {
       isClockedIn: !!activeSession,
-      currentClockInTime: activeSession ? new Date(activeSession.startTime).toLocaleTimeString() : null,
+      currentClockInTime: activeSession ? this.dateFormattingService.formatTimeShort(new Date(activeSession.startTime)) : null,
       activeSession: activeSession || null
     };
 

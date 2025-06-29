@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, MAT_DATE_FORMATS, NativeDateAdapter, DateAdapter, MAT_NATIVE_DATE_FORMATS } from '@angular/material/core';
+import { DateFormattingService } from '../../../services/date-formatting/date-formatting.service';
 
 export interface PopupField {
   name: string;
@@ -73,13 +74,15 @@ export class GenericPopupComponent {
     public dialogRef: MatDialogRef<GenericPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PopupData,
     private fb: FormBuilder,
-    private injector: Injector
+    private injector: Injector,
+    private dateFormattingService: DateFormattingService
   ) {
     this.form = this.fb.group({});    data.fields?.forEach(field => {
       let initialValue = data.values?.[field.name] || '';
       
       if (field.type === 'date' && initialValue) {
-        initialValue = new Date(initialValue);
+        const parsedDate = this.dateFormattingService.fromDateInput(initialValue) || new Date(initialValue);
+        initialValue = parsedDate;
       }
       
       const control = this.fb.control(initialValue, field.validators || []);
@@ -99,9 +102,8 @@ export class GenericPopupComponent {
 
   onDateChange(fieldName: string, event: any): void {
     if (event.value) {
-      const date = new Date(event.value);
-      const isoDate = date.toISOString().split('T')[0];
-      this.form.get(fieldName)?.setValue(isoDate, { emitEvent: false });
+      const dateString = this.dateFormattingService.formatForDateInput(event.value);
+      this.form.get(fieldName)?.setValue(dateString, { emitEvent: false });
     }
   }
   onSubmit(): void {
@@ -110,12 +112,16 @@ export class GenericPopupComponent {
       
       this.data.fields?.forEach(field => {
         if (field.type === 'date' && formValue[field.name]) {
-          const date = new Date(formValue[field.name]);
-          formValue[field.name] = date.toISOString().split('T')[0];
+          const date = this.dateFormattingService.fromDateInput(formValue[field.name]);
+          if (date) {
+            formValue[field.name] = this.dateFormattingService.formatForDateInput(date);
+          }
         }
       });
       
       this.dialogRef.close(formValue);
+    } else {
+      this.form.markAllAsTouched();
     }
   }
 

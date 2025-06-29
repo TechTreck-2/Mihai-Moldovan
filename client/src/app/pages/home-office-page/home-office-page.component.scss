@@ -1,22 +1,51 @@
 .container {
-  display: grid;
-  grid-template-columns: minmax(300px, 2fr) 1fr;
-  gap: 32px;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px); // subtract toolbar height (e.g., 64px) from viewport height
+  overflow: hidden;
+  padding: 24px 24px 0;
+  box-sizing: border-box;
   max-width: 1400px;
   margin: 0 auto;
   position: relative;
 }
 
-.left-panel {
+.main-content {
+  display: flex;
+  gap: 32px;
+  align-items: stretch;
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: hidden;
+}
+
+.left-panel-container {
+  flex: 3;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  height: 100%;
+}
+
+.right-panel-container {
+  flex: 1; // Takes 1/4 of the space
+  display: flex;
+  flex-direction: column;
+  min-width: 250px; // Ensure it doesn't get too small
+  height: 100%;
+}
+
+.map-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  position: relative;
 }
 
 .map {
   width: 100%;
-  height: calc(100vh - 180px);
+  flex: 1 1 auto;
+  height: auto;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -38,7 +67,8 @@
 .office-list {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
+  height: 100%;
   overflow-y: auto;
   padding: 24px !important;
   border-radius: 12px;
@@ -56,6 +86,8 @@
 .office-items-container {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
   gap: 12px;
 }
 
@@ -224,14 +256,17 @@ button[mat-raised-button] {
 
 .floating-panel {
   position: absolute;
-  top: 24px;
-  left: 24px;
-  background-color: white;
-  padding: 24px;
-  border-radius: 12px;
-  width: 380px;
-  z-index: 900;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  background: white;
+  padding: 16px;
+  width: 360px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .floating-panel h3 {
@@ -464,18 +499,30 @@ button[mat-raised-button] {
 @media (max-width: 768px) {
   .container {
     padding: 16px;
+  }
+
+  .main-content {
+    flex-direction: column;
     gap: 24px;
-    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .left-panel-container {
+    order: 1;
+  }
+
+  .right-panel-container {
+    order: 2;
   }
 
   .map {
     height: 400px;
-    order: 1;
+    flex: none;
   }
 
   .office-list {
     max-height: unset;
-    order: 2;
+    height: auto;
     padding: 16px !important;
   }
 
@@ -506,6 +553,9 @@ button[mat-raised-button] {
 @media (max-width: 480px) {
   .container {
     padding: 12px;
+  }
+
+  .main-content {
     gap: 16px;
   }
 
@@ -552,5 +602,41 @@ button[mat-raised-button] {
   }
   100% {
     transform: translate3d(-100%, 0, 0);
+  }
+}
+
+// Desktop optimization: Reduce viewport slightly to prevent scrolling on PC
+// Only apply when screen height is sufficient (min 800px) to keep it usable
+// Use fixed heights for consistent layout
+@media (min-width: 1024px) and (min-height: 800px) {
+  .map {
+    height: calc(100vh - 300px);
+  }
+  
+  .office-list {
+    height: calc(100vh - 220px); // Match search bar + map total height
+  }
+  
+  .container {
+    padding: 20px;
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+  }
+}
+
+// For larger desktop screens, we can be more aggressive with space optimization
+// Maintain proportional scaling across all elements
+@media (min-width: 1440px) and (min-height: 900px) {
+  .map {
+    height: calc(100vh - 320px);
+  }
+  
+  .office-list {
+    height: calc(100vh - 240px); // Match search bar + map total height
+  }
+  
+  .container {
+    padding: 24px;
+    max-height: calc(100vh - 48px);
   }
 }

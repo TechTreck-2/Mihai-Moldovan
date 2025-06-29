@@ -59,7 +59,7 @@
             *matCellDef="let element" 
             class="column-cell" 
             (contextmenu)="onRightClick($event, element)">
-          <span class="cell-content">{{ element[column] }}</span>
+          <span class="cell-content">{{ formatCellValue(element[column], column) }}</span>
         </td>
       </ng-container>      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
       <tr mat-row *matRowDef="let row; columns: computedColumns" class="data-row" data-cy="table-row"></tr>

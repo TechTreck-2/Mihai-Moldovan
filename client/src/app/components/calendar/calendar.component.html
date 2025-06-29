@@ -24,7 +24,7 @@
                                     <mat-list-item *ngFor="let event of currentEvents" class="event-item">
                                         <div class="event-content">
                                             <div class="event-info">
-                                                <div class="event-date">{{ event.startStr | date:'MMM d, y' }}</div>
+                                                <div class="event-date">{{ event.startStr | consistentDate:'display' }}</div>
                                                 <div class="event-title">{{ event.title }}</div>
                                             </div>
                                             <div class="event-actions">
