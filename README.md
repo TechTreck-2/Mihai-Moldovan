@@ -76,3 +76,4 @@ The project is organized as a monorepo (no nx) with two main parts:
 -   Holiday Planning Overview
 -   Home Office Management (defining locations via map, requesting home office days)
 -   User Preferences
+-   E2E and Unit testing.
