@@ -50,7 +50,7 @@ The project is organized as a monorepo (no nx) with two main parts:
     The backend API will be available at `http://localhost:3000`.
 
 4.  Setup a .env file at the root of the backend folder with the following structure.
-    ```json
+    ```bash
     # Database Configuration
     DB_TYPE=postgres
     DB_HOST=<your-host-url>
