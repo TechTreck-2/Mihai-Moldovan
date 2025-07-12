@@ -77,6 +77,7 @@ The project is organized as a monorepo (no nx) with two main parts:
 -   Home Office Management (defining locations via map, requesting home office days)
 -   User Preferences
 -   E2E and Unit testing
+-   Full dark mode support
 
 
 ![Screenshot_13-7-2025_02539_localhost](https://github.com/user-attachments/assets/f3927986-05ef-4463-b306-684f94fc1fc8)
