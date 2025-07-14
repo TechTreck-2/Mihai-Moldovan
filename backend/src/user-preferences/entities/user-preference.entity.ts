@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from 'src/users/user.entity';
 
 @Entity()
@@ -14,7 +20,7 @@ export class UserPreferences {
 
   @Column({ default: true })
   notifications: boolean;
-  
+
   @Column({ type: 'json', nullable: true })
   additionalSettings: Record<string, any>;
 

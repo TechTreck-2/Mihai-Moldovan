@@ -20,7 +20,7 @@ export class Absence {
 
   @Column()
   status: string;
-  
-  @ManyToOne(() => User, user => user.absences, { onDelete: 'CASCADE' })
+
+  @ManyToOne(() => User, (user) => user.absences, { onDelete: 'CASCADE' })
   user: User;
 }

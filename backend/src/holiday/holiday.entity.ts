@@ -14,7 +14,7 @@ export class Holiday {
 
   @Column()
   holidayName: string;
-  
-  @ManyToOne(() => User, user => user.holidays, { onDelete: 'CASCADE' })
+
+  @ManyToOne(() => User, (user) => user.holidays, { onDelete: 'CASCADE' })
   user: User;
 }

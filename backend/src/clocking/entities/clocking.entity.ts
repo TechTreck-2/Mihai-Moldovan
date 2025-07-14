@@ -19,8 +19,8 @@ export class Clocking {
   description: string;
 
   @Column({ default: 'active' })
-  status: string;  // 'active' | 'completed' | 'modified'
-  
-  @ManyToOne(() => User, user => user.clockings, { onDelete: 'CASCADE' })
+  status: string; // 'active' | 'completed' | 'modified'
+
+  @ManyToOne(() => User, (user) => user.clockings, { onDelete: 'CASCADE' })
   user: User;
 }

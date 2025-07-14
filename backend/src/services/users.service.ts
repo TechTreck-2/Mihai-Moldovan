@@ -18,13 +18,18 @@ export class UsersService {
 
   async create(username: string, password: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ username, password: hashedPassword });
+    const user = this.userRepository.create({
+      username,
+      password: hashedPassword,
+    });
     return this.userRepository.save(user);
   }
 
   async updateUser(id: number, updateData: Partial<User>): Promise<User> {
     await this.userRepository.update(id, updateData);
-    const user = await this.userRepository.findOne({ where: { id: String(id) } });
+    const user = await this.userRepository.findOne({
+      where: { id: String(id) },
+    });
     if (!user) {
       throw new Error(`User with id ${id} not found`);
     }
@@ -36,7 +41,9 @@ export class UsersService {
   }
 
   async findById(id: number): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { id: String(id) } });
+    const user = await this.userRepository.findOne({
+      where: { id: String(id) },
+    });
     return user ?? undefined;
   }
 

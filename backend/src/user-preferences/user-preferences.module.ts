@@ -8,6 +8,6 @@ import { UserPreferences } from './entities/user-preference.entity';
   imports: [TypeOrmModule.forFeature([UserPreferences])],
   controllers: [UserPreferencesController],
   providers: [UserPreferencesService],
-  exports: [UserPreferencesService]
+  exports: [UserPreferencesService],
 })
 export class UserPreferencesModule {}

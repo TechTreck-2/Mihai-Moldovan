@@ -19,8 +19,14 @@ export class AbsenceService {
     const newAbsence = this.absenceRepository.create({ ...absence, user });
     return this.absenceRepository.save(newAbsence);
   }
-  async update(id: string, updatedAbsence: Partial<Absence>, user: User): Promise<Absence> {
-    const absence = await this.absenceRepository.findOne({ where: { id, user } });
+  async update(
+    id: string,
+    updatedAbsence: Partial<Absence>,
+    user: User,
+  ): Promise<Absence> {
+    const absence = await this.absenceRepository.findOne({
+      where: { id, user },
+    });
     if (!absence) {
       throw new Error('Absence not found');
     }
@@ -29,7 +35,9 @@ export class AbsenceService {
   }
 
   async delete(id: string, user: User): Promise<void> {
-    const absence = await this.absenceRepository.findOne({ where: { id, user } });
+    const absence = await this.absenceRepository.findOne({
+      where: { id, user },
+    });
     if (!absence) {
       throw new Error('Absence not found');
     }

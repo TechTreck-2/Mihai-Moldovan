@@ -19,25 +19,33 @@ export class ClockingService {
     const newClocking = this.clockingRepository.create({ ...clocking, user });
     return this.clockingRepository.save(newClocking);
   }
-  async update(id: string, updatedClocking: Partial<Clocking>, user: User): Promise<Clocking> {
-    const clocking = await this.clockingRepository.findOne({ where: { id, user: { id: user.id } } });
+  async update(
+    id: string,
+    updatedClocking: Partial<Clocking>,
+    user: User,
+  ): Promise<Clocking> {
+    const clocking = await this.clockingRepository.findOne({
+      where: { id, user: { id: user.id } },
+    });
     if (!clocking) throw new Error('Clocking not found');
     Object.assign(clocking, updatedClocking);
     return this.clockingRepository.save(clocking);
   }
 
   async delete(id: string, user: User): Promise<void> {
-    const clocking = await this.clockingRepository.findOne({ where: { id, user: { id: user.id } } });
+    const clocking = await this.clockingRepository.findOne({
+      where: { id, user: { id: user.id } },
+    });
     if (!clocking) throw new Error('Clocking not found');
     await this.clockingRepository.remove(clocking);
   }
-  
+
   async findByDate(date: string, user: User): Promise<Clocking[]> {
-    return this.clockingRepository.find({ 
-      where: { 
+    return this.clockingRepository.find({
+      where: {
         date: date,
-        user: { id: user.id } 
-      } 
+        user: { id: user.id },
+      },
     });
   }
 
@@ -46,20 +54,20 @@ export class ClockingService {
     if (!activeClocking) {
       throw new Error('No active clocking found');
     }
-    
+
     activeClocking.endTime = new Date().toISOString();
     activeClocking.status = 'completed';
-    
+
     return this.clockingRepository.save(activeClocking);
   }
-  
+
   async findActive(user: User): Promise<Clocking | null> {
-    return this.clockingRepository.findOne({ 
-      where: { 
+    return this.clockingRepository.findOne({
+      where: {
         status: 'active',
         endTime: IsNull(),
-        user: { id: user.id } 
-      } 
+        user: { id: user.id },
+      },
     });
   }
 }
