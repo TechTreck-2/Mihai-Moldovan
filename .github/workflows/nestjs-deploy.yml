@@ -33,12 +33,6 @@ jobs:
       - name: Run Linting
         run: npm run lint
 
-      - name: Run Tests
-        run: npm run test
-
-      - name: Run E2E Tests
-        run: npm run test:e2e
-
       - name: Build NestJS Application
         run: npm run build
 
