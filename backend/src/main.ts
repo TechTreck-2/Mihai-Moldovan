@@ -4,17 +4,17 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configure CORS with more permissive settings for development
   app.enableCors({
     origin: [
       'http://localhost:4200',
       'http://127.0.0.1:4200',
-      'https://*.github.io', // For GitHub Pages deployment
+      'https://ccc909.github.io',
+      'https://*.github.io',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: '*', // Allow all headers
+    allowedHeaders: '*',
     credentials: true,
-    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+    optionsSuccessStatus: 200,
   });
 
   await app.listen(process.env.PORT ?? 3000);
