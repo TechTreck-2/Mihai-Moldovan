@@ -49,20 +49,26 @@ jobs:
           # Install Railway CLI
           npm install -g @railway/cli
           
-          # Deploy to Railway
-          railway login --service-token ${{ secrets.RAILWAY_TOKEN }}
-          railway up --service backend
+          # Deploy to Railway (authentication via RAILWAY_TOKEN environment variable)
+          railway up
           
-          # Get the deployment URL
-          BACKEND_URL=$(railway status --json | jq -r '.deployment.url')
-          echo "BACKEND_URL=$BACKEND_URL" >> $GITHUB_ENV
-          echo "Backend deployed to: $BACKEND_URL"
+          echo "Backend deployed successfully to Railway"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Update Angular deployment with backend URL
+      - name: Trigger Angular deployment
         if: success()
         run: |
+          # Get the backend URL from repository variables or use Railway URL
+          BACKEND_URL="${{ vars.BACKEND_URL }}"
+          
+          if [ -z "$BACKEND_URL" ]; then
+            echo "Warning: BACKEND_URL not set in repository variables. Please set it manually."
+            BACKEND_URL="https://your-railway-app.railway.app"
+          fi
+          
+          echo "Triggering Angular deployment with backend URL: $BACKEND_URL"
+          
           # Trigger the Angular deployment with the backend URL
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
