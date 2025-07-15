@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+  repository_dispatch:
+    types: [backend-deployed]
 
 jobs:
   build:
@@ -28,7 +30,13 @@ jobs:
       - name: Build for GitHub Pages
         # This now uses your new 'github-pages' configuration in angular.json
         working-directory: client
-        run: npm run build:github
+        env:
+          BACKEND_URL: ${{ github.event.client_payload.backend_url || vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
+        run: |
+          # Replace the placeholder with the actual backend URL
+          sed -i "s|BACKEND_URL_PLACEHOLDER|$BACKEND_URL|g" src/environments/environment.github-pages.ts
+          echo "Using backend URL: $BACKEND_URL"
+          npm run build:github
 
       - name: Create .nojekyll file
         # Place it inside the 'browser' sub-directory where index.html is

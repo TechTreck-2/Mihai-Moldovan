@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, catchError } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface AbsenceRequest {
   id: number;
@@ -25,7 +26,7 @@ interface AbsencePayload {
   providedIn: 'root'
 })
 export class AbsencesService implements OnDestroy {
-  private apiUrl = 'http://localhost:3000/absences';
+  private apiUrl = `${environment.apiUrl}/absences`;
   private absencesSubject = new BehaviorSubject<AbsenceRequest[]>([]);
   absences$: Observable<AbsenceRequest[]> = this.absencesSubject.asObservable();
   private authSubscriptions = new Subscription();
