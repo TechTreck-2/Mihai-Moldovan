@@ -29,21 +29,14 @@ jobs:
         working-directory: client
         run: npm run build:github
 
-      # --- FIX STARTS HERE ---
-
-      - name: (Debug) List files in the build output
+      - name: (Debug) List files in the original build output
         run: ls -R ./client/dist/techtrek
-        # This step helps you see the exact structure. You can remove it later.
 
-      - name: Create a clean deployment directory
-        run: mkdir ./deployment
+      - name: Prepare deployment directory by moving the browser output
+        run: mv ./client/dist/techtrek/browser ./deployment
 
-      - name: Copy browser output to deployment directory
-        run: cp -r ./client/dist/techtrek/browser/* ./deployment
-
-      - name: Create .nojekyll file in the correct location
+      - name: Create .nojekyll file in the deployment directory
         run: touch ./deployment/.nojekyll
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
