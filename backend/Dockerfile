@@ -16,8 +16,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --only=production
-RUN npm install pg --save
+RUN npm ci --omit=dev
 RUN npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
