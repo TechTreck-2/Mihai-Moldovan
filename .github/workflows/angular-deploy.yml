@@ -36,7 +36,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular Application
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production --ssr=false
         env:
           NODE_OPTIONS: --max_old_space_size=8192
           NG_CLI_ANALYTICS: false
@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/techtrek
+          path: ./dist/techtrek/browser
 
       - name: Deploy to GitHub Pages
         id: deployment
