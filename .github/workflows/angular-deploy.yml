@@ -32,10 +32,12 @@ jobs:
 
       - name: Build Angular Application
         run: npm run build -- --configuration production
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+          NG_CLI_ANALYTICS: false
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./client/dist/techtrek 
-
+          publish_dir: ./dist/techtrek

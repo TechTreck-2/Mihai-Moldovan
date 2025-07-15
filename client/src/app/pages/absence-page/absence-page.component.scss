@@ -1,10 +1,10 @@
 @use '@angular/material' as mat;
-@use '../../../styles.scss' as theme;
+@use '../../../styles/_theme-mixins' as mixins;
 @use '../../../palettes.scss' as palettes;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
-$accent: mat.get-color-from-palette(theme.$my-accent, 500);
-$warn: mat.get-color-from-palette(theme.$my-warn, 500);
+$primary: mat.get-color-from-palette(palettes.$m2-primary, 500);
+$accent: mat.get-color-from-palette(palettes.$m2-accent, 500);
+$warn: mat.get-color-from-palette(palettes.$m2-error, 500);
 $background-light: #ffffff;
 $background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
 $text-primary-light: rgba(0, 0, 0, 0.87);
@@ -67,9 +67,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       }
 
       button {
-        @include mat.button-theme(theme.$my-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        @include mixins.primary-button();
         align-self: flex-start;
 
         &:hover {
@@ -115,9 +113,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       }
 
       button {
-        @include mat.button-theme(theme.$my-dark-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        @include mixins.dark-primary-button();
 
         &:hover {
           background-color: mat.get-color-from-palette(theme.$my-primary, 400);

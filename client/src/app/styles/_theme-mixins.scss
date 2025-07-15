@@ -1,0 +1,22 @@
+@use '@angular/material' as mat;
+@use '../../styles.scss' as theme;
+
+// Primary button mixin to avoid duplicate theme includes
+@mixin primary-button() {
+  background-color: mat.get-color-from-palette(theme.$my-primary, 500);
+  color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+  
+  &:hover {
+    background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+  }
+}
+
+// Dark theme primary button mixin
+@mixin dark-primary-button() {
+  background-color: mat.get-color-from-palette(theme.$my-primary, 400);
+  color: mat.get-contrast-color-from-palette(theme.$my-primary, 400);
+  
+  &:hover {
+    background-color: mat.get-color-from-palette(theme.$my-primary, 300);
+  }
+}

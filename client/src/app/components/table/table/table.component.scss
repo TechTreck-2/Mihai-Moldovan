@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use '../../../../styles.scss' as theme;
+@use '../../../../styles/_theme-mixins' as mixins;
 
 $primary: mat.get-color-from-palette(theme.$my-primary, 500);
 $accent: mat.get-color-from-palette(theme.$my-accent, 500);
@@ -24,9 +24,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     margin-bottom: 24px;
 
     .add-button {
-      @include mat.button-theme(theme.$my-theme);
-      background-color: $primary;
-      color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+      @include mixins.primary-button();
       padding: 8px 16px;
       border-radius: 8px;
 
@@ -157,9 +155,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 
     .table-header {
       .add-button {
-        @include mat.button-theme(theme.$my-dark-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        @include mixins.dark-primary-button();
       }
     }
 

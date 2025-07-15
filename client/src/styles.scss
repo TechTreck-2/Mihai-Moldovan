@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 @use 'palettes';
-@use 'theme-utils';
 
 $my-primary: mat.define-palette(palettes.$m2-primary);
 $my-accent: mat.define-palette(palettes.$m2-accent, A200, A100, A400);
