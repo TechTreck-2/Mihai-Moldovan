@@ -36,38 +36,26 @@ jobs:
       - name: Build NestJS Application
         run: npm run build
 
-      - name: Create .env file for production
-        run: |
-          echo "NODE_ENV=production" > .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-        if: success()
+      - name: Run Tests (if available)
+        run: npm test
+        continue-on-error: true
 
-      - name: Deploy to Railway
+      - name: Notify Angular deployment
         if: success()
         run: |
-          # Install Railway CLI
-          npm install -g @railway/cli
+          echo "Backend build completed successfully"
+          echo "Railway will automatically deploy the backend"
           
-          # Deploy to Railway (authentication via RAILWAY_TOKEN environment variable)
-          railway up
-          
-          echo "Backend deployed successfully to Railway"
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Update Angular deployment with backend URL
-        if: success()
-        run: |
-          # Get the backend URL from repository variables or use fallback
+          # Get the backend URL from repository variables
           BACKEND_URL="${{ vars.BACKEND_URL }}"
           
           if [ -z "$BACKEND_URL" ]; then
-            echo "Warning: BACKEND_URL not set in repository variables. Please set it manually."
+            echo "Warning: BACKEND_URL not set in repository variables."
+            echo "Please set it in Settings → Secrets and variables → Actions → Variables"
             BACKEND_URL="https://your-railway-app.railway.app"
           fi
           
-          echo "Triggering Angular deployment with backend URL: $BACKEND_URL"
+          echo "Expected backend URL: $BACKEND_URL"
           
           # Trigger the Angular deployment with the backend URL
           curl -X POST \
