@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { ApiService } from '../api/api.service';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface Location {
   id: number;
@@ -25,8 +26,8 @@ export interface HomeOfficeRequest {
   providedIn: 'root'
 })
 export class HomeOfficeService implements OnDestroy {
-  private readonly officesApiUrl = '/home-office/locations';
-  private readonly requestsApiUrl = '/home-office/requests';
+  private readonly officesApiEndpoint = '/home-office/locations';
+  private readonly requestsApiEndpoint = '/home-office/requests';
 
   private officesSubject = new BehaviorSubject<Location[]>([]);
   private requestsSubject = new BehaviorSubject<HomeOfficeRequest[]>([]);
@@ -64,7 +65,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   private loadOffices(): void {
-    this.apiService.get<Location[]>(this.officesApiUrl).pipe(
+    this.apiService.get<Location[]>(this.officesApiEndpoint).pipe(
       tap(offices => this.officesSubject.next(offices)),
       catchError(error => this.handleError(error))
     ).subscribe();
@@ -80,7 +81,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public addOffice(office: Omit<Location, 'id'>): void {
-    this.apiService.post<Location>(this.officesApiUrl, office).pipe(
+    this.apiService.post<Location>(this.officesApiEndpoint, office).pipe(
       tap(newOffice => {
         const offices = [...this.officesSubject.value, newOffice];
         this.officesSubject.next(offices);
@@ -90,7 +91,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public updateOffice(updatedOffice: Location): void {
-    this.apiService.put<Location>(`${this.officesApiUrl}/${updatedOffice.id}`, updatedOffice).pipe(
+    this.apiService.put<Location>(`${this.officesApiEndpoint}/${updatedOffice.id}`, updatedOffice).pipe(
       tap(() => {
         const offices = this.officesSubject.value.map(o => o.id === updatedOffice.id ? updatedOffice : o);
         this.officesSubject.next(offices);
@@ -100,7 +101,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public deleteOffice(id: number): void {
-    this.apiService.delete<void>(`${this.officesApiUrl}/${id}`).pipe(
+    this.apiService.delete<void>(`${this.officesApiEndpoint}/${id}`).pipe(
       tap(() => {
         const offices = this.officesSubject.value.filter(o => o.id !== id);
         this.officesSubject.next(offices);
@@ -110,7 +111,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   private loadRequests(): void {
-    this.apiService.get<HomeOfficeRequest[]>(this.requestsApiUrl).pipe(
+    this.apiService.get<HomeOfficeRequest[]>(this.requestsApiEndpoint).pipe(
       tap(requests => this.requestsSubject.next(requests)),
       catchError(error => this.handleError(error))
     ).subscribe();
@@ -123,7 +124,7 @@ export class HomeOfficeService implements OnDestroy {
 
   public addRequest(request: Omit<HomeOfficeRequest, 'id' | 'status'>): void {
     const newRequestPayload = { ...request, status: 'pending' as const };
-    this.apiService.post<HomeOfficeRequest>(this.requestsApiUrl, newRequestPayload).pipe(
+    this.apiService.post<HomeOfficeRequest>(this.requestsApiEndpoint, newRequestPayload).pipe(
       tap(newRequest => {
         const requests = [...this.requestsSubject.value, newRequest];
         this.requestsSubject.next(requests);
@@ -133,7 +134,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public updateRequest(updatedRequest: HomeOfficeRequest): void {
-    this.apiService.put<HomeOfficeRequest>(`${this.requestsApiUrl}/${updatedRequest.id}`, updatedRequest).pipe(
+    this.apiService.put<HomeOfficeRequest>(`${this.requestsApiEndpoint}/${updatedRequest.id}`, updatedRequest).pipe(
       tap(() => {
         const requests = this.requestsSubject.value.map((r: HomeOfficeRequest) => r.id === updatedRequest.id ? updatedRequest : r);
         this.requestsSubject.next(requests);
@@ -143,7 +144,7 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public deleteRequest(id: number): void {
-    this.apiService.delete<void>(`${this.requestsApiUrl}/${id}`).pipe(
+    this.apiService.delete<void>(`${this.requestsApiEndpoint}/${id}`).pipe(
       tap(() => {
         const requests = this.requestsSubject.value.filter((r: HomeOfficeRequest) => r.id !== id);
         this.requestsSubject.next(requests);

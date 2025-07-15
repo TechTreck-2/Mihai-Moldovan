@@ -1,9 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { map, tap, catchError } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
-import { environment } from '../../../environments/environment';
+import { ApiService } from '../api/api.service';
 
 export interface AbsenceRequest {
   id: number;
@@ -26,13 +25,13 @@ interface AbsencePayload {
   providedIn: 'root'
 })
 export class AbsencesService implements OnDestroy {
-  private apiUrl = `${environment.apiUrl}/absences`;
+  private apiEndpoint = '/absences';
   private absencesSubject = new BehaviorSubject<AbsenceRequest[]>([]);
   absences$: Observable<AbsenceRequest[]> = this.absencesSubject.asObservable();
   private authSubscriptions = new Subscription();
 
   constructor(
-    private http: HttpClient,
+    private apiService: ApiService,
     private authService: AuthService
   ) { 
     this.loadAbsences();
@@ -56,7 +55,7 @@ export class AbsencesService implements OnDestroy {
     this.authSubscriptions.unsubscribe();
   }
   private loadAbsences(): void {
-    this.http.get<AbsencePayload[]>(this.apiUrl).pipe(
+    this.apiService.get<AbsencePayload[]>(this.apiEndpoint).pipe(
       map(payloads => payloads.map(this.mapPayloadToRequest)),
       tap(absences => this.absencesSubject.next(absences)),
       catchError(this.handleError)
@@ -75,7 +74,7 @@ export class AbsencesService implements OnDestroy {
       status: 'pending'
     };
 
-    this.http.post<AbsencePayload>(this.apiUrl, payload).pipe(
+    this.apiService.post<AbsencePayload>(this.apiEndpoint, payload).pipe(
       tap(() => this.loadAbsences()),
       catchError(this.handleError)
     ).subscribe({
@@ -86,7 +85,7 @@ export class AbsencesService implements OnDestroy {
 
   updateAbsence(updatedAbsence: AbsenceRequest): void {
     const payload = this.mapRequestToPayload(updatedAbsence);
-    this.http.put<AbsencePayload>(`${this.apiUrl}/${updatedAbsence.id}`, payload).pipe(
+    this.apiService.put<AbsencePayload>(`${this.apiEndpoint}/${updatedAbsence.id}`, payload).pipe(
       tap(() => this.loadAbsences()),
       catchError(this.handleError)
     ).subscribe({
@@ -95,7 +94,7 @@ export class AbsencesService implements OnDestroy {
     });
   }
   deleteAbsence(id: number): void {
-    this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    this.apiService.delete<void>(`${this.apiEndpoint}/${id}`).pipe(
       tap(() => {
         const currentAbsences = this.absencesSubject.getValue().filter(a => a.id !== id);
         this.absencesSubject.next(currentAbsences);

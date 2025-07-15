@@ -5,6 +5,7 @@ import { formatToISODateTime } from '../../utils/date-utils';
 import { HolidayService } from '../holiday/holiday.service';
 import { ApiService } from '../api/api.service';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface ClockInterval {
   id: string;
@@ -30,7 +31,7 @@ export class ClockingService implements OnDestroy {
   clockIntervals$: Observable<ClockInterval[]> = this.clockIntervalsSubject.asObservable();
 
   private _holidayService?: HolidayService;
-  private apiUrl = '/clockings';
+  private apiEndpoint = '/clockings';
   private authSubscriptions = new Subscription();
 
   constructor(
@@ -70,9 +71,11 @@ export class ClockingService implements OnDestroy {
   }
 
   private loadClockIntervals(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     
-    this.apiService.get<ClockingPayload[]>(this.apiUrl)
+    this.apiService.get<ClockingPayload[]>(this.apiEndpoint)
       .pipe(
         map(payloads => payloads.map(this.mapPayloadToInterval)),
         tap(intervals => this.clockIntervalsSubject.next(intervals)),
@@ -107,7 +110,7 @@ export class ClockingService implements OnDestroy {
       return false;
     }
 
-    this.apiService.post<ClockingPayload>(`${this.apiUrl}/clock-in`, {})
+    this.apiService.post<ClockingPayload>(`${this.apiEndpoint}/clock-in`, {})
       .pipe(
         map(this.mapPayloadToInterval),
         tap(newInterval => {
@@ -134,7 +137,7 @@ export class ClockingService implements OnDestroy {
       return false;
     }
 
-    this.apiService.post<ClockingPayload>(`${this.apiUrl}/clock-out`, {})
+    this.apiService.post<ClockingPayload>(`${this.apiEndpoint}/clock-out`, {})
       .pipe(
         map(this.mapPayloadToInterval),
         tap(updatedInterval => {
@@ -173,7 +176,7 @@ export class ClockingService implements OnDestroy {
 
     const payload = this.mapIntervalToPayload(newInterval);
     
-    this.apiService.post<ClockingPayload>(this.apiUrl, payload)
+    this.apiService.post<ClockingPayload>(this.apiEndpoint, payload)
       .pipe(
         map(this.mapPayloadToInterval),
         tap(createdInterval => {
@@ -199,7 +202,7 @@ export class ClockingService implements OnDestroy {
   updateClockInterval(updatedInterval: ClockInterval): void {
     const payload = this.mapIntervalToPayload(updatedInterval);
     
-    this.apiService.put<ClockingPayload>(`${this.apiUrl}/${updatedInterval.id}`, payload)
+    this.apiService.put<ClockingPayload>(`${this.apiEndpoint}/${updatedInterval.id}`, payload)
       .pipe(
         map(this.mapPayloadToInterval),
         tap(updatedFromApi => {
@@ -218,7 +221,7 @@ export class ClockingService implements OnDestroy {
       .subscribe();
   }
   deleteClockInterval(id: string): void {
-    this.apiService.delete<void>(`${this.apiUrl}/${id}`)
+    this.apiService.delete<void>(`${this.apiEndpoint}/${id}`)
       .pipe(
         tap(() => {
           const intervals = this.getCurrentClockIntervals().filter(interval => interval.id !== id);
