@@ -149,13 +149,13 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.isLoggingIn = true;
     
     const { username, password } = this.loginForm.value;
-    this.authService.login(username, password).subscribe(result => {
+    this.authService.login(username, password).subscribe(success => {
       this.isLoggingIn = false;
-      if (result.success) {
+      if (success) {
         this.errorMessage = '';
         this.router.navigate([this.returnUrl]);
       } else {
-        this.errorMessage = result.message || 'Invalid credentials';
+        this.errorMessage = 'Invalid credentials';
         this.snackBar.open('Login failed. Please check your credentials.', 'Close', {
           duration: 5000,
           panelClass: 'error-snackbar'
@@ -171,9 +171,9 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     this.isRegistering = true;
     
     const { username, password } = this.registerForm.value;
-    this.authService.register(username, password).subscribe(result => {
+    this.authService.register(username, password).subscribe(success => {
       this.isRegistering = false;
-      if (result.success) {
+      if (success) {
         this.successMessage = 'Registration successful';
         this.errorMessage = '';
         this.snackBar.open('Registration successful! Please login.', 'Close', {
@@ -182,9 +182,9 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         });
         this.loginForm.patchValue({ username });
       } else {
-        this.errorMessage = result.message || 'Registration failed. Username may be taken.';
+        this.errorMessage = 'Registration failed. Username may be taken.';
         this.successMessage = '';
-        this.snackBar.open(result.message || 'Registration failed. Username may be taken.', 'Close', {
+        this.snackBar.open('Registration failed. Username may be taken.', 'Close', {
           duration: 5000,
           panelClass: 'error-snackbar'
         });
