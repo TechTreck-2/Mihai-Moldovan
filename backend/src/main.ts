@@ -12,14 +12,7 @@ async function bootstrap() {
       'https://*.github.io', // For GitHub Pages deployment
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization',
-      'Cache-Control',
-    ],
+    allowedHeaders: '*', // Allow all headers
     credentials: true,
     optionsSuccessStatus: 200, // Some legacy browsers choke on 204
   });
