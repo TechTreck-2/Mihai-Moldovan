@@ -69,6 +69,32 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "github-pages": {
+              "baseHref": "/your-repo-name/",
+              "prerender": false,
+              "ssr": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "200kb",
+                  "maximumError": "500kb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": {
+                  "inline": false
+                },
+                "styles": {
+                  "inlineCritical": false
+                }
+              }
             }
           },
           "defaultConfiguration": "production"
@@ -107,7 +133,6 @@
             "styles": [
               "src/styles.scss",
               "@angular/material/prebuilt-themes/indigo-pink.css"
-              
             ],
             "scripts": []
           }

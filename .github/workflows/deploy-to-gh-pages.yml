@@ -29,18 +29,13 @@ jobs:
         working-directory: client
         run: npm run build:github
 
-      - name: (Debug) List files in the original build output
-        run: ls -R ./client/dist/techtrek
+      - name: Create .nojekyll file
+        run: touch ./client/dist/techtrek/.nojekyll
 
-      - name: Prepare deployment directory by moving the browser output
-        run: mv ./client/dist/techtrek/browser ./deployment
-
-      - name: Create .nojekyll file in the deployment directory
-        run: touch ./deployment/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./deployment
+          path: ./client/dist/techtrek
 
   deploy:
     if: github.event_name != 'pull_request'
