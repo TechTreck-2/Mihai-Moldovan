@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use '../../../styles/_theme-mixins' as mixins;
 @use '../../../palettes.scss' as palettes;
+@use '../../../styles.scss' as theme;
 
 $primary: mat.get-color-from-palette(palettes.$m2-primary, 500);
 $accent: mat.get-color-from-palette(palettes.$m2-accent, 500);
