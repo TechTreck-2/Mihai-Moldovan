@@ -25,17 +25,20 @@ jobs:
         working-directory: client
         run: npm ci
 
-      - name: Build for production
+      - name: Build for GitHub Pages
+        # This now uses your new 'github-pages' configuration in angular.json
         working-directory: client
         run: npm run build:github
 
       - name: Create .nojekyll file
-        run: touch ./client/dist/techtrek/.nojekyll
+        # Place it inside the 'browser' sub-directory where index.html is
+        run: touch ./client/dist/techtrek/browser/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./client/dist/techtrek
+          # Point directly to the 'browser' sub-directory
+          path: ./client/dist/techtrek/browser
 
   deploy:
     if: github.event_name != 'pull_request'
