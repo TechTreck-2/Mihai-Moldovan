@@ -8,6 +8,11 @@ on:
       - 'client/**' 
       - '.github/workflows/angular-deploy.yml' 
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -36,8 +41,14 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
           NG_CLI_ANALYTICS: false
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/techtrek
+          path: ./dist/techtrek
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
