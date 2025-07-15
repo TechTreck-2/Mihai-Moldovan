@@ -71,7 +71,7 @@
               "sourceMap": true
             },
             "github-pages": {
-              "baseHref": "/your-repo-name/",
+              "baseHref": "/Mihai-Moldovan/",
               "prerender": false,
               "ssr": false,
               "budgets": [
