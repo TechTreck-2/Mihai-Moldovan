@@ -10,40 +10,37 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     defaults:
       run:
         working-directory: client
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js 18.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-        cache-dependency-path: 'client/package-lock.json'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build for production
-      run: npm run build:github
-      
-    - name: List built files (debug)
-      run: ls -la dist/techtrek/
-        
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./client/dist/techtrek/browser
-        name: github-pages-browser-only
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for GitHub Pages
+        run: npm run build:github
+        # assumes your angular.json has "outputPath": "dist/techtrek/browser"
+
+      - name: Upload browser-only artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/techtrek/browser/**
 
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
-    
+
     permissions:
       pages: write
       id-token: write
@@ -51,11 +48,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: github-pages-browser-only
