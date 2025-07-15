@@ -10,30 +10,32 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Use Node.js 18.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-        cache-dependency-path: 'client/package-lock.json'
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
 
-    - name: Install dependencies
-      working-directory: client
-      run: npm ci
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
 
-    - name: Build for production
-      working-directory: client
-      run: npm run build:github
+      - name: Build for production
+        working-directory: client
+        run: npm run build:github
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./client/dist/techtrek/browser
+      - name: Create .nojekyll file
+        run: touch ./client/dist/techtrek/browser/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./client/dist/techtrek/browser
 
   deploy:
     if: github.event_name != 'pull_request'
