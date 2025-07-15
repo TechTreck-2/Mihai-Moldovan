@@ -56,10 +56,10 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Trigger Angular deployment
+      - name: Update Angular deployment with backend URL
         if: success()
         run: |
-          # Get the backend URL from repository variables or use Railway URL
+          # Get the backend URL from repository variables or use fallback
           BACKEND_URL="${{ vars.BACKEND_URL }}"
           
           if [ -z "$BACKEND_URL" ]; then
