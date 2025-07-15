@@ -28,7 +28,6 @@ jobs:
         run: npm ci
 
       - name: Build for GitHub Pages
-        # This now uses your new 'github-pages' configuration in angular.json
         working-directory: client
         env:
           BACKEND_URL: ${{ github.event.client_payload.backend_url || vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
