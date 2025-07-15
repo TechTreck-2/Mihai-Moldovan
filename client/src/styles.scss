@@ -1,34 +1,43 @@
 @use '@angular/material' as mat;
 @use 'palettes';
+@use 'sass:map';
 
+// Define typography config once
+$my-typography: mat.define-typography-config();
+
+// Define palettes once
 $my-primary: mat.define-palette(palettes.$m2-primary);
 $my-accent: mat.define-palette(palettes.$m2-accent, A200, A100, A400);
 $my-warn: mat.define-palette(palettes.$m2-error);
 
-$my-theme: mat.define-light-theme(
-  (
-    color: (
-      primary: $my-primary,
-      accent: $my-accent,
-      warn: $my-warn,
-    ),
-    typography: mat.define-typography-config(),
-    density: 0,
-  )
+// Define common color config to avoid duplication
+$my-colors: (
+  primary: $my-primary,
+  accent: $my-accent,
+  warn: $my-warn
 );
 
-$my-dark-theme: mat.define-dark-theme(
-  (
-    color: (
-      primary: $my-primary,
-      accent: $my-accent,
-      warn: $my-warn,
-    ),
-  )
-);
+// Define light theme
+$my-theme: mat.define-light-theme((
+  color: $my-colors,
+  typography: $my-typography,
+  density: 0
+));
 
+// Define dark theme - reuse common color config
+$my-dark-theme: mat.define-dark-theme((
+  color: $my-colors,
+  typography: $my-typography,
+  density: 0
+));
+
+// Include core material styles
 @include mat.core();
 
+// Include theme styles for components
+@include mat.all-component-themes($my-theme);
+
+// Base styles
 mat-toolbar {
   padding-top: 0;
   margin-top: 0;
@@ -38,8 +47,6 @@ mat-sidenav {
   padding-left: 0;
   margin-left: 0;
 }
-
-@include mat.all-component-themes($my-theme);
 
 .sidenav-container {
   height: 100vh;
@@ -64,22 +71,12 @@ body {
   overflow: auto;
 }
 
-
+// Dark theme styles
 .dark {
   @include mat.all-component-themes($my-dark-theme);
 
   body {
     background-color: mat.get-color-from-palette(palettes.$m2-primary, 900);
     color: mat.get-color-from-palette(palettes.$m2-primary, 50);
-  }
-  
-  mat-toolbar {
-    padding-top: 0;
-    margin-top: 0;
-  }
-  
-  mat-sidenav {
-    padding-left: 0;
-    margin-left: 0;
   }
 }
