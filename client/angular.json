@@ -71,7 +71,7 @@
               "sourceMap": true
             },
             "github-pages": {
-              "baseHref": "/Mihai-Moldovan/",
+              "baseHref": "/TimeTracking/",
               "prerender": false,
               "ssr": false,
               "fileReplacements": [
