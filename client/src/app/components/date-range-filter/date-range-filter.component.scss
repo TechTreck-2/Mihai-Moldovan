@@ -1,0 +1,95 @@
+@use '@angular/material' as mat;
+@use '../../../styles/_theme-mixins' as mixins;
+@use '../../../styles.scss' as theme;
+@use '../../../palettes.scss' as palettes;
+
+$primary: mat.get-color-from-palette(theme.$my-primary, 500);
+$accent: mat.get-color-from-palette(theme.$my-accent, 500);
+$warn: mat.get-color-from-palette(theme.$my-warn, 500);
+$background-light: #ffffff;
+$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
+$text-primary-light: rgba(0, 0, 0, 0.87);
+$text-primary-dark: rgba(255, 255, 255, 0.87);
+$text-secondary-light: #5f6368;
+$text-secondary-dark: rgba(255, 255, 255, 0.7);
+$divider-light: #e0e0e0;
+$divider-dark: rgba(255, 255, 255, 0.12);
+
+.filter-container {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  flex: 1;
+  min-width: 300px;
+  color: $text-primary-light;
+
+  .filter-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .filter-header {
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        color: $text-primary-light;
+      }
+    }
+
+    .date-picker-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      .mat-form-field {
+        flex: 1;
+        min-width: 200px;
+
+        ::ng-deep .mat-form-field-label,
+        ::ng-deep .mat-input-element {
+          color: $text-primary-light !important;
+        }
+
+        ::ng-deep .mat-form-field-underline {
+          background-color: $divider-light;
+        }
+      }
+    }
+
+    button {
+      @include mixins.primary-button();
+      align-self: flex-start;
+
+      &:hover {
+        background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+      }
+    }
+  }
+}
+
+:host-context(body.dark) .filter-container {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: $text-primary-dark;
+
+  .filter-content {
+    .filter-header {
+      h2 {
+        color: $text-primary-dark;
+      }
+    }
+
+    .date-picker-group {
+      .mat-form-field {
+        ::ng-deep .mat-form-field-label,
+        ::ng-deep .mat-input-element {
+          color: $text-primary-dark !important;
+        }
+
+        ::ng-deep .mat-form-field-underline {
+          background-color: $divider-dark;
+        }
+      }
+    }
+  }
+}

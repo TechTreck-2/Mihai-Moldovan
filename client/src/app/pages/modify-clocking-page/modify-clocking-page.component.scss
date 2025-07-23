@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use '../../../styles/_theme-mixins' as mixins;
 @use '../../../styles.scss' as theme;
 @use '../../../palettes.scss' as palettes;
 
@@ -68,10 +69,11 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       }
 
       button {
-        @include mat.button-theme(theme.$my-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        @include mixins.primary-button();
         align-self: flex-start;
+        height: 36px;
+        padding: 0 16px;
+        border-radius: 8px;
 
         &:hover {
           background-color: mat.get-color-from-palette(theme.$my-primary, 600);
@@ -122,9 +124,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       }
 
       button {
-        @include mat.button-theme(theme.$my-dark-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+        @include mixins.dark-primary-button();
 
         &:hover {
           background-color: mat.get-color-from-palette(theme.$my-primary, 400);

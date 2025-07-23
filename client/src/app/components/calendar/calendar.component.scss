@@ -191,41 +191,41 @@
     font-style: italic;
 }
 
-.calendar-component ::ng-deep .fc {
+:host ::ng-deep .fc {
     max-width: 100%;
 }
 
-.calendar-component ::ng-deep .fc .fc-toolbar-title {
+:host ::ng-deep .fc .fc-toolbar-title {
     font-size: 1.5rem;
 }
 
-.calendar-component ::ng-deep .fc .fc-button {
+:host ::ng-deep .fc .fc-button {
     background-color: #6750a4;
     border-color: #6750a4;
 }
 
-.calendar-component ::ng-deep .fc .fc-button:hover {
+:host ::ng-deep .fc .fc-button:hover {
     background-color: #5f499c;
     border-color: #5f499c;
 }
 
-.calendar-component ::ng-deep .fc .fc-button.fc-button-active {
+:host ::ng-deep .fc .fc-button.fc-button-active {
     background-color: #5f499c;
     border-color: #5f499c;
 }
 
-.calendar-component ::ng-deep .fc .fc-event {
+:host ::ng-deep .fc .fc-event {
     border-radius: 4px;
     padding: 2px 4px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-.calendar-component ::ng-deep .fc .fc-event:hover {
+:host ::ng-deep .fc .fc-event:hover {
     filter: brightness(0.9);
 }
 
-.calendar-component ::ng-deep .fc .fc-day-today {
+:host ::ng-deep .fc .fc-day-today {
     background-color: rgba(103, 80, 164, 0.1) !important;
 }
 
@@ -254,5 +254,48 @@
     
     .no-events {
         color: rgba(255, 255, 255, 0.54);
+    }
+}
+
+@media(max-width: 768px){
+    .calendar-app-container{
+        flex-direction: column;
+    }
+    
+    .calendar-app-sidenav-container {
+        height: auto;
+    }
+    
+    .calendar-app-sidenav {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .calendar-app-main-content {
+        margin-left: 0;
+    }
+    
+    .events-card {
+        max-height: 200px;
+    }
+    
+    .events-list-container {
+        max-height: 150px;
+    }
+    
+    .add-event-container {
+        flex-direction: column;
+        gap: 12px;
+        
+        .add-event-input {
+            width: 100%;
+        }
+        
+        .add-event-button {
+            width: 100%;
+        }
     }
 }

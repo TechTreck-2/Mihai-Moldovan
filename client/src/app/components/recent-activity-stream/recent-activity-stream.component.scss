@@ -1,32 +1,10 @@
-.activity-card {
+:host {
   height: 100%;
-  min-height: 400px;
-  max-height: 600px;
   display: flex;
   flex-direction: column;
-  
-  .mat-card-header {
-    padding-bottom: 0;
-    flex-shrink: 0;
-    
-    .mat-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-      
-      .activity-icon {
-        color: #3f51b5;
-      }
-    }
-  }
-  
-  .mat-card-content {
-    padding-top: 8px;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 400px;
 }
 
 .activity-stream {

@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AbstractControl, ValidationErrors, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
 import { GenericPopupComponent, PopupField } from '../../components/popup/popup/popup.component';
 import { AbsencesService, AbsenceRequest } from '../../services/absences/absences.service';
-import { GenericTableComponent } from '../../components/table/table/table.component';
+import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
+import { DualViewContainerComponent } from '../../components/dual-view-container/dual-view-container.component';
+import { DateRangeFilterComponent } from '../../components/date-range-filter/date-range-filter.component';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { EventInput, EventApi } from '@fullcalendar/core';
 
 
 @Component({
@@ -18,22 +16,44 @@ import { GenericTableComponent } from '../../components/table/table/table.compon
   styleUrls: ['./absence-page.component.scss'],
   standalone: true,
   imports: [
-    GenericTableComponent,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule
+    DualViewContainerComponent,
+    DateRangeFilterComponent
   ]
 })
 export class AbsencePageComponent implements OnInit {
-  absenceRequests: any[] = [];
-  displayedColumns: string[] = ['date', 'startTime', 'endTime', 'description'];
+  columns: string[] = ['date', 'startTime', 'endTime', 'description'];
   startDate: Date | null = null;
   endDate: Date | null = null;
+  
+  tableData$: Observable<any[]>;
+  calendarEvents$ = new BehaviorSubject<EventInput[]>([]);
+  
+  private absenceRequests: any[] = [];
 
-  constructor(public dialog: MatDialog, private absenceService: AbsencesService) {}
+  constructor(
+    public dialog: MatDialog, 
+    private absenceService: AbsencesService,
+    private dateFormattingService: DateFormattingService
+  ) {
+    this.tableData$ = this.absenceService.absences$.pipe(
+      map(absences => absences.map(request => {
+        const startDate = new Date(request.startDateTime);
+        const endDate = new Date(request.endDateTime);
+        return {
+          ...request,
+          date: startDate.toLocaleDateString(),
+          startTime: startDate.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }),
+          endTime: endDate.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })
+        };
+      }))
+    );
+  }
 
   ngOnInit() {
     this.absenceService.absences$.subscribe(absences => {
@@ -53,7 +73,34 @@ export class AbsencePageComponent implements OnInit {
           })
         };
       });
+      
+      this.updateCalendarEvents(absences);
     });
+  }
+  
+  private updateCalendarEvents(absences: AbsenceRequest[]): void {
+    const events: EventInput[] = absences.map(absence => ({
+      id: String(absence.id),
+      title: absence.description,
+      start: absence.startDateTime,
+      end: absence.endDateTime,
+      backgroundColor: this.getStatusColor(absence.status),
+      borderColor: this.getStatusColor(absence.status)
+    }));
+    
+    this.calendarEvents$.next(events);
+  }
+  
+  private getStatusColor(status: string): string {
+    switch(status) {
+      case 'approved':
+        return '#4CAF50';
+      case 'denied':
+        return '#F44336';
+      case 'pending':
+      default:
+        return '#FF9800';
+    }
   }
 
   timeOrderValidator(control: AbstractControl): ValidationErrors | null {
@@ -103,6 +150,20 @@ export class AbsencePageComponent implements OnInit {
   deleteAbsenceRequest(row: any): void {
     this.absenceService.deleteAbsence(row.id);
   }
+
+  onStartDateChange(date: Date | null): void {
+    this.startDate = date;
+  }
+
+  onEndDateChange(date: Date | null): void {
+    this.endDate = date;
+  }
+  
+  applyFilter(dateRange: { startDate: Date | null, endDate: Date | null }): void {
+    this.startDate = dateRange.startDate;
+    this.endDate = dateRange.endDate;
+    console.log(`Filtering absences between ${dateRange.startDate} and ${dateRange.endDate}`);
+  }
   editAbsenceRequests(row: any): void {
     const absenceDate = new Date(row.startDateTime);
     const today = new Date();
@@ -151,7 +212,48 @@ export class AbsencePageComponent implements OnInit {
     });
   }
 
-  applyFilter(): void {
-    console.log('Filter applied with start date:', this.startDate, 'and end date:', this.endDate);
+  onCalendarEventAdded(event: EventApi): void {
+    const startDateTime = event.start || new Date();
+    const endDateTime = event.end || startDateTime;
+    
+    const date = startDateTime.toISOString().split('T')[0];
+    const startTime = startDateTime.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false 
+    });
+    const endTime = endDateTime.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false 
+    });
+    
+    this.absenceService.createAbsence(date, startTime, endTime, event.title);
+  }
+  
+  onCalendarEventDeleted(event: EventApi): void {
+    this.absenceService.deleteAbsence(Number(event.id));
+  }
+  
+  onCalendarEventUpdated(event: EventApi): void {
+    const absenceToUpdate = this.absenceRequests.find(a => a.id === Number(event.id));
+    
+    if (absenceToUpdate) {
+      const updatedAbsence: AbsenceRequest = {
+        ...absenceToUpdate,
+        startDateTime: event.start || new Date(),
+        endDateTime: event.end || event.start || new Date(),
+        description: event.title
+      };
+      
+      this.absenceService.updateAbsence(updatedAbsence);
+    }
+  }
+  
+  onCalendarEventEditRequested(event: EventApi): void {
+    const absence = this.absenceRequests.find(a => a.id === Number(event.id));
+    if (absence) {
+      this.editAbsenceRequests(absence);
+    }
   }
 }

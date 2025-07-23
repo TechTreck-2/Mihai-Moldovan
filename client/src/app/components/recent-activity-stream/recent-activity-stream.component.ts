@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
@@ -24,60 +23,49 @@ interface ActivityItem {
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
     MatIconModule,
     MatListModule,
     MatChipsModule
   ],
   template: `
-    <mat-card class="activity-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon class="activity-icon">history</mat-icon>
-          Recent Activity
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="activity-stream" *ngIf="activities.length > 0; else noActivity">
-          <div 
-            class="activity-item" 
-            *ngFor="let activity of activities; trackBy: trackByActivity"
-            [class.clock-in]="activity.type === 'clock-in'"
-            [class.clock-out]="activity.type === 'clock-out'">
-            
-            <div class="activity-icon-container">
-              <mat-icon [style.color]="activity.color">{{ activity.icon }}</mat-icon>
-            </div>
-            
-            <div class="activity-content">
-              <div class="activity-main">
-                <span class="activity-type">
-                  {{ activity.type === 'clock-in' ? 'Clocked In' : 'Clocked Out' }}
-                </span>
-                <span class="activity-time">{{ activity.time }}</span>
-              </div>
-              <div class="activity-details">
-                <span class="activity-date">{{ activity.date }}</span>
-                <mat-chip 
-                  *ngIf="activity.duration" 
-                  class="duration-chip"
-                  [style.background-color]="activity.color + '20'"
-                  [style.color]="activity.color">
-                  {{ activity.duration }}
-                </mat-chip>
-              </div>
-            </div>
-          </div>
+    <div class="activity-stream" *ngIf="activities.length > 0; else noActivity">
+      <div 
+        class="activity-item" 
+        *ngFor="let activity of activities; trackBy: trackByActivity"
+        [class.clock-in]="activity.type === 'clock-in'"
+        [class.clock-out]="activity.type === 'clock-out'">
+        
+        <div class="activity-icon-container">
+          <mat-icon [style.color]="activity.color">{{ activity.icon }}</mat-icon>
         </div>
         
-        <ng-template #noActivity>
-          <div class="no-activity">
-            <mat-icon>timer_off</mat-icon>
-            <p>No recent activity</p>
+        <div class="activity-content">
+          <div class="activity-main">
+            <span class="activity-type">
+              {{ activity.type === 'clock-in' ? 'Clocked In' : 'Clocked Out' }}
+            </span>
+            <span class="activity-time">{{ activity.time }}</span>
           </div>
-        </ng-template>
-      </mat-card-content>
-    </mat-card>
+          <div class="activity-details">
+            <span class="activity-date">{{ activity.date }}</span>
+            <mat-chip 
+              *ngIf="activity.duration" 
+              class="duration-chip"
+              [style.background-color]="activity.color + '20'"
+              [style.color]="activity.color">
+              {{ activity.duration }}
+            </mat-chip>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <ng-template #noActivity>
+      <div class="no-activity">
+        <mat-icon>timer_off</mat-icon>
+        <p>No recent activity</p>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./recent-activity-stream.component.scss']
 })

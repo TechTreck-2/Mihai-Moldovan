@@ -3,41 +3,20 @@ import { AbstractControl, Validators } from '@angular/forms';
 import { Subscription, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { HomeOfficeService, HomeOfficeRequest } from '../../services/home-office/home-office.service';
 import { GenericPopupComponent } from '../../components/popup/popup/popup.component';
 import { UserPreferencesService } from '../../services/user-preferences/user-preferences.service';
 import { EventInput, EventApi } from '@fullcalendar/core';
-import { GenericTableComponent } from '../../components/table/table/table.component';
-import { CalendarComponent } from '../../components/calendar/calendar.component';
-import { AsyncPipe, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
+import { DualViewContainerComponent } from '../../components/dual-view-container/dual-view-container.component';
+import { DateRangeFilterComponent } from '../../components/date-range-filter/date-range-filter.component';
 
 @Component({
   selector: 'app-home-office-request-page',
   standalone: true,
   imports: [
-    GenericTableComponent, 
-    CalendarComponent, 
-    NgIf, 
-    FormsModule, 
-    MatButtonToggleModule, 
-    MatCardModule, 
-    MatIconModule,
-    AsyncPipe,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule
+    DualViewContainerComponent,
+    DateRangeFilterComponent
   ],
   templateUrl: './home-office-request-page.component.html',
   styleUrls: ['./home-office-request-page.component.scss']
@@ -50,7 +29,7 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
   startDate: Date | null = null;
   endDate: Date | null = null;
 
-  activeComponent: 'table' | 'calendar' = 'table';
+  activeComponent: 'table' | 'calendar';
 
   constructor(
     private homeOfficeService: HomeOfficeService,
@@ -58,9 +37,9 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
     private userPreferencesService: UserPreferencesService,
     private dateFormattingService: DateFormattingService
   ) {
-    this.homeOfficeRequests$ = this.homeOfficeService.requests$.pipe(
-      tap((requests: HomeOfficeRequest[]) => console.log('Table data updated:', requests))
-    );
+    this.activeComponent = this.userPreferencesService.getPreference('lastAcessedHomeOfficeRequestView') || 'table';
+    
+    this.homeOfficeRequests$ = this.homeOfficeService.requests$;
 
     this.calendarEvents$ = this.homeOfficeRequests$.pipe(
       map(requests =>
@@ -71,13 +50,11 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
           end: request.endDate,
           location: request.location,
         }))
-      ),
-      tap((events: EventInput[]) => console.log('Calendar events updated:', events))
+      )
     );
   }
 
   ngAfterViewInit(): void {
-    this.activeComponent = this.userPreferencesService.getPreference('lastAcessedHomeOfficeRequestView') || 'table';
   }
 
   ngOnDestroy(): void {
@@ -87,6 +64,8 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
   toggleView(view: 'table' | 'calendar'): void {
     this.activeComponent = view;
     this.userPreferencesService.setPreference('lastAcessedHomeOfficeRequestView', view);
+    // Force a refetch every time the view is toggled
+    this.homeOfficeService.loadRequests();
   }
 
   endAfterStartValidator(control: AbstractControl) {
@@ -125,7 +104,8 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
         ],
         values: {},
       }
-    }).afterClosed().subscribe(result => {      if (result) {
+    }).afterClosed().subscribe(result => {
+      if (result) {
         const newRequest: HomeOfficeRequest = {
           id: Date.now(),
           startDate: this.dateFormattingService.formatDateISO(this.dateFormattingService.fromDateInput(result.startTime) || new Date()),
@@ -206,7 +186,6 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
   }
 
   onCalendarEventDeleted(event: EventApi): void {
-    console.log('Calendar delete event called with:', event);
     this.homeOfficeService.deleteRequest(Number(event.id));
   }
 
@@ -223,11 +202,8 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
   }
 
   onCalendarEditRequested(event: EventApi): void {
-    console.log('Calendar edit event called with:', event);
     const currentRequests = this.homeOfficeService.getRequests();
-    console.log('Current requests:', currentRequests);
     const request = currentRequests.find((r: HomeOfficeRequest) => r.id === Number(event.id));
-    console.log('Found request:', request);
     if (request) {
       this.openEditPopup(request);
     } else {
@@ -235,7 +211,18 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
     }
   }
 
-  applyFilter(): void {
-    console.log('Filter applied with start date:', this.startDate, 'and end date:', this.endDate);
+  onStartDateChange(date: Date | null): void {
+    this.startDate = date;
+  }
+
+  onEndDateChange(date: Date | null): void {
+    this.endDate = date;
+  }
+
+  applyFilter(dateRange: { startDate: Date | null, endDate: Date | null }): void {
+    this.startDate = dateRange.startDate;
+    this.endDate = dateRange.endDate;
+    // Implement filter logic here
+    console.log(`Filtering between ${this.startDate} and ${this.endDate}`);
   }
 }

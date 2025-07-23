@@ -1,0 +1,23 @@
+
+@media (forced-colors: active) {
+  .mat-button, .mat-raised-button, .mat-stroked-button {
+    border: 1px solid ButtonText;
+  }
+  
+  .mat-card {
+    border: 1px solid ButtonText;
+  }
+  
+  .mat-form-field {
+    border: 1px solid ButtonText;
+  }
+  
+  .mat-icon {
+    color: ButtonText;
+  }
+  
+  .mat-table, .mat-header-row, .mat-row {
+    border: 1px solid ButtonText;
+  }
+}
+

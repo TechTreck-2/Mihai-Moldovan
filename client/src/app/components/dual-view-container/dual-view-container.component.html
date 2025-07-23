@@ -1,0 +1,90 @@
+<div class="dual-view-container" [attr.data-cy]="formatDataCyAttribute(title)">
+  <div class="view-content">
+    <div *ngIf="activeComponent === 'table'" class="table-container" data-cy="table-container">
+      <div class="table-header-controls">
+        <div class="header-left">
+          <button 
+            *ngIf="enableTableAdd"
+            mat-raised-button 
+            color="primary" 
+            (click)="onAddClick()"
+            class="add-button"
+            [attr.data-cy]="formatAddButtonAttribute(title)">
+            <mat-icon>add</mat-icon>
+            Add
+          </button>
+          <h2>{{ title }}</h2>
+        </div>
+        
+        <mat-button-toggle-group 
+          [(ngModel)]="activeComponent" 
+          (change)="toggleView(activeComponent)"
+          class="view-toggle"
+          data-cy="view-toggle"
+          aria-label="View Selection">
+          <mat-button-toggle value="table" class="toggle-button" data-cy="table-view-toggle">
+            <mat-icon>view_list</mat-icon>
+            <span>Table</span>
+          </mat-button-toggle>
+          <mat-button-toggle value="calendar" class="toggle-button" data-cy="calendar-view-toggle">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Calendar</span>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      
+      <app-generic-table 
+        [data]="resolvedTableData"
+        [displayedColumns]="tableColumns"
+        [enableEdit]="enableTableEdit"
+        [enableDelete]="enableTableDelete"
+        [enableAdd]="false"
+        [editHandler]="onEditClick.bind(this)"
+        [deleteHandler]="onDeleteClick.bind(this)"
+        [columnDisplayNames]="columnDisplayNames"
+        data-cy="generic-table"></app-generic-table>
+    </div>
+
+    <div *ngIf="activeComponent === 'calendar'" class="calendar-container" data-cy="calendar-container">
+      <div class="calendar-header-controls">
+        <div class="header-left">
+          <button 
+            *ngIf="enableTableAdd"
+            mat-flat-button 
+            color="primary" 
+            (click)="onAddClick()"
+            class="add-button"
+            [attr.data-cy]="formatAddButtonAttribute(title)">
+            <mat-icon>add</mat-icon>
+            Add
+          </button>
+          <h2>{{ title }}</h2>
+        </div>
+        
+        <mat-button-toggle-group 
+          [(ngModel)]="activeComponent" 
+          (change)="toggleView(activeComponent)"
+          class="view-toggle"
+          data-cy="view-toggle"
+          aria-label="View Selection">
+          <mat-button-toggle value="table" class="toggle-button" data-cy="table-view-toggle">
+            <mat-icon>view_list</mat-icon>
+            <span>Table</span>
+          </mat-button-toggle>
+          <mat-button-toggle value="calendar" class="toggle-button" data-cy="calendar-view-toggle">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Calendar</span>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      
+      <calendar 
+        [eventInputs]="resolvedCalendarEvents"
+        (eventAdded)="onCalendarEventAdded($event)"
+        (eventDeleted)="onCalendarEventDeleted($event)"
+        (eventUpdated)="onCalendarEventUpdated($event)"
+        (eventEditRequested)="onCalendarEventEditRequested($event)"
+        data-cy="calendar-component"></calendar>
+    </div>
+  </div>
+</div>

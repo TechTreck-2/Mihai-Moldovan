@@ -1,16 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalStorageService {
-  constructor() {
-    if (!this.isLocalStorageAvailable()) {
-      console.error('Local Storage is not available.');
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    if (!this.isBrowser) {
+      console.debug('Running in non-browser environment, localStorage not available');
     }
   }
 
   private isLocalStorageAvailable(): boolean {
+    if (!this.isBrowser) {
+      return false;
+    }
+    
     try {
       const testKey = '__test__';
       localStorage.setItem(testKey, 'test');
@@ -24,8 +32,6 @@ export class LocalStorageService {
   public saveData(key: string, value: string) {
     if (this.isLocalStorageAvailable()) {
       localStorage.setItem(key, value);
-    } else {
-      console.warn('Local Storage is not available. Data not saved.');
     }
   }
 
@@ -33,7 +39,6 @@ export class LocalStorageService {
     if (this.isLocalStorageAvailable()) {
       return localStorage.getItem(key);
     }
-    console.warn('Local Storage is not available.');
     return null;
   }
 

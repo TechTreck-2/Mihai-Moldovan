@@ -27,17 +27,19 @@ mat-icon{
     align-items: center;
     padding-right: 1rem;
 
-    .timer-header {
+    .section-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 1.5rem;
 
-      .timer-icon {
+      .section-icon {
         color: #3f51b5;
-        font-size: 32px;
-        width: 32px;
-        height: 32px;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
       }
     }
 
@@ -62,15 +64,19 @@ mat-icon{
     flex: 1;
     padding: 0 1rem;
 
-    .stats-header {
+    .section-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 1.5rem;
-
-      mat-icon {
+      
+      .section-icon {
         color: #4caf50;
         font-size: 28px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
       }
     }
 
@@ -128,6 +134,22 @@ mat-icon{
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+      
+      .section-icon {
+        color: #ff4081;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 
   mat-divider {
@@ -139,11 +161,13 @@ mat-icon{
 :host-context(body.dark) .timer-card{
   .stats-section {
 
-    .stats-header {
+    .section-header {
 
-      mat-icon {
+      .section-icon {
         color: #4caf50;
         font-size: 28px;
+        width: 28px;
+        height: 28px;
       }
     }
 

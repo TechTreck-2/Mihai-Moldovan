@@ -50,6 +50,7 @@ export class AppComponent implements OnInit {
   isLoggedIn: boolean = false;
   isLoginPage: boolean = false;
   currentUser: string | null = null;
+  isAuthChecked: boolean = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -83,7 +84,7 @@ export class AppComponent implements OnInit {
     this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isLoggedIn = isAuthenticated;
       this.currentUser = this.authService.getCurrentUser();
-      
+      this.isAuthChecked = true;
       if (!isAuthenticated && this.isBrowser) {
         this.router.navigate(['/login']);
       }
@@ -93,6 +94,10 @@ export class AppComponent implements OnInit {
   @HostBinding('class.dark-theme')
   get darkThemeClass() {
     return this.isDarkTheme;
+  }
+
+  get showContent() {
+    return this.isAuthChecked;
   }
 
   toggleTheme() {

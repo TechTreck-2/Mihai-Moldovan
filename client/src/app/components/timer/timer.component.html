@@ -3,10 +3,10 @@
     <div class="card-content">
       <div class="main-content">
         <div class="timer-section">
-          <div class="timer-header">
-            <mat-icon class="timer-icon">timer</mat-icon>
-            <h2 class="mat-headline-6">Work Timer</h2>
-          </div>
+          <h2 class="mat-headline-6 section-header">
+            <mat-icon class="section-icon">timer</mat-icon>
+            Work Timer
+          </h2>
           
           <div class="timer-wrapper">
             <app-cronograph-timer 
@@ -33,8 +33,8 @@
         </div>        <mat-divider [vertical]="true"></mat-divider>
         
         <div class="stats-section">
-          <h2 class="mat-headline-6 stats-header">
-            <mat-icon>analytics</mat-icon>
+          <h2 class="mat-headline-6 section-header">
+            <mat-icon class="section-icon">analytics</mat-icon>
             Today's Summary
           </h2>
         
@@ -97,6 +97,10 @@
         <mat-divider [vertical]="true"></mat-divider>
 
         <div class="activity-section">
+          <h2 class="mat-headline-6 section-header">
+            <mat-icon class="section-icon">history</mat-icon>
+            Recent Activity
+          </h2>
           <app-recent-activity-stream></app-recent-activity-stream>
         </div>
       </div>

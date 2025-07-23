@@ -48,6 +48,11 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     overflow: hidden;
     background: $background-light;
     border: 1px solid $divider-light;
+    
+    @media (max-width: 768px) {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
     .data-table {
       width: 100%;
@@ -92,6 +97,8 @@ $divider-dark: rgba(255, 255, 255, 0.12);
           border-right: 1px solid $divider-light;
 
           .action-buttons {
+            display: flex;
+            flex-direction: row;
             .divider {
               background-color: $divider-light;
             }
@@ -237,6 +244,66 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         &:hover {
           background: rgba($primary, 0.12);
         }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .generic-table-container {
+    .table-header {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
+      
+      .add-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    .data-table {
+      min-width: 600px;
+      
+      .column-cell,
+      .column-header {
+        min-width: 120px;
+        white-space: nowrap;
+        
+        .cell-content {
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      
+      .actions-cell,
+      .actions-header {
+        min-width: 100px;
+      }
+    }
+    
+    .custom-paginator {
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0 16px;
+      
+      ::ng-deep .mat-mdc-paginator-container {
+        min-width: 100%;
+        width: 100%;
+        padding: 0;
+      }
+      
+      ::ng-deep .mat-mdc-paginator-range-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      ::ng-deep .mat-mdc-paginator-page-size {
+        flex: 1;
+        min-width: 0;
       }
     }
   }

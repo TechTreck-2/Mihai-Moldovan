@@ -1,0 +1,40 @@
+
+.app-card,
+mat-card,
+.holiday-summary,
+.events-card,
+.calendar-card,
+.login-card,
+.office-list {
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host-context(body.dark) {
+  .app-card,
+  mat-card,
+  .holiday-summary,
+  .events-card,
+  .calendar-card,
+  .login-card,
+  .office-list {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+.filter-container,
+.table-wrapper {
+  border: 1px solid #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host-context(body.dark) {
+  .filter-container,
+  .table-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  }
+}

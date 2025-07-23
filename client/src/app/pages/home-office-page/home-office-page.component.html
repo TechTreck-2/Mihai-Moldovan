@@ -13,6 +13,7 @@
           <div class="draggable-pin-container" [class.disabled]="confirmingAddress" cdkDrag (cdkDragEnded)="onPinDropped($event)" data-cy="draggable-pin">
             <img [src]="isDarkMode ? 'assets/dark_mode_pin.svg' : 'assets/pin.svg'" alt="Draggable pin" class="draggable-pin" cdkDragHandle>
             <span class="pin-tooltip">Drag pin to map</span>
+            <span class="mobile-instruction">(or tap to place on map)</span>
           </div>
         </div>
       </div>
@@ -94,3 +95,8 @@
 </div>
 
 <div id="tooltip" class="tooltip" style="display: none;"></div>
+<div class="mobile-message">
+  <div *ngIf="isMobile" class="mobile-instructions">
+    <p>Tap and drag to navigate the map</p>
+  </div>
+</div>

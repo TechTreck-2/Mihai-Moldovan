@@ -1,112 +1,34 @@
-<div class="view-container" data-cy="home-office-requests-container">
-  <div class="filter-container" *ngIf="activeComponent === 'table'">
-    <div class="filter-content">
-      <div class="filter-header">
-        <h2>Home Office Requests</h2>
-      </div>
+<div class="home-office-page-container">
+  <!-- Filter Component -->
+  <app-date-range-filter
+    title="Filter Home Office Requests"
+    [startDate]="startDate"
+    [endDate]="endDate"
+    (startDateChange)="onStartDateChange($event)"
+    (endDateChange)="onEndDateChange($event)"
+    (filterApply)="applyFilter($event)">
+  </app-date-range-filter>
 
-      <div class="date-picker-group">
-        <mat-form-field appearance="fill">
-          <mat-label>Start Date</mat-label>
-          <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="startDate">
-          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #startDatePicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>End Date</mat-label>
-          <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate">
-          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #endDatePicker></mat-datepicker>
-        </mat-form-field>
-      </div>
-      
-      <button mat-raised-button color="primary" (click)="applyFilter()">Apply Filter</button>
-    </div>
-  </div>
-
-  <div class="calendar-header" *ngIf="activeComponent === 'calendar'">
-    <h2>Home Office Requests</h2>
-  </div>
-
-  <div class="view-content">
-    <div *ngIf="activeComponent === 'table'" class="table-container" data-cy="table-container">
-      <div class="table-header-controls">
-        <button mat-flat-button 
-                color="primary" 
-                (click)="openAddPopup()"
-                class="add-button"
-                data-cy="add-request-button">
-          <mat-icon>add</mat-icon>
-          Add
-        </button>
-        
-        <mat-button-toggle-group 
-          [(ngModel)]="activeComponent" 
-          (change)="toggleView(activeComponent)"
-          class="view-toggle"
-          data-cy="view-toggle"
-          aria-label="View Selection">
-          <mat-button-toggle value="table" class="toggle-button" data-cy="table-view-toggle">
-            <mat-icon>view_list</mat-icon>
-            <span>Table</span>
-          </mat-button-toggle>
-          <mat-button-toggle value="calendar" class="toggle-button" data-cy="calendar-view-toggle">
-            <mat-icon>calendar_today</mat-icon>
-            <span>Calendar</span>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-      
-      <app-generic-table 
-        [data]="(homeOfficeRequests$ | async) ?? []"
-        [displayedColumns]="columns"
-        [enableEdit]="true"
-        [enableDelete]="true"
-        [editHandler]="openEditPopup.bind(this)"
-        [deleteHandler]="deleteRequest.bind(this)"
-        [enableAdd]="false"
-        [columnDisplayNames]="{
-          startDate: 'Start Date',
-          endDate: 'End date'
-        }"
-        data-cy="generic-table"></app-generic-table>
-    </div>
-
-    <div *ngIf="activeComponent === 'calendar'" class="calendar-container" data-cy="calendar-container">
-      <div class="calendar-header-controls">
-        <button mat-flat-button 
-                color="primary" 
-                (click)="openAddPopup()"
-                class="add-button"
-                data-cy="add-request-button">
-          <mat-icon>add</mat-icon>
-          Add
-        </button>
-        
-        <mat-button-toggle-group 
-          [(ngModel)]="activeComponent" 
-          (change)="toggleView(activeComponent)"
-          class="view-toggle"
-          data-cy="view-toggle"
-          aria-label="View Selection">
-          <mat-button-toggle value="table" class="toggle-button" data-cy="table-view-toggle">
-            <mat-icon>view_list</mat-icon>
-            <span>Table</span>
-          </mat-button-toggle>
-          <mat-button-toggle value="calendar" class="toggle-button" data-cy="calendar-view-toggle">
-            <mat-icon>calendar_today</mat-icon>
-            <span>Calendar</span>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-      
-      <calendar [eventInputs]="(calendarEvents$ | async) ?? []"
-      (eventAdded)="onCalendarEventAdded($event)"
-      (eventDeleted)="onCalendarEventDeleted($event)"
-      (eventUpdated)="onCalendarEventUpdated($event)"
-      (eventEditRequested)="onCalendarEditRequested($event)"
-      data-cy="calendar-component"></calendar>
-    </div>
-  </div>
+  <!-- Dual View Component -->
+  <app-dual-view-container
+    title="Home Office Requests"
+    preferencesKey="lastAcessedHomeOfficeRequestView"
+    [tableData]="homeOfficeRequests$"
+    [tableColumns]="columns"
+    [enableTableEdit]="true"
+    [enableTableDelete]="true"
+    [enableTableAdd]="true"
+    [columnDisplayNames]="{
+      startDate: 'Start Date',
+      endDate: 'End date'
+    }"
+    [calendarEvents]="calendarEvents$"
+    (addItem)="openAddPopup()"
+    (editItem)="openEditPopup($event)"
+    (deleteItem)="deleteRequest($event)"
+    (calendarEventAdded)="onCalendarEventAdded($event)"
+    (calendarEventDeleted)="onCalendarEventDeleted($event)"
+    (calendarEventUpdated)="onCalendarEventUpdated($event)"
+    (calendarEventEditRequested)="onCalendarEditRequested($event)"
+  ></app-dual-view-container>
 </div>

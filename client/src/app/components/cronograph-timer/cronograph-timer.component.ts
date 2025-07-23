@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, OnDestroy, signal, computed, effect } from "@angular/core";
+import { Component, Input, OnInit, OnDestroy, signal, computed, effect, PLATFORM_ID, Inject, NgZone } from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
 import { interval, Subscription } from "rxjs";
@@ -18,6 +19,7 @@ export class CronographTimerComponent implements OnInit, OnDestroy {
   private timerSubscription: Subscription | null = null;
   private startTime = signal<number>(0);
   private currentTime = signal<number>(0);
+  private isBrowser: boolean;
 
   private targetTimeMs = computed(() => {
     return (this.targetHours * 3600 + this.targetMinutes * 60 + this.targetSeconds) * 1000;
@@ -52,7 +54,9 @@ export class CronographTimerComponent implements OnInit, OnDestroy {
     return this.timerSubscription !== null;
   });
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private ngZone: NgZone) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    
     effect(() => {
       if (this.isComplete()) {
         this.stopTimer();
@@ -68,6 +72,10 @@ export class CronographTimerComponent implements OnInit, OnDestroy {
   }
 
   startTimer(elapsedTimeMs: number = 0): void {
+    if (!this.isBrowser) {
+      return; // Don't start timer on server
+    }
+    
     if (this.timerSubscription) {
       return;
     }
@@ -75,14 +83,24 @@ export class CronographTimerComponent implements OnInit, OnDestroy {
     this.startTime.set(Date.now() - elapsedTimeMs);
     this.currentTime.set(Date.now());
   
-    this.timerSubscription = interval(100).subscribe(() => {
-      if (!this.isComplete()) {
-        this.currentTime.set(Date.now());
-      }
+    // Run timer outside Angular's zone to prevent hydration stability issues
+    this.ngZone.runOutsideAngular(() => {
+      this.timerSubscription = interval(100).subscribe(() => {
+        if (!this.isComplete()) {
+          // Update signals inside Angular zone for change detection
+          this.ngZone.run(() => {
+            this.currentTime.set(Date.now());
+          });
+        }
+      });
     });
   }
 
   setTime(elapsedTimeMs: number): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    
     this.startTime.set(Date.now() - elapsedTimeMs);
     this.currentTime.set(Date.now());
   }

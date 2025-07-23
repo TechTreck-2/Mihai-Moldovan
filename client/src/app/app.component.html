@@ -1,15 +1,11 @@
-<!-- Full template -->
 <div>
 <app-notifications></app-notifications>
 
-<!-- Fullscreen layout for login page -->
 <div *ngIf="isLoginPage" class="fullscreen-container">
   <router-outlet></router-outlet>
 </div>
 
-<!-- Regular layout with sidebar for authenticated pages -->
 <mat-sidenav-container *ngIf="!isLoginPage" class="sidenav-container">
-  <!-- Sidebar -->
   <mat-sidenav 
     #sidenav 
     mode="side" 
@@ -21,7 +17,6 @@
       <span class="app-title">TimeTracking</span>
     </mat-toolbar>
     
-    <!-- Navigation menu -->
     <mat-nav-list class="nav-list" *ngIf="isLoggedIn">
       <mat-list-item 
         routerLink="/clocking"
@@ -74,7 +69,6 @@
     </mat-nav-list>
   </mat-sidenav>
 
-  <!-- Main content -->
   <mat-sidenav-content class="content-container">
     <mat-toolbar color="primary" class="main-toolbar" *ngIf="isLoggedIn">
       <button 
@@ -84,12 +78,10 @@
         aria-label="Toggle navigation">
         <mat-icon>menu</mat-icon>
       </button>      <span class="toolbar-title">Dashboard</span>
-      <!-- Spacer to push toggle buttons to right -->
-      <span class="spacer"></span>      <!-- Clock Status Indicator -->
+      <span class="spacer"></span>
       <app-clock-status-indicator></app-clock-status-indicator>
-      <mat-divider [vertical]="true"> </mat-divider>      <!-- Username display -->
+      <mat-divider [vertical]="true" class="clock-separator"> </mat-divider>
       <span class="username" *ngIf="currentUser" data-cy="user-menu">{{ currentUser }}</span>
-      <!-- Logout button -->
       <button 
         mat-icon-button 
         (click)="logout()" 
@@ -99,7 +91,6 @@
         *ngIf="currentUser">
         <mat-icon>exit_to_app</mat-icon>
       </button>
-      <!-- Dark theme toggle button -->
       <button 
         mat-icon-button 
         (click)="toggleTheme()" 
@@ -119,7 +110,6 @@
       <router-outlet></router-outlet>
     </main>
 
-    <!-- Bottom navigation for mobile -->
     <mat-toolbar color="primary" class="bottom-nav show-on-mobile">
       <button mat-icon-button routerLink="/clocking" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:false}">
         <mat-icon>access_time</mat-icon>

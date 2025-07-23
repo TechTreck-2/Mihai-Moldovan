@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, Inject, PLATFORM_ID, ElementRef, ViewChild, QueryList, ViewChildren, OnInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, Inject, PLATFORM_ID, ElementRef, ViewChild, QueryList, ViewChildren, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgFor, NgIf } from '@angular/common';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -12,6 +12,7 @@ import Point from 'ol/geom/Point';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Icon, Style } from 'ol/style';
 import Overlay from 'ol/Overlay';
+import { defaults as defaultControls } from 'ol/control';
 import { FormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -72,9 +73,10 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
   newOfficeDescription: string = '';
   newOfficeName: string = '';
   isOverflowing: boolean = true;
-  loading = false;
+  loading = true;
   
   isDarkMode: boolean = false;
+  isMobile: boolean = false;
 
   locations: Location[] = [];
   private officeSubscription: Subscription = new Subscription();
@@ -84,10 +86,15 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     private homeOfficeService: HomeOfficeService,
     private snackBar: MatSnackBar,
     private themeService: ThemeService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.checkIfMobile();
+      
+      window.addEventListener('resize', this.handleResize);
+      
       this.officeSubscription.add(
         this.homeOfficeService.offices$.subscribe(locations => {
           this.locations = locations;
@@ -106,20 +113,26 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     }
   }
 
-  // Handler to update OpenLayers map size on window resize
   private resizeMapHandler = () => this.map?.updateSize();
+  
+  private checkIfMobile(): void {
+    this.isMobile = window.innerWidth < 768;
+  }
+  
+  private handleResize = (): void => {
+    this.checkIfMobile();
+    this.map?.updateSize();
+  };
   
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
 
       this.initMap();
 
-      // ensure map redraws on window resize
       window.addEventListener('resize', this.resizeMapHandler);
 
       this.officeSubscription.add(
         this.themeService.isDarkTheme$.subscribe(isDark => {
-          this.loading = true;
           this.updateMapTheme(isDark);
         })
       );
@@ -128,6 +141,10 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
         this.addressElements.forEach((el: ElementRef) => {
           if (el.nativeElement.scrollWidth > el.nativeElement.clientWidth) {
             el.nativeElement.classList.add('marquee');
+            const span = el.nativeElement.querySelector('span');
+            if (span) {
+              span.setAttribute('data-text', span.textContent);
+            }
           } else {
             el.nativeElement.classList.remove('marquee');
           }
@@ -141,8 +158,8 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     if (this.map) {
       this.map.setTarget(undefined);
     }
-    // remove resize listener
     window.removeEventListener('resize', this.resizeMapHandler);
+    window.removeEventListener('resize', this.handleResize);
   }
 
   private initMap(): void {
@@ -163,12 +180,20 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
       layers: [this.tileLayer, vectorLayer],
       view: new View({
         center: fromLonLat([-74.006, 40.7128]),
-        zoom: 4
-      })
+        zoom: this.isMobile ? 3 : 4
+      }),
+      controls: defaultControls({
+        zoom: true,
+        rotate: false,
+        attribution: false
+      }).extend([])
     });
 
     this.map.once('rendercomplete', () => {
-      this.loading = false;
+      setTimeout(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      });
     });
 
     const tooltip = document.getElementById('tooltip') as HTMLElement;
@@ -183,7 +208,6 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
       const { pixel, coordinate } = evt;
       const feature = this.map.forEachFeatureAtPixel(pixel, f => f);
       if (feature && feature.get('description')) {
-        // coordinate extracted above
         tooltip.innerHTML = feature.get('description');
         this.overlay.setPosition(coordinate);
         tooltip.style.display = 'block';
@@ -221,6 +245,11 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
       return;
     }
 
+    setTimeout(() => {
+      this.loading = true;
+      this.cdr.detectChanges();
+    });
+
     const newSource = isDark
       ? new XYZ({
           url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
@@ -257,6 +286,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
 
     this.tileLayer.getSource()?.once('tileloadend', () => {
       this.loading = false;
+      this.cdr.detectChanges();
     });
   }
 
@@ -396,6 +426,8 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
     }
     
     this.loading = true;
+    this.cdr.detectChanges();
+    
     this.geocodeAddress(this.searchAddress).then(result => {
       if (result) {
         const { lat, lng, address } = result;
@@ -414,10 +446,12 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
         this.snackBar.open('Address not found', 'Close', { duration: 3000 });
       }
       this.loading = false;
+      this.cdr.detectChanges();
     }).catch(err => {
       console.error('Geocoding failed', err);
       this.snackBar.open('Failed to find address', 'Close', { duration: 3000 });
       this.loading = false;
+      this.cdr.detectChanges();
     });
   }
   onPinDropped(event: CdkDragEnd): void {
@@ -534,7 +568,7 @@ export class HomeOfficeMapComponent implements AfterViewInit, OnInit, OnDestroy 
             resolve({
               lat: mockGeocodingResults[key].lat,
               lng: mockGeocodingResults[key].lng,
-              address: address // Return the original address instead of the key
+              address: address
             });
             return;
           }

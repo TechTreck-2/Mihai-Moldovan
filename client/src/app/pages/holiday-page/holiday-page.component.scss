@@ -26,51 +26,13 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
-  }  .filter-container {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    flex: 2;
-
-    .filter-content {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-
-      .filter-header {
-        h2 {
-          margin: 0;
-          font-size: 20px;
-          font-weight: 500;
-          color: $text-primary-light;
-        }
-      }
-
-      .date-picker-group {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-
-        .mat-form-field {
-          flex: 1;
-
-          ::ng-deep .mat-form-field-label,
-          ::ng-deep .mat-input-element {
-            color: $text-primary-light !important;
-          }
-
-          ::ng-deep .mat-form-field-underline {
-            background-color: $divider-light !important;
-          }
-        }
-      }
-
-      button {
-        @include mixins.primary-button();
-        align-self: flex-start;
-      }
+    
+    > * {
+      flex: 1;
+      min-width: 300px;
     }
   }
+
   .holiday-summary {
     display: flex;
     flex-direction: row;
@@ -103,13 +65,13 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 
       .holiday-visualizer {
         display: grid;
-        grid-template-columns: repeat(7, 15px);
-        gap: 7px;
+        grid-template-columns: repeat(7, 20px);
+        gap: 5px;
+        padding: 10px;
 
         .day-square {
           width: 20px;
           height: 20px;
-          margin: 2px;
           border-radius: 2px;
           background-color: #ebedf0;
 
@@ -127,46 +89,17 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 }
 
 :host-context(body.dark) .holiday-planner-container {
-  color: $text-primary-dark;  .filter-container {
+  color: $text-primary-dark;
+
+  .holiday-summary {
+    border-color: $divider-dark;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
-    .filter-content {
-      .filter-header {        h2 {
-          color: $text-primary-dark;
-        }
-      }
-
-      .date-picker-group {
-        .mat-form-field {          ::ng-deep .mat-form-field-label,
-          ::ng-deep .mat-input-element {
-            color: $text-primary-dark !important;
-          }
-
-          ::ng-deep .mat-form-field-underline {
-            background-color: $divider-dark !important;
-          }
-
-          ::ng-deep .mat-datepicker-toggle {
-            color: $text-primary-dark !important;
-          }
-        }
-      }
-
-      button {
-        @include mat.button-theme(theme.$my-dark-theme);
-        background-color: $primary;
-        color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
-
-        &:hover {
-          background-color: mat.get-color-from-palette(theme.$my-primary, 400);
-        }
-      }
-    }
-  }  .holiday-summary {
-    border-color: $divider-dark;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);.holiday-summary-text {
+    .holiday-summary-text {
       p {
-        color: $text-primary-dark;        span {
+        color: $text-primary-dark;
+
+        span {
           color: $primary;
         }
       }

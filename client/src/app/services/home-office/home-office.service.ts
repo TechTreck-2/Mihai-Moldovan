@@ -110,7 +110,7 @@ export class HomeOfficeService implements OnDestroy {
     ).subscribe();
   }
 
-  private loadRequests(): void {
+  public loadRequests(): void {
     this.apiService.get<HomeOfficeRequest[]>(this.requestsApiEndpoint).pipe(
       tap(requests => this.requestsSubject.next(requests)),
       catchError(error => this.handleError(error))
@@ -144,12 +144,15 @@ export class HomeOfficeService implements OnDestroy {
   }
 
   public deleteRequest(id: number): void {
+    const currentRequests = this.requestsSubject.value;
+    const updatedRequests = currentRequests.filter((r: HomeOfficeRequest) => r.id !== id);
+    this.requestsSubject.next(updatedRequests);
+
     this.apiService.delete<void>(`${this.requestsApiEndpoint}/${id}`).pipe(
-      tap(() => {
-        const requests = this.requestsSubject.value.filter((r: HomeOfficeRequest) => r.id !== id);
-        this.requestsSubject.next(requests);
-      }),
-      catchError(error => this.handleError(error))
+      catchError(error => {
+        this.requestsSubject.next(currentRequests);
+        return this.handleError(error);
+      })
     ).subscribe();
   }
 

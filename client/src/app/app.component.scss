@@ -2,6 +2,12 @@
   overflow: hidden;
   height: 100vh;
   width: 100%;
+  
+  @media (max-width: 768px) {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
 }
 
 .sidenav {
@@ -26,7 +32,9 @@
   display: flex;
   flex-direction: column;
   @media (max-width: 768px) {
-    padding-bottom: 56px; /* height of bottom nav */
+    padding-bottom: 56px;
+    overflow-y: auto;
+    height: auto;
   }
 }
 
@@ -56,14 +64,14 @@
 }
 
 .main-toolbar mat-divider {
-  margin: 0 24px;
+  margin: 0 12px;
   height: 24px;
-  border-right-color: rgba(255, 255, 255, 0.3);
+  border-right-color: rgba(255, 255, 255, 0.6);
 }
 
 .nav-item {
   height: 48px !important;
-  margin: 4px 0 4px 0 !important; /* Changed from 4px 8px to remove side margins */
+  margin: 4px 0 4px 0 !important;
   border-radius: 0 !important; 
   overflow: hidden;
   &:hover {
@@ -77,7 +85,7 @@
 
 .nav-list {
   overflow: hidden;
-  padding: 0; /* Added to remove default padding */
+  padding: 0;
 }
 
 .fullscreen-container {
@@ -89,7 +97,6 @@
   left: 0;
 }
 
-/* Hide and disable desktop sidenav on small screens */
 .desktop-sidenav {
   @media (max-width: 768px) {
     display: none !important;
@@ -98,14 +105,12 @@
   }
 }
 
-/* Disable menu toggle button on mobile */
 .menu-button {
   @media (max-width: 768px) {
     display: none !important;
   }
 }
 
-/* Show bottom nav on mobile, hide on desktop */
 .show-on-mobile {
   display: none !important;
   @media (max-width: 768px) {
@@ -119,17 +124,16 @@
   }
 }
 
-/* Hide Dashboard text on mobile override */
 @media (max-width: 768px) {
   .toolbar-title {
     display: none !important;
   }
 }
 
-/* Hide clock status & username on mobile */
 @media (max-width: 768px) {
   .main-toolbar app-clock-status-indicator,
-  .main-toolbar .username {
+  .main-toolbar .username,
+  .main-toolbar .clock-separator {
     display: none !important;
   }
 }
@@ -142,5 +146,9 @@ body.dark {
 
   .active-link {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .main-toolbar mat-divider {
+    border-right-color: rgba(255, 255, 255, 0.8);
   }
 }

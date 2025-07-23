@@ -1,0 +1,25 @@
+<div class="filter-container">
+  <div class="filter-content">
+    <div class="filter-header">
+      <h2>{{ title }}</h2>
+    </div>
+
+    <div class="date-picker-group">
+      <mat-form-field appearance="fill">
+        <mat-label>Start Date</mat-label>
+        <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="startDate" (ngModelChange)="onStartDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>End Date</mat-label>
+        <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate" (ngModelChange)="onEndDateChange($event)">
+        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #endDatePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    
+    <button mat-raised-button color="primary" (click)="applyFilter()">Apply Filter</button>
+  </div>
+</div>

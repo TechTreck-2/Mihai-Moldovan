@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px); // subtract toolbar height (e.g., 64px) from viewport height
+  height: calc(100vh - 64px);
   overflow: hidden;
   padding: 24px 24px 0;
   box-sizing: border-box;
@@ -28,30 +28,32 @@
 }
 
 .right-panel-container {
-  flex: 1; // Takes 1/4 of the space
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 250px; // Ensure it doesn't get too small
+  min-width: 250px;
   height: 100%;
 }
 
-.map-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  position: relative;
-}
-
-.map {
-  width: 100%;
-  flex: 1 1 auto;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-}
-
-.spinner-overlay {
+  .map-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    position: relative;
+    min-height: 400px;
+    height: calc(100% - 80px);
+    touch-action: manipulation;
+  }
+  
+  .map {
+    width: 100%;
+    flex: 1 1 auto;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    touch-action: pan-x pan-y;
+  }.spinner-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -146,13 +148,18 @@
 .office-details h3.marquee {
   overflow: hidden;
   position: relative;
+  width: 100%;
 }
 
 .office-details h3.marquee span {
   display: inline-block;
   white-space: nowrap;
   position: relative;
-  animation: marquee 15s linear infinite;
+  animation: marquee-band 10s linear infinite;
+}
+
+.office-details h3.marquee span::after {
+  content: "   " attr(data-text) "   |"; 
 }
 
 .office-description {
@@ -255,16 +262,17 @@ button[mat-raised-button] {
 }
 
 .floating-panel {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1001;
+  z-index: 1500;
   max-height: calc(100% - 48px);
   overflow-y: auto;
   background: white;
   padding: 16px;
-  width: 360px;
+  width: 90%;
+  max-width: 360px;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
@@ -366,57 +374,73 @@ button[mat-raised-button] {
   margin-bottom: -1.34em;
 }
 
-.draggable-pin-container {
-  flex-shrink: 0;
-  position: relative;
-  cursor: grab;
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  height: 40px;
-  
-  &:active {
-    cursor: grabbing;
-  }
-  
-  &.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .draggable-pin {
-    width: 32px;
-    height: 32px;
-    transition: transform 0.2s ease;
-    filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.3));
+  .draggable-pin-container {
+    flex-shrink: 0;
+    position: relative;
+    cursor: grab;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    height: 40px;
     
-    &:hover {
-      transform: scale(1.1);
+    &:active {
+      cursor: grabbing;
     }
-  }
-  
-  .pin-tooltip {
-    position: absolute;
-    bottom: -24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-  
-  &:hover .pin-tooltip {
-    opacity: 1;
-  }
-}
+    
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-.map-container {
+    .draggable-pin {
+      width: 32px;
+      height: 32px;
+      transition: transform 0.2s ease;
+      filter: drop-shadow(0px 3px 3px rgba(0, 0, 0, 0.3));
+      
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+    
+    .pin-tooltip {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .mobile-instruction {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .pin-tooltip {
+        display: none;
+      }
+      
+      .mobile-instruction {
+        display: block;
+        color: #666;
+        font-size: 11px;
+        margin-top: 4px;
+        text-align: center;
+      }
+    }
+    
+    &:hover .pin-tooltip {
+      opacity: 1;
+    }
+  }.map-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -499,31 +523,49 @@ button[mat-raised-button] {
 @media (max-width: 768px) {
   .container {
     padding: 16px;
+    height: auto;
+    min-height: calc(100vh - 64px);
+    overflow-y: auto;
+    position: relative;
   }
 
   .main-content {
     flex-direction: column;
     gap: 24px;
     height: auto;
+    overflow: visible;
+    min-height: calc(100vh - 96px);
   }
 
   .left-panel-container {
     order: 1;
+    min-height: 450px;
+    height: 50vh;
+    flex: 0 0 auto;
   }
 
   .right-panel-container {
     order: 2;
   }
 
+  .map-container {
+    position: relative;
+    height: 100%;
+    touch-action: pan-x pan-y;
+  }
+
   .map {
-    height: 400px;
-    flex: none;
+    height: 100%;
+    min-height: 350px;
+    flex: 1;
+    touch-action: manipulation;
   }
 
   .office-list {
-    max-height: unset;
+    max-height: 400px;
     height: auto;
     padding: 16px !important;
+    overflow-y: auto;
   }
 
   .list-item-container {
@@ -532,12 +574,15 @@ button[mat-raised-button] {
 
   .floating-panel {
     position: fixed;
-    top: 16px;
-    left: 16px;
-    right: 16px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: calc(100% - 32px);
     max-width: 500px;
     margin: 0 auto;
+    z-index: 1500;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   .address-input-container {
@@ -559,8 +604,28 @@ button[mat-raised-button] {
     gap: 16px;
   }
 
+  .map-container {
+    width: 100%;
+    height: 60vh;
+    min-height: 300px;
+    position: relative;
+  }
+
   .map {
-    height: 300px;
+    height: 100%;
+    width: 100%;
+    touch-action: manipulation;
+  }
+
+  .search-bar-container {
+    padding: 8px;
+    height: auto;
+    flex-wrap: wrap;
+    z-index: 100;
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
   .office-item {
@@ -580,20 +645,53 @@ button[mat-raised-button] {
     justify-content: flex-end;
   }
   
-  .search-bar-container {
-    padding: 8px;
-    height: auto;
-    flex-wrap: wrap;
-  }
-  
   .search-input {
     width: 100%;
     margin-bottom: 0;
   }
   
   .draggable-pin-container {
-    margin-top: 8px;
+    margin: 8px auto;
+    display: flex;
+    justify-content: center;
   }
+  
+  .floating-panel {
+    width: 90%;
+    max-width: none;
+    max-height: 80vh;
+    padding: 12px;
+  }
+  
+  :host-context(body.dark) .search-bar-container {
+    background: rgba(33, 33, 33, 0.9);
+  }
+}
+
+.mobile-message {
+  display: none;
+}
+
+.mobile-instructions {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 1000;
+  text-align: center;
+  pointer-events: none;
+  animation: fadeOut 3s forwards;
+  animation-delay: 3s;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
 }
 
 @keyframes marquee {
@@ -605,16 +703,116 @@ button[mat-raised-button] {
   }
 }
 
-// Desktop optimization: Reduce viewport slightly to prevent scrolling on PC
-// Only apply when screen height is sufficient (min 800px) to keep it usable
-// Use fixed heights for consistent layout
+@keyframes marquee-band {
+  0% {
+    transform: translate3d(0%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+
+@media (max-width: 500px){
+  .container{
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 64px);
+    padding: 16px;
+  }
+  
+  .main-content {
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+  
+  html, body{
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+  
+  .left-panel-container,
+  .right-panel-container {
+    width: 100%;
+    flex: none;
+    height: auto;
+    min-width: unset;
+  }
+  
+  .left-panel-container {
+    order: 1;
+    margin-bottom: 16px;
+  }
+  
+  .right-panel-container {
+    order: 2;
+  }
+  
+  .map-container {
+    height: 50vh;
+    min-height: 300px;
+    margin-bottom: 16px;
+  }
+  
+  .office-list {
+    height: auto;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .map-search-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .ol-control {
+    position: absolute;
+    background-color: rgba(255,255,255,0.4);
+    border-radius: 4px;
+    padding: 2px;
+    z-index: 10;
+  }
+  
+  .ol-zoom {
+    top: .5em;
+    left: .5em;
+  }
+  
+  .ol-control button {
+    display: block;
+    margin: 1px;
+    padding: 0;
+    color: #fff;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    height: 1.4em;
+    width: 1.4em;
+    line-height: .4em;
+    background-color: rgba(0,60,136,.5);
+    border: none;
+    border-radius: 2px;
+  }
+}
+
 @media (min-width: 1024px) and (min-height: 800px) {
   .map {
     height: calc(100vh - 300px);
   }
   
   .office-list {
-    height: calc(100vh - 220px); // Match search bar + map total height
+    height: calc(100vh - 220px);
   }
   
   .container {
@@ -624,15 +822,13 @@ button[mat-raised-button] {
   }
 }
 
-// For larger desktop screens, we can be more aggressive with space optimization
-// Maintain proportional scaling across all elements
 @media (min-width: 1440px) and (min-height: 900px) {
   .map {
     height: calc(100vh - 320px);
   }
   
   .office-list {
-    height: calc(100vh - 240px); // Match search bar + map total height
+    height: calc(100vh - 240px);
   }
   
   .container {

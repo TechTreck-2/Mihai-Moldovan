@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject, NgZone } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 
 @Injectable({
@@ -10,12 +11,25 @@ export class TimerService {
 
   private timerSubscription: Subscription | null = null;
   private isRunning = false;
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private ngZone: NgZone) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   startTimer(intervalMs: number = 1000): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    
     if (!this.isRunning) {
       this.isRunning = true;
-      this.timerSubscription = interval(intervalMs).subscribe(() => {
-        this.timeElapsedSubject.next(this.timeElapsedSubject.value + 1);
+      this.ngZone.runOutsideAngular(() => {
+        this.timerSubscription = interval(intervalMs).subscribe(() => {
+          this.ngZone.run(() => {
+            this.timeElapsedSubject.next(this.timeElapsedSubject.value + 1);
+          });
+        });
       });
     }
   }

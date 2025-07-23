@@ -1,57 +1,64 @@
 import { Component, OnInit } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors, Validators } from '@angular/forms';
 import { NgClass, NgFor } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { GenericTableComponent } from '../../components/table/table/table.component';
 import { GenericPopupComponent, PopupField } from '../../components/popup/popup/popup.component';
-import { NotificationComponent } from '../../components/notification/notification.component';
 import { NotificationsService } from '../../services/notifications/notifications.service';
 import { HolidayService, Holiday } from '../../services/holiday/holiday.service';
 import { calculateWorkingDays } from '../../utils/date-utils';
 import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
+import { DualViewContainerComponent } from '../../components/dual-view-container/dual-view-container.component';
+import { DateRangeFilterComponent } from '../../components/date-range-filter/date-range-filter.component';
+import { BehaviorSubject, Observable, map } from 'rxjs';
+import { EventInput, EventApi } from '@fullcalendar/core';
 
 @Component({
   selector: 'app-holiday-page',
   standalone: true,
   imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     ReactiveFormsModule,
     FormsModule,
-    GenericTableComponent,
     NgFor,
     NgClass,
-    NotificationComponent
+    DualViewContainerComponent,
+    DateRangeFilterComponent
   ],
   templateUrl: './holiday-page.component.html',
   styleUrls: ['./holiday-page.component.scss'],
 })
 export class HolidayPageComponent implements OnInit {
-  startDate: Date = new Date();
-  endDate: Date = new Date();
+  startDate: Date | null = null;
+  endDate: Date | null = null;
   columns: string[] = ['startDate', 'endDate', 'holidayName', 'length'];
-  holidays: (Holiday & { length: number })[] = [];
   holidayDays: { planned: boolean }[] = [];
   totalDays: number = 0;
   workingDays: number = 0;
   nonWorkingDays: number = 0;
+  
+  // Create observables for reactive data binding
+  tableData$: Observable<(Holiday & { length: number })[]>;
+  calendarEvents$ = new BehaviorSubject<EventInput[]>([]);
+  
+  // Keep a local copy for operations that need synchronous access
+  private holidays: (Holiday & { length: number })[] = [];
 
   constructor(
     private notificationService: NotificationsService,
     private holidayService: HolidayService,
     private dialog: MatDialog,
     private dateFormattingService: DateFormattingService
-  ) {}
+  ) {
+    // Initialize the table data observable
+    this.tableData$ = this.holidayService.holidays$.pipe(
+      map(holidays => holidays.map(holiday => ({
+        ...holiday,
+        length: calculateWorkingDays(new Date(holiday.startDate), new Date(holiday.endDate))
+      })))
+    );
+  }
 
   ngOnInit() {
+    // Subscribe to holidays for calendar events and local operations
     this.holidayService.holidays$.subscribe(holidays => {
       this.updateDayCalculations();
       this.holidays = holidays.map(holiday => ({
@@ -59,6 +66,9 @@ export class HolidayPageComponent implements OnInit {
         length: calculateWorkingDays(new Date(holiday.startDate), new Date(holiday.endDate))
       }));
       this.initializeHolidayDays();
+      
+      // Update calendar events
+      this.updateCalendarEvents(holidays);
     });
   }
 
@@ -72,7 +82,11 @@ export class HolidayPageComponent implements OnInit {
     }));
   }
 
-  applyFilter(): void {
+  applyFilter(dateRange?: { startDate: Date | null, endDate: Date | null }): void {
+    if (dateRange) {
+      this.startDate = dateRange.startDate || this.startDate;
+      this.endDate = dateRange.endDate || this.endDate;
+    }
     console.log('Filter applied with start date:', this.startDate, 'and end date:', this.endDate);
     this.updateDayCalculations();
     this.holidays = this.holidays.map(holiday => ({
@@ -81,7 +95,22 @@ export class HolidayPageComponent implements OnInit {
     }));
   }
 
+  onStartDateChange(date: Date | null): void {
+    this.startDate = date;
+  }
+
+  onEndDateChange(date: Date | null): void {
+    this.endDate = date;
+  }
+
   updateDayCalculations(): void {
+    if (!this.startDate || !this.endDate) {
+      this.totalDays = 0;
+      this.workingDays = 0;
+      this.nonWorkingDays = 0;
+      return;
+    }
+    
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
     this.totalDays = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
@@ -188,5 +217,55 @@ export class HolidayPageComponent implements OnInit {
 
   private formatDate(date: Date): string {
     return this.dateFormattingService.formatDateISO(date);
+  }
+  
+  // Calendar methods
+  private updateCalendarEvents(holidays: Holiday[]): void {
+    console.log('Updating calendar events with holidays:', holidays);
+    
+    const events: EventInput[] = holidays.map(holiday => ({
+      id: holiday.id,
+      title: holiday.holidayName,
+      start: holiday.startDate,
+      end: holiday.endDate,
+      allDay: true,
+      backgroundColor: '#6750a4', // Purple color matching app's theme
+      borderColor: '#6750a4'
+    }));
+    
+    console.log('Generated calendar events:', events);
+    this.calendarEvents$.next(events);
+  }
+  
+  onCalendarEventAdded(event: EventApi): void {
+    const newHoliday: Omit<Holiday, 'id'> = {
+      startDate: this.dateFormattingService.formatDateISO(event.start || new Date()),
+      endDate: this.dateFormattingService.formatDateISO(event.end || event.start || new Date()),
+      holidayName: event.title
+    };
+    
+    this.holidayService.addHoliday(newHoliday);
+  }
+  
+  onCalendarEventDeleted(event: EventApi): void {
+    this.holidayService.deleteHoliday(event.id);
+  }
+  
+  onCalendarEventUpdated(event: EventApi): void {
+    const updatedHoliday: Holiday = {
+      id: event.id,
+      startDate: this.dateFormattingService.formatDateISO(event.start || new Date()),
+      endDate: this.dateFormattingService.formatDateISO(event.end || event.start || new Date()),
+      holidayName: event.title
+    };
+    
+    this.holidayService.updateHoliday(updatedHoliday);
+  }
+  
+  onCalendarEventEditRequested(event: EventApi): void {
+    const holiday = this.holidays.find(h => h.id === event.id);
+    if (holiday) {
+      this.openEditPopup(holiday);
+    }
   }
 }

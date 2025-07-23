@@ -1,43 +1,37 @@
 @use '@angular/material' as mat;
 @use 'palettes';
 @use 'sass:map';
+@import 'styles/card-styles';
+@import 'styles/accessibility-fixes';
 
-// Define typography config once
 $my-typography: mat.define-typography-config();
 
-// Define palettes once
 $my-primary: mat.define-palette(palettes.$m2-primary);
 $my-accent: mat.define-palette(palettes.$m2-accent, A200, A100, A400);
 $my-warn: mat.define-palette(palettes.$m2-error);
 
-// Define common color config to avoid duplication
 $my-colors: (
   primary: $my-primary,
   accent: $my-accent,
   warn: $my-warn
 );
 
-// Define light theme
 $my-theme: mat.define-light-theme((
   color: $my-colors,
   typography: $my-typography,
   density: 0
 ));
 
-// Define dark theme - reuse common color config
 $my-dark-theme: mat.define-dark-theme((
   color: $my-colors,
   typography: $my-typography,
   density: 0
 ));
 
-// Include core material styles
 @include mat.core();
 
-// Include theme styles for components
 @include mat.all-component-themes($my-theme);
 
-// Base styles
 mat-toolbar {
   padding-top: 0;
   margin-top: 0;
@@ -62,6 +56,10 @@ body {
   padding: 0;
   background-color: mat.get-color-from-palette(palettes.$m2-primary, 50);
   color: mat.get-color-from-palette(palettes.$m2-primary, 900);
+  
+  @media (max-width: 768px) {
+    overflow-y: auto;
+  }
 }
 
 .content {
@@ -69,9 +67,14 @@ body {
   flex-direction: column;
   flex: 1;
   overflow: auto;
+  
+  @media (max-width: 768px) {
+    overflow-y: auto;
+    height: auto;
+    min-height: calc(100vh - 120px);
+  }
 }
 
-// Dark theme styles
 .dark {
   @include mat.all-component-themes($my-dark-theme);
 

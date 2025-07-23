@@ -15,80 +15,11 @@ $text-secondary-dark: rgba(255, 255, 255, 0.7);
 $divider-light: #e0e0e0;
 $divider-dark: rgba(255, 255, 255, 0.12);
 
-.home-office-page-container {
+.dual-view-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
-}
-
-.view-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  color: $text-primary-light;
-
-  .filter-container {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    flex: 1;
-    min-width: 300px;
-
-    .filter-content {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-
-      .filter-header {
-        h2 {
-          margin: 0;
-          font-size: 20px;
-          font-weight: 500;
-        }
-      }
-
-      .date-picker-group {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-
-        .mat-form-field {
-          flex: 1;
-
-          ::ng-deep .mat-form-field-label,
-          ::ng-deep .mat-input-element {
-            color: $text-primary-light !important;
-          }
-
-          ::ng-deep .mat-form-field-underline {
-            background-color: $divider-light !important;
-          }
-        }
-      }
-
-      button {
-        @include mixins.primary-button();
-        align-self: flex-start;
-
-        &:hover {
-          background-color: mat.get-color-from-palette(theme.$my-primary, 600);
-        }
-      }
-    }
-  }
-
-  .calendar-header {
-    margin-bottom: 24px;
-
-    h2 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 500;
-    }
-  }
-
+  
   .table-header-controls,
   .calendar-header-controls {
     display: flex;
@@ -97,12 +28,26 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     margin-bottom: 16px;
     padding: 0;
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+      }
+    }
+
     .add-button {
       @include mixins.primary-button();
-      padding: 0 12px;
+      padding: 0 16px;
+      height: 36px;
       font-size: 13px;
       display: flex;
       align-items: center;
+      border-radius: 8px;
       gap: 8px;
 
       mat-icon {
@@ -193,8 +138,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 }
 
-:host-context(body.dark) .view-container {
-  color: $text-primary-dark;
+:host-context(body.dark) .dual-view-container {
 
   .filter-container {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -232,96 +176,44 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     }
   }
 
-  .calendar-header h2 {
-  }
-
-  .table-header-controls,
-  .calendar-header-controls {
-    .add-button {
-      @include mixins.dark-primary-button();
-
-      &:hover {
-        background-color: mat.get-color-from-palette(theme.$my-primary, 400);
-      }
+  .calendar-header {
+    h2 {
+      color: $text-primary-dark;
     }
   }
 
+  .view-toggle {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
   ::ng-deep .mat-button-toggle {
-    background-color: #424242;
-    color: $text-primary-dark;
-    border-color: #616161;
-  }
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 
-  ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-    background-color: #525252;
-  }
-
-  ::ng-deep .mat-button-toggle-checked {
-    background-color: $primary;
-    color: white;
-  }
-
-  ::ng-deep .mat-button-toggle-checked:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 400);
+    &:hover:not(.mat-button-toggle-checked) {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 
 @media (max-width: 768px) {
-  .view-container {
-    padding: 16px;
-    height: auto;
-    min-height: calc(100vh - 64px);
-    overflow-y: auto;
-    
-    .filter-container {
-      margin-bottom: 16px;
+  .dual-view-container {
+    .view-toggle {
+      display: none;
     }
-
+    
     .table-header-controls,
     .calendar-header-controls {
-      flex-direction: column;
-      gap: 12px;
-      align-items: stretch;
-      margin-bottom: 12px;
-
-      .add-button {
-        order: 2;
-        align-self: center;
-      }
-
-      .view-toggle {
-        order: 1;
-        align-self: center;
-      }
-    }
-    
-    .view-toggle {
-      width: auto;
-    }
-    
-    .toggle-button {
-      padding: 0 10px;
-      
-      span {
-        font-size: 12px;
-      }
-      
-      mat-icon {
-        font-size: 14px;
-        height: 14px;
-        width: 14px;
-      }
-    }
-    
-    .view-content {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      
-      .table-container, .calendar-container {
-        min-width: 600px; // Ensure horizontal scrolling for tables
+      .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        
+        h2 {
+          font-size: 18px;
+        }
       }
     }
   }
 }
-  
-  

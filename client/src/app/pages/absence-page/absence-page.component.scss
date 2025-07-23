@@ -33,6 +33,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     flex: 1;
+    min-width: 300px;
 
     .filter-content {
       display: flex;
@@ -79,7 +80,14 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 
   .table-container {
-    margin: 0;
+    .table-header {
+      h2 {
+        margin: 0 0 20px 0;
+        font-size: 20px;
+        font-weight: 500;
+        color: $text-primary-light;
+      }
+    }
   }
 }
 
@@ -119,6 +127,14 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         &:hover {
           background-color: mat.get-color-from-palette(theme.$my-primary, 400);
         }
+      }
+    }
+  }
+  
+  .table-container {
+    .table-header {
+      h2 {
+        color: $text-primary-dark;
       }
     }
   }
