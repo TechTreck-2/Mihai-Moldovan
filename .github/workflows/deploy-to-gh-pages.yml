@@ -32,31 +32,30 @@ jobs:
         env:
           BACKEND_URL: ${{ github.event.client_payload.backend_url || vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
         run: |
-          # Validate and ensure the backend URL has a protocol
+
           if [[ ! "$BACKEND_URL" =~ ^https?:// ]]; then
             echo "Warning: BACKEND_URL doesn't include protocol. Adding https://"
             BACKEND_URL="https://$BACKEND_URL"
           fi
-          
-          # Replace the placeholder with the actual backend URL
+
           echo "Before replacement:"
           cat src/environments/environment.github-pages.ts
-          
+
           sed -i "s|BACKEND_URL_PLACEHOLDER|$BACKEND_URL|g" src/environments/environment.github-pages.ts
-          
+
           echo "After replacement - Using backend URL: $BACKEND_URL"
           cat src/environments/environment.github-pages.ts
-          
+
           npm run build:github
 
       - name: Create .nojekyll file
-        # Place it inside the 'browser' sub-directory where index.html is
+        # For testing
         run: touch ./client/dist/techtrek/browser/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Point directly to the 'browser' sub-directory
+
           path: ./client/dist/techtrek/browser
 
   deploy:
