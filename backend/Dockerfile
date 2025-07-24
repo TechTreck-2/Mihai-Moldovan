@@ -29,7 +29,6 @@ USER nestjs
 
 EXPOSE 3000
 
-# Environment variables for runtime (will be provided by Railway/Docker)
 ENV NODE_ENV=production
 ENV PORT=3000
 
