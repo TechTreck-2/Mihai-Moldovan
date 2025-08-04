@@ -1,10 +1,13 @@
 @use '@angular/material' as mat;
 @use '../../../styles.scss' as theme;
 @use '../../../palettes.scss' as palettes;
+@use '../../../styles/_theme-variables' as vars;
+@use '../../../styles/_theme-mixins' as mixins;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
+// Essential color variables for this component
+$primary: vars.$primary-light;
 $primary-light: mat.get-color-from-palette(theme.$my-primary, 50);
-$primary-dark: mat.get-color-from-palette(theme.$my-primary, 700);
+$primary-dark: vars.$primary-dark;
 
 .login-container {
   display: flex;
@@ -12,7 +15,7 @@ $primary-dark: mat.get-color-from-palette(theme.$my-primary, 700);
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, $primary-light 0%, #f5f5f5 100%);
+  background: linear-gradient(135deg, vars.$purple-glass-light 0%, vars.$background-light 100%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -85,18 +88,23 @@ mat-card-content {
 }
 
 .auth-tabs {
-  .mat-mdc-tab-group {
-    --mdc-tab-indicator-active-indicator-color: #{$primary};
+  ::ng-deep .mat-mdc-tab-group {
+    --mdc-tab-indicator-active-indicator-color: #{$primary} !important;
+    --mat-tab-header-inactive-label-text-color: rgba(0, 0, 0, 0.6) !important;
+    --mat-tab-header-active-label-text-color: #{$primary} !important;
   }
   
-  .mat-mdc-tab {
-    color: rgba(0, 0, 0, 0.6);
+  ::ng-deep .mat-mdc-tab {
     font-weight: 500;
     font-size: 14px;
     min-width: 120px;
     
-    &.mdc-tab--active {
-      color: $primary;
+    .mdc-tab__text-label {
+      color: rgba(0, 0, 0, 0.6) !important;
+    }
+    
+    &.mdc-tab--active .mdc-tab__text-label {
+      color: $primary !important;
     }
   }
   
@@ -166,31 +174,17 @@ mat-card-content {
 }
 
 .auth-button {
+  @include mixins.glass-button();
   width: 100%;
   height: 48px;
   margin-top: auto;
   font-size: 16px;
   font-weight: 500;
   border-radius: 8px;
-  background-color: $primary;
-  color: white;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  
-  &:not([disabled]) {
-    &:hover {
-      background-color: $primary-dark;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba($primary, 0.3);
-    }
-    
-    &:active {
-      transform: translateY(0);
-    }
-  }
   
   &[disabled] {
     opacity: 0.6;
@@ -219,21 +213,33 @@ mat-card-content {
   }
   
   &.error {
-    background-color: #ffebee;
-    border: 1px solid #ffcdd2;
-    color: #c62828;
+    background-color: vars.$error-glass-light;
+    border: 1px solid vars.$status-error;
+    color: vars.$status-error;
+    
+    :host-context(body.dark) & {
+      background-color: vars.$error-glass-dark;
+    }
   }
   
   &.success {
-    background-color: #e8f5e8;
-    border: 1px solid #c8e6c9;
-    color: #2e7d32;
+    background-color: vars.$success-glass-light;
+    border: 1px solid vars.$status-success;
+    color: vars.$status-success;
+    
+    :host-context(body.dark) & {
+      background-color: vars.$success-glass-dark;
+    }
   }
   
   &.session-expired {
-    background-color: #fff3e0;
-    border: 1px solid #ffcc02;
-    color: #f57c00;
+    background-color: vars.$accent-glass-light;
+    border: 1px solid vars.$status-warning;
+    color: vars.$status-warning;
+    
+    :host-context(body.dark) & {
+      background-color: vars.$accent-glass-dark;
+    }
   }
 }
 
@@ -262,11 +268,18 @@ mat-card-content {
     background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
   }
   
-  .auth-tabs .mat-mdc-tab {
-    color: white;
+  .auth-tabs ::ng-deep .mat-mdc-tab-group {
+    --mat-tab-header-inactive-label-text-color: rgba(255, 255, 255, 0.7) !important;
+    --mat-tab-header-active-label-text-color: white !important;
+  }
+  
+  .auth-tabs ::ng-deep .mat-mdc-tab {
+    .mdc-tab__text-label {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
     
-    &.mdc-tab--active {
-      color: white;
+    &.mdc-tab--active .mdc-tab__text-label {
+      color: white !important;
     }
   }
   

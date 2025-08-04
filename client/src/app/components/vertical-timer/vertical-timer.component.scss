@@ -1,0 +1,313 @@
+@use '../../../styles/theme-variables' as vars;
+@use '../../../styles/theme-mixins' as mixins;
+
+.vertical-timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.timer-container {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.progress-line {
+  position: relative;
+  width: 6px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  
+  :host-context(body.dark) & {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.progress-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, #4A90E2, #FF6B6B);
+  border-radius: 3px;
+  transition: height 0.3s ease;
+  
+  .purple-theme & {
+    background: linear-gradient(to top, #673ab7, #9c27b0, #e91e63);
+  }
+}
+
+.progress-glow {
+  position: absolute;
+  bottom: 0;
+  left: -2px;
+  width: 10px;
+  background: linear-gradient(to top, rgba(74, 144, 226, 0.6), rgba(255, 107, 107, 0.6));
+  border-radius: 5px;
+  filter: blur(4px);
+  transition: height 0.3s ease;
+  
+  .purple-theme & {
+    background: linear-gradient(to top, rgba(103, 58, 183, 0.8), rgba(156, 39, 176, 0.8), rgba(233, 30, 99, 0.6));
+  }
+}
+
+.time-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.time-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  
+  &.hours .time-value {
+    font-size: 4rem;
+    font-weight: 200;
+    line-height: 0.8;
+    color: #4A90E2;
+    text-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+    
+    .purple-theme & {
+      color: #673ab7;
+      text-shadow: 0 0 20px rgba(103, 58, 183, 0.4);
+      
+      :host-context(body.dark) & {
+        color: #9c27b0;
+        text-shadow: 0 0 20px rgba(156, 39, 176, 0.4);
+      }
+    }
+    
+    :host-context(body.dark) & {
+      color: #FF6B6B;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+    }
+  }
+  
+  &.minutes .time-value {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 0.8;
+    color: #666;
+    
+    .purple-theme & {
+      color: #9c27b0;
+      
+      :host-context(body.dark) & {
+        color: #e91e63;
+      }
+    }
+    
+    :host-context(body.dark) & {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+  
+  &.seconds .time-value {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #999;
+    
+    .purple-theme & {
+      color: #ba68c8;
+    }
+    
+    :host-context(body.dark) & {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+  
+  .time-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #999;
+    text-transform: uppercase;
+    
+    .purple-theme & {
+      color: #ba68c8;
+    }
+    
+    :host-context(body.dark) & {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.time-separator {
+  font-size: 2rem;
+  font-weight: 300;
+  color: #ccc;
+  margin: 0 -8px;
+  
+  .purple-theme & {
+    color: #ce93d8;
+  }
+  
+  :host-context(body.dark) & {
+    color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.target-display {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  
+  .target-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    
+    .purple-theme & {
+      color: #ba68c8;
+    }
+    
+    :host-context(body.dark) & {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+  
+  .target-time {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    
+    .purple-theme & {
+      color: #9c27b0;
+      
+      :host-context(body.dark) & {
+        color: #ce93d8;
+      }
+    }
+    
+    :host-context(body.dark) & {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+// Animation when timer starts
+.vertical-timer {
+  .progress-fill,
+  .progress-glow {
+    animation: pulseGlow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    filter: brightness(1);
+  }
+  100% {
+    filter: brightness(1.2);
+  }
+}
+
+// Gradient theme (default) specific styles
+.gradient-theme {
+  .progress-line {
+    background: rgba(74, 144, 226, 0.1);
+    box-shadow: inset 0 0 10px rgba(74, 144, 226, 0.2);
+    
+    :host-context(body.dark) & {
+      background: rgba(255, 107, 107, 0.1);
+      box-shadow: inset 0 0 10px rgba(255, 107, 107, 0.2);
+    }
+  }
+}
+
+// Purple theme specific styles
+.purple-theme {
+  .progress-line {
+    background: rgba(103, 58, 183, 0.1);
+    box-shadow: inset 0 0 10px rgba(103, 58, 183, 0.2);
+    
+    :host-context(body.dark) & {
+      background: rgba(156, 39, 176, 0.1);
+      box-shadow: inset 0 0 10px rgba(156, 39, 176, 0.2);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .timer-container {
+    gap: 24px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .progress-line {
+    width: 200px;
+    height: 6px;
+    order: 2;
+  }
+  
+  .progress-fill,
+  .progress-glow {
+    width: 100%;
+    height: 100% !important;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    top: 0;
+    background: linear-gradient(to right, #4A90E2, #FF6B6B);
+    
+    .purple-theme & {
+      background: linear-gradient(to right, #673ab7, #9c27b0, #e91e63);
+    }
+  }
+  
+  .progress-glow {
+    top: -2px;
+    height: 10px !important;
+    filter: blur(4px);
+    
+    .purple-theme & {
+      background: linear-gradient(to right, rgba(103, 58, 183, 0.8), rgba(156, 39, 176, 0.8), rgba(233, 30, 99, 0.6));
+    }
+  }
+  
+  .time-display {
+    order: 1;
+    gap: 12px;
+  }
+  
+  .time-unit {
+    &.hours .time-value {
+      font-size: 3rem;
+    }
+    
+    &.minutes .time-value {
+      font-size: 2rem;
+    }
+    
+    &.seconds .time-value {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .target-display {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    order: 3;
+    margin-top: 16px;
+  }
+}

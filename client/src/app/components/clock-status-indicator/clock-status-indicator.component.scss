@@ -1,3 +1,5 @@
+@use '../../../styles/_theme-variables' as vars;
+
 .clock-status-container {
   display: flex;
   align-items: center;
@@ -10,22 +12,22 @@
   transition: color 0.6s ease;
   
   &.clocked-in {
-    color: #6750a4;
+    color: vars.$primary-light !important;
   }
   
   &.clocked-out {
-    color: #9585bf;
+    color: vars.$text-secondary-light !important;
   }
 }
 
-:host-context(.dark) {
+:host-context(body.dark) {
   .status-text {
     &.clocked-in {
-      color: #efecf8;
+      color: vars.$primary-dark !important;
     }
     
     &.clocked-out {
-      color: #7e6ab2;
+      color: vars.$text-secondary-dark !important;
     }
   }
 }

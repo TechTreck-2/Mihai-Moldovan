@@ -1,9 +1,14 @@
-<div class="cronograph">
+<div class="cronograph" [class.purple-theme]="theme === 'purple'">
   <svg [attr.width]="SVG_SIZE" [attr.height]="SVG_SIZE" [attr.viewBox]="'0 0 ' + SVG_SIZE + ' ' + SVG_SIZE">
     <defs>
-      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <linearGradient id="gradientTheme" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" style="stop-color: #4A90E2" />
         <stop offset="100%" style="stop-color: #FF6B6B" />
+      </linearGradient>
+      <linearGradient id="purpleTheme" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color: #673ab7" />
+        <stop offset="50%" style="stop-color: #9c27b0" />
+        <stop offset="100%" style="stop-color: #e91e63" />
       </linearGradient>
     </defs>
     
@@ -19,7 +24,7 @@
       [attr.cy]="SVG_CENTER" 
       [attr.r]="RADIUS" 
       class="progress-ring"
-      stroke="url(#progressGradient)"
+      [attr.stroke]="theme === 'purple' ? 'url(#purpleTheme)' : 'url(#gradientTheme)'"
       [attr.stroke-dasharray]="CIRCUMFERENCE"
       [attr.stroke-dashoffset]="strokeDashoffset()"
     />

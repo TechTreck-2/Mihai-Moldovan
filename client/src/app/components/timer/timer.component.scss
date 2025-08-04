@@ -1,3 +1,6 @@
+@use '../../../styles/_theme-variables' as vars;
+@use '../../../styles/_theme-mixins' as mixins;
+
 mat-icon{
   display: flex;
   align-items: center;
@@ -7,25 +10,41 @@ mat-icon{
 .timer-card {
   max-width: 1400px;
   margin: 2rem auto;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  border: vars.$glass-border-light;
+  box-shadow: vars.$glass-shadow-light;
+  background: vars.$background-light-card !important;
+  transition: none;
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  :host-context(body.dark) & {
+    background: vars.$background-dark-card !important;
+    border: vars.$glass-border-dark;
+    box-shadow: vars.$glass-shadow-dark;
+  }
+  
   .card-content {
     display: flex;
     gap: 2rem;
     padding: 32px;
     flex-direction: column;
-  }.main-content {
+  }
+  
+  .main-content {
     display: flex;
     gap: 3rem;
     align-items: flex-start;
   }
+  
   .timer-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-right: 1rem;
+    min-height: 350px;
 
     .section-header {
       display: flex;
@@ -34,12 +53,16 @@ mat-icon{
       margin-bottom: 1.5rem;
 
       .section-icon {
-        color: #3f51b5;
+        color: vars.$primary-light;
         font-size: 28px;
         width: 28px;
         height: 28px;
         display: flex;
         align-items: center;
+        
+        :host-context(body.dark) & {
+          color: vars.$primary-dark;
+        }
       }
     }
 
@@ -49,17 +72,37 @@ mat-icon{
       gap: 1rem;
 
       button {
+        @include mixins.glass-button();
         padding: 8px 24px;
-        border-radius: 8px;
+        border-radius: vars.$glass-border-radius;
         font-weight: 500;
-        transition: all 0.2s ease;
+        color: #ffffff !important;
 
         mat-icon {
           margin-right: 8px;
+          color: #ffffff !important;
+        }
+        
+        :host-context(body.dark) & {
+          color: #ffffff !important;
+          
+          mat-icon {
+            color: #ffffff !important;
+          }
         }
       }
     }
+    
+    .timer-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 250px;
+      margin: 1rem 0;
+    }
   }
+  
   .stats-section {
     flex: 1;
     padding: 0 1rem;
@@ -71,7 +114,7 @@ mat-icon{
       margin-bottom: 1.5rem;
       
       .section-icon {
-        color: #4caf50;
+        color: vars.$status-success;
         font-size: 28px;
         width: 28px;
         height: 28px;
@@ -89,16 +132,21 @@ mat-icon{
         align-items: center;
         gap: 1rem;
         padding: 12px;
-        background: #f8f9fa;
-        border-radius: 8px;
+        @include mixins.purple-glass-accent();
+        border-radius: vars.$glass-border-radius;
 
         .stat-icon {
-          color: #666;
+          @include mixins.text-secondary();
           font-size: 24px;
           padding: 8px;
-          background: white;
+          background: vars.$glass-background-light-elevated;
           border-radius: 6px;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+          box-shadow: vars.$elevation-1;
+          
+          :host-context(body.dark) & {
+            background: vars.$glass-background-dark-elevated;
+            box-shadow: vars.$elevation-1-dark;
+          }
         }
 
         .stat-text {
@@ -106,10 +154,12 @@ mat-icon{
 
           .mat-caption {
             margin-bottom: 2px;
+            @include mixins.text-secondary();
           }
 
           .mat-body-2 {
             font-weight: 500;
+            @include mixins.text-primary();
           }
 
           .weekly-progress-bar {
@@ -122,12 +172,14 @@ mat-icon{
         &.week-info {
           .stat-text .mat-body-2 {
             font-size: 0.85rem;
-            color: #666;
+            @include mixins.text-secondary();
           }
         }
       }
     }
-  }  .activity-section {
+  }
+  
+  .activity-section {
     flex: 1;
     padding-left: 1rem;
     max-height: 600px;
@@ -142,11 +194,15 @@ mat-icon{
       margin-bottom: 1.5rem;
       
       .section-icon {
-        color: #ff4081;
+        color: vars.$accent-light;
         font-size: 28px;
         width: 28px;
         height: 28px;
         display: flex;
+        
+        :host-context(body.dark) & {
+          color: vars.$accent-dark;
+        }
         align-items: center;
       }
     }

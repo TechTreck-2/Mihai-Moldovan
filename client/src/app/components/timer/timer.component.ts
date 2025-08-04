@@ -6,12 +6,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { TimerService } from '../../services/timer/timer.service';
 import { ClockingService, ClockInterval } from '../../services/clocking/clocking.service';
 import { CronographTimerComponent } from '../cronograph-timer/cronograph-timer.component';
+import { VerticalTimerComponent } from '../vertical-timer/vertical-timer.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProgressBarMode, MatProgressBarModule } from '@angular/material/progress-bar';
 import { RecentActivityStreamComponent } from '../recent-activity-stream/recent-activity-stream.component';
 import { DateFormattingService } from '../../services/date-formatting/date-formatting.service';
+import { UserPreferencesService } from '../../services/user-preferences/user-preferences.service';
+import { TimerDisplaySettings } from '../timer-settings-dialog/timer-settings-dialog.component';
 
 @Component({
   selector: 'app-timer',
@@ -20,6 +23,7 @@ import { DateFormattingService } from '../../services/date-formatting/date-forma
     CommonModule,
     MatButtonModule,
     CronographTimerComponent,
+    VerticalTimerComponent,
     MatCardModule,
     MatIconModule,
     MatListModule,
@@ -31,6 +35,7 @@ import { DateFormattingService } from '../../services/date-formatting/date-forma
 })
 export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('cronographTimer') cronographTimer!: CronographTimerComponent;
+  @ViewChild('verticalTimer') verticalTimer!: VerticalTimerComponent;
   timeElapsed: number = 0;
   private timerSubscription: Subscription | null = null;
   private intervalsSubscription: Subscription | null = null;
@@ -47,13 +52,19 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
   weeklyProgress: number = 0;
   currentWeekDates: { start: string; end: string } = { start: '', end: '' };
 
+  // Timer display settings
+  timerDisplaySettings: TimerDisplaySettings = {
+    displayType: 'circle',
+    theme: 'gradient'
+  };
 
   constructor(
     private timerService: TimerService,
     private clockingService: ClockingService,
     private snackBar: MatSnackBar,
     private dateFormattingService: DateFormattingService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private userPreferencesService: UserPreferencesService
   ) {
     this.currentDate = this.dateFormattingService.formatDateDisplay(new Date());
     this.currentWeekDates = this.getCurrentWeekDates(new Date());
@@ -61,6 +72,38 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.timerSubscription = this.timerService.timeElapsed$.subscribe(time => {
+    });
+    
+    // Load timer display settings
+    this.loadTimerDisplaySettings();
+    
+    // Subscribe to live updates of timer display settings
+    this.subscribeToSettingsUpdates();
+  }
+
+  private loadTimerDisplaySettings(): void {
+    const savedSettings = this.userPreferencesService.getPreference('timerDisplay');
+    if (savedSettings) {
+      // Migrate from old 'default' to new 'gradient'
+      if ((savedSettings as any).theme === 'default') {
+        savedSettings.theme = 'gradient';
+        this.userPreferencesService.setPreference('timerDisplay', savedSettings);
+      }
+      this.timerDisplaySettings = { ...this.timerDisplaySettings, ...savedSettings };
+    }
+  }
+
+  private subscribeToSettingsUpdates(): void {
+    // Subscribe to timer display preference changes for live updates
+    this.userPreferencesService.getPreferenceObservable('timerDisplay').subscribe(settings => {
+      if (settings) {
+        // Migrate from old 'default' to new 'gradient' if needed
+        if ((settings as any).theme === 'default') {
+          settings.theme = 'gradient';
+        }
+        this.timerDisplaySettings = { ...this.timerDisplaySettings, ...settings };
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -104,6 +147,11 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
               this.cronographTimer.resetTimer();
               this.cronographTimer.startTimer(this.timeElapsed * 1000);
             }
+            
+            if (this.verticalTimer) {
+              this.verticalTimer.resetTimer();
+              this.verticalTimer.startTimer(this.timeElapsed * 1000);
+            }
           } else {
             localStorage.removeItem('clockInData');
             this.initializeBasedOnIntervals(intervals, todayISO);
@@ -141,6 +189,11 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
        this.cronographTimer.resetTimer();
        this.cronographTimer.setTime(this.timeElapsed * 1000);
      }
+     
+     if (this.verticalTimer) {
+       this.verticalTimer.resetTimer();
+       this.verticalTimer.setTime(this.timeElapsed * 1000);
+     }
 
      if (isActive) {
         const now = new Date();
@@ -160,6 +213,10 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
 
         if (this.cronographTimer) {
             this.cronographTimer.startTimer(this.timeElapsed * 1000);
+        }
+        
+        if (this.verticalTimer) {
+            this.verticalTimer.startTimer(this.timeElapsed * 1000);
         }
      }
   }
@@ -233,7 +290,15 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.clockingService.clockIn()) {
       this.timeClockedToday = offset;
-      this.cronographTimer.startTimer(this.timeClockedToday * 1000);
+      
+      if (this.cronographTimer) {
+        this.cronographTimer.startTimer(this.timeClockedToday * 1000);
+      }
+      
+      if (this.verticalTimer) {
+        this.verticalTimer.startTimer(this.timeClockedToday * 1000);
+      }
+      
       this.currentClockInTime = this.dateFormattingService.formatTimeShort(now);
       this.currentClockOutTime = null;
 
@@ -251,7 +316,14 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
 
   clockOut(): void {
     if (this.clockingService.clockOut()) {
-      this.cronographTimer.stopTimer();
+      if (this.cronographTimer) {
+        this.cronographTimer.stopTimer();
+      }
+      
+      if (this.verticalTimer) {
+        this.verticalTimer.stopTimer();
+      }
+      
       const now = new Date();
       this.currentClockOutTime = now.toLocaleTimeString();
 
@@ -272,6 +344,12 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
 
+  updateTimerDisplaySettings(settings: TimerDisplaySettings): void {
+    this.timerDisplaySettings = settings;
+    this.userPreferencesService.setPreference('timerDisplay', settings);
+    this.cdr.detectChanges();
+  }
+
   ngOnDestroy(): void {
     this.viewInitialized = false;
     if (this.timerSubscription) {
@@ -282,6 +360,10 @@ export class TimerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.cronographTimer) {
         this.cronographTimer.stopTimer();
+    }
+    
+    if (this.verticalTimer) {
+        this.verticalTimer.stopTimer();
     }
   }
 }

@@ -2,18 +2,20 @@
 @use '../../../styles/_theme-mixins' as mixins;
 @use '../../../styles.scss' as theme;
 @use '../../../palettes.scss' as palettes;
+@use '../../../styles/_theme-variables' as vars;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
-$accent: mat.get-color-from-palette(theme.$my-accent, 500);
-$warn: mat.get-color-from-palette(theme.$my-warn, 500);
-$background-light: #ffffff;
-$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
-$text-primary-light: rgba(0, 0, 0, 0.87);
-$text-primary-dark: rgba(255, 255, 255, 0.87);
-$text-secondary-light: #5f6368;
-$text-secondary-dark: rgba(255, 255, 255, 0.7);
-$divider-light: #e0e0e0;
-$divider-dark: rgba(255, 255, 255, 0.12);
+// Essential color variables for this component
+$primary: vars.$primary-light;
+$accent: vars.$accent-light;
+$warn: vars.$warn-light;
+$background-light: vars.$background-light-card;
+$background-dark: vars.$background-dark-card;
+$text-primary-light: vars.$text-primary-light;
+$text-primary-dark: vars.$text-primary-dark;
+$text-secondary-light: vars.$text-secondary-light;
+$text-secondary-dark: vars.$text-secondary-dark;
+$divider-light: vars.$divider-light;
+$divider-dark: vars.$divider-dark;
 
 .home-office-page-container {
   display: flex;
@@ -27,7 +29,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   flex-direction: column;
   gap: 20px;
   padding: 20px;
-  color: $text-primary-light;
+  color: vars.$text-primary-light;
 
   .filter-container {
     border-radius: 8px;
@@ -59,11 +61,11 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 
           ::ng-deep .mat-form-field-label,
           ::ng-deep .mat-input-element {
-            color: $text-primary-light !important;
+            color: vars.$text-primary-light !important;
           }
 
           ::ng-deep .mat-form-field-underline {
-            background-color: $divider-light !important;
+            background-color: vars.$divider-light !important;
           }
         }
       }
@@ -110,10 +112,6 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         height: 16px;
         width: 16px;
       }
-
-      &:hover {
-        background-color: mat.get-color-from-palette(theme.$my-primary, 600);
-      }
     }
   }
 
@@ -155,29 +153,25 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 
   ::ng-deep .mat-button-toggle {
-    background-color: #f5f5f5;
-    color: #666;
-    transition: all 0.2s ease;
-    border: 1px solid #e0e0e0;
+    @include mixins.purple-glass-accent();
+    color: vars.$text-secondary-light;
     height: 32px;
+    border-radius: 0 !important;
     
     &:first-child {
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
+      border-top-left-radius: 4px !important;
+      border-bottom-left-radius: 4px !important;
     }
     
     &:last-child {
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
+      border-top-right-radius: 4px !important;
+      border-bottom-right-radius: 4px !important;
     }
-  }
-
-  ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-    background-color: #e8e8e8;
-  }
-
-  ::ng-deep .mat-button-toggle-checked:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+    
+    &.mat-button-toggle-checked {
+      @include mixins.glass-button();
+      color: white;
+    }
   }
 
   .view-content {
@@ -194,7 +188,7 @@ $divider-dark: rgba(255, 255, 255, 0.12);
 }
 
 :host-context(body.dark) .view-container {
-  color: $text-primary-dark;
+  color: vars.$text-primary-dark;
 
   .filter-container {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -209,15 +203,15 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         .mat-form-field {
           ::ng-deep .mat-form-field-label,
           ::ng-deep .mat-input-element {
-            color: $text-primary-dark !important;
+            color: vars.$text-primary-dark !important;
           }
 
           ::ng-deep .mat-form-field-underline {
-            background-color: $divider-dark !important;
+            background-color: vars.$divider-dark !important;
           }
 
           ::ng-deep .mat-datepicker-toggle {
-            color: $text-primary-dark !important;
+            color: vars.$text-primary-dark !important;
           }
         }
       }
@@ -239,30 +233,21 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   .calendar-header-controls {
     .add-button {
       @include mixins.dark-primary-button();
-
-      &:hover {
-        background-color: mat.get-color-from-palette(theme.$my-primary, 400);
-      }
     }
   }
 
   ::ng-deep .mat-button-toggle {
-    background-color: #424242;
-    color: $text-primary-dark;
-    border-color: #616161;
-  }
-
-  ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-    background-color: #525252;
-  }
-
-  ::ng-deep .mat-button-toggle-checked {
-    background-color: $primary;
-    color: white;
-  }
-
-  ::ng-deep .mat-button-toggle-checked:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 400);
+    @include mixins.purple-glass-accent();
+    background-color: vars.$glass-background-dark;
+    color: vars.$text-secondary-dark;
+    border: 1px solid vars.$border-dark;
+    border-radius: 0 !important;
+    
+    &.mat-button-toggle-checked {
+      @include mixins.glass-button();
+      background-color: vars.$purple-glass-dark !important;
+      color: vars.$text-primary-dark !important;
+    }
   }
 }
 

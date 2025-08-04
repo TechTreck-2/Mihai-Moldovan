@@ -1,22 +1,208 @@
 @use '@angular/material' as mat;
-@use '../../styles.scss' as theme;
+@use '../../styles/_theme-variables' as vars;
 
-// Primary button mixin to avoid duplicate theme includes
-@mixin primary-button() {
-  background-color: mat.get-color-from-palette(theme.$my-primary, 500);
-  color: mat.get-contrast-color-from-palette(theme.$my-primary, 500);
+// Glass effect base mixin
+@mixin glass-effect($background-light: vars.$glass-background-light, $background-dark: vars.$glass-background-dark) {
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  border: vars.$glass-border-light;
+  box-shadow: vars.$glass-shadow-light;
+  background: $background-light;
   
-  &:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+  :host-context(body.dark) & {
+    background: $background-dark;
+    border: vars.$glass-border-dark;
+    box-shadow: vars.$glass-shadow-dark;
   }
 }
 
-// Dark theme primary button mixin
-@mixin dark-primary-button() {
-  background-color: mat.get-color-from-palette(theme.$my-primary, 400);
-  color: mat.get-contrast-color-from-palette(theme.$my-primary, 400);
+// Glass card mixin
+@mixin glass-card() {
+  @include glass-effect(vars.$glass-background-light-elevated, vars.$glass-background-dark-elevated);
+  transition: all vars.$transition-normal;
   
   &:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 300);
+    box-shadow: vars.$elevation-3;
+    
+    :host-context(body.dark) & {
+      box-shadow: vars.$elevation-3-dark;
+    }
+  }
+}
+
+// Glass button mixin
+@mixin glass-button() {
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  border: vars.$glass-border-light;
+  background: vars.$button-glass-background-light;
+  box-shadow: vars.$glass-shadow-light;
+  color: vars.$primary-contrast-light;
+  transition: all vars.$transition-fast;
+  font-weight: 500;
+  
+  &:hover {
+    background: vars.$button-glass-hover-light !important;
+    transform: translateY(-1px);
+    box-shadow: vars.$elevation-2;
+    
+    :host-context(body.dark) & {
+      background: vars.$button-glass-hover-dark !important;
+      box-shadow: vars.$elevation-2-dark;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: vars.$glass-shadow-light;
+    
+    :host-context(body.dark) & {
+      box-shadow: vars.$glass-shadow-dark;
+    }
+  }
+  
+  :host-context(body.dark) & {
+    background: vars.$button-glass-background-dark;
+    border: vars.$glass-border-dark;
+    box-shadow: vars.$glass-shadow-dark;
+    color: vars.$primary-contrast-dark;
+  }
+}
+
+// Purple glass accent mixin
+@mixin purple-glass-accent() {
+  background: vars.$purple-glass-light;
+  border: 1px solid rgba(103, 80, 164, 0.2);
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  transition: all vars.$transition-fast;
+  
+  &:hover {
+    background: vars.$purple-glass-hover-light;
+    transform: translateY(-1px);
+    box-shadow: vars.$elevation-2;
+  }
+  
+  :host-context(body.dark) & {
+    background: vars.$purple-glass-dark;
+    border-color: rgba(103, 80, 164, 0.3);
+    
+    &:hover {
+      background: vars.$purple-glass-hover-dark;
+      transform: translateY(-1px);
+      box-shadow: vars.$elevation-2-dark;
+    }
+  }
+}
+
+// Accent glass mixin for secondary elements
+@mixin accent-glass() {
+  background: vars.$accent-glass-light;
+  border: 1px solid rgba(181, 131, 146, 0.2);
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  transition: all vars.$transition-fast;
+  
+  &:hover {
+    background: vars.$accent-glass-hover-light;
+    transform: translateY(-1px);
+    box-shadow: vars.$elevation-1;
+  }
+  
+  :host-context(body.dark) & {
+    background: vars.$accent-glass-dark;
+    border-color: rgba(181, 131, 146, 0.3);
+    
+    &:hover {
+      background: vars.$accent-glass-hover-dark;
+      box-shadow: vars.$elevation-1-dark;
+    }
+  }
+}
+
+// Success glass mixin
+@mixin success-glass() {
+  background: vars.$success-glass-light;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  transition: all vars.$transition-fast;
+  
+  :host-context(body.dark) & {
+    background: vars.$success-glass-dark;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+}
+
+// Error glass mixin
+@mixin error-glass() {
+  background: vars.$error-glass-light;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  backdrop-filter: vars.$glass-backdrop-filter;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
+  border-radius: vars.$glass-border-radius;
+  transition: all vars.$transition-fast;
+  
+  :host-context(body.dark) & {
+    background: vars.$error-glass-dark;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+}
+
+// Primary button mixin with glass effect
+@mixin primary-button() {
+  @include glass-button();
+}
+
+// Dark theme primary button mixin (now using consistent glass effect)
+@mixin dark-primary-button() {
+  @include glass-button();
+}
+
+// Surface mixin for consistent backgrounds
+@mixin surface($elevated: false) {
+  @if $elevated {
+    background-color: vars.$background-light-elevated;
+    box-shadow: vars.$elevation-1;
+    
+    :host-context(body.dark) & {
+      background-color: vars.$background-dark-elevated;
+      box-shadow: vars.$elevation-1-dark;
+    }
+  } @else {
+    background-color: vars.$background-light-card;
+    
+    :host-context(body.dark) & {
+      background-color: vars.$background-dark-card;
+    }
+  }
+  
+  border-radius: 8px;
+  border: 1px solid vars.$border-light;
+  
+  :host-context(body.dark) & {
+    border-color: vars.$border-dark;
+  }
+}
+
+// Text color mixins
+@mixin text-primary() {
+  color: vars.$text-primary-light;
+  
+  :host-context(body.dark) & {
+    color: vars.$text-primary-dark;
+  }
+}
+
+@mixin text-secondary() {
+  color: vars.$text-secondary-light;
+  
+  :host-context(body.dark) & {
+    color: vars.$text-secondary-dark;
   }
 }

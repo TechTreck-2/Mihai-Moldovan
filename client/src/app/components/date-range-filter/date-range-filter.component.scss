@@ -1,27 +1,20 @@
 @use '@angular/material' as mat;
 @use '../../../styles/_theme-mixins' as mixins;
+@use '../../../styles/_theme-variables' as vars;
 @use '../../../styles.scss' as theme;
-@use '../../../palettes.scss' as palettes;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
-$accent: mat.get-color-from-palette(theme.$my-accent, 500);
-$warn: mat.get-color-from-palette(theme.$my-warn, 500);
-$background-light: #ffffff;
-$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
-$text-primary-light: rgba(0, 0, 0, 0.87);
-$text-primary-dark: rgba(255, 255, 255, 0.87);
-$text-secondary-light: #5f6368;
-$text-secondary-dark: rgba(255, 255, 255, 0.7);
-$divider-light: #e0e0e0;
-$divider-dark: rgba(255, 255, 255, 0.12);
+// Essential color variables for this component
+$text-primary-light: vars.$text-primary-light;
+$text-primary-dark: vars.$text-primary-dark;
+$divider-light: vars.$divider-light;
+$divider-dark: vars.$divider-dark;
 
 .filter-container {
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  @include mixins.glass-card();
   padding: 20px;
   flex: 1;
   min-width: 300px;
-  color: $text-primary-light;
+  @include mixins.text-primary();
 
   .filter-content {
     display: flex;

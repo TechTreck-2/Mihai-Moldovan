@@ -23,9 +23,17 @@
 .time-value {
   font-size: 36px;
   font-weight: 500;
-  fill: #333;
+  fill: #4A90E2;
   text-anchor: middle;
   dominant-baseline: middle;
+  
+  .purple-theme & {
+    fill: #673ab7;
+    
+    :host-context(body.dark) & {
+      fill: #9c27b0;
+    }
+  }
 }
 
 .time-label {
@@ -33,6 +41,10 @@
   font-weight: 400;
   fill: #666;
   text-anchor: middle;
+  
+  .purple-theme & {
+    fill: #ba68c8;
+  }
 }
 
 .target-time {
@@ -41,6 +53,10 @@
   fill: #666;
   text-anchor: middle;
   dominant-baseline: middle;
+  
+  .purple-theme & {
+    fill: #ba68c8;
+  }
 }
 
 :host-context(body.dark) .time-value{
@@ -53,4 +69,11 @@
 
 :host-context(body.dark) .target-time{
   fill: white;
+}
+
+// Theme-specific styles
+.purple-theme {
+  .progress-bg {
+    stroke: rgba(103, 58, 183, 0.2);
+  }
 }

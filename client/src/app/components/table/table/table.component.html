@@ -11,7 +11,8 @@
     </button>
   </div>
 
-  <div class="table-wrapper mat-elevation-z8">
+  <!-- Desktop/Tablet Table View -->
+  <div *ngIf="!isMobile" class="table-wrapper mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort class="data-table">
       <!-- Actions Column -->
       <tr class="no-data-row" *matNoDataRow>
@@ -61,7 +62,8 @@
             (contextmenu)="onRightClick($event, element)">
           <span class="cell-content">{{ formatCellValue(element[column], column) }}</span>
         </td>
-      </ng-container>      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
+      </ng-container>      
+      <tr mat-header-row *matHeaderRowDef="computedColumns" class="header-row"></tr>
       <tr mat-row *matRowDef="let row; columns: computedColumns" class="data-row" data-cy="table-row"></tr>
     </table>
 
@@ -70,8 +72,67 @@
     </mat-paginator>
   </div>
 
-  <!-- Context Menu -->
-  <div *ngIf="contextMenuVisible" 
+  <!-- Mobile Card View -->
+  <div *ngIf="isMobile" class="mobile-cards-container">
+    <!-- Empty State -->
+    <div *ngIf="dataSource.data.length === 0" class="mobile-empty-state">
+      <mat-icon class="empty-icon">inbox</mat-icon>
+      <h3>No data available</h3>
+      <p>Add some items to get started</p>
+    </div>
+
+    <!-- Data Cards -->
+    <div *ngFor="let element of dataSource.data; let i = index" class="mobile-card" data-cy="mobile-card">
+      <mat-card class="data-card">
+        <mat-card-header>
+          <div class="card-header-content">
+            <div class="primary-info">
+              <h3 class="primary-title">{{ getPrimaryField(element).value }}</h3>
+              <span class="primary-label">{{ getPrimaryField(element).label }}</span>
+            </div>
+            <div class="card-actions" *ngIf="enableEdit || enableDelete">
+              <button mat-icon-button [matMenuTriggerFor]="cardMenu" class="menu-trigger">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #cardMenu="matMenu">
+                <button *ngIf="enableEdit" mat-menu-item (click)="editHandler(element)">
+                  <mat-icon>edit</mat-icon>
+                  <span>{{ editButtonLabel }}</span>
+                </button>
+                <button *ngIf="enableDelete" mat-menu-item (click)="deleteHandler(element)">
+                  <mat-icon>delete</mat-icon>
+                  <span>{{ deleteButtonLabel }}</span>
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+          <div *ngIf="getStatusChip(element)" class="status-chip">
+            <mat-chip [color]="getStatusChip(element)?.color" selected>
+              {{ getStatusChip(element)?.text }}
+            </mat-chip>
+          </div>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="secondary-info">
+            <div *ngFor="let field of getSecondaryFields(element)" class="info-row">
+              <span class="info-label">{{ field.label }}:</span>
+              <span class="info-value">{{ field.value }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Mobile Paginator -->
+    <div class="mobile-paginator-wrapper">
+      <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons class="mobile-paginator">
+      </mat-paginator>
+    </div>
+  </div>
+
+  <!-- Context Menu (Desktop only) -->
+  <div *ngIf="contextMenuVisible && !isMobile" 
        class="context-menu" 
        [style.top.px]="contextMenuPosition.y" 
        [style.left.px]="contextMenuPosition.x">

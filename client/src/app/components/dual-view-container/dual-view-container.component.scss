@@ -2,23 +2,40 @@
 @use '../../../styles/_theme-mixins' as mixins;
 @use '../../../styles.scss' as theme;
 @use '../../../palettes.scss' as palettes;
+@use '../../../styles/_theme-variables' as vars;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
-$accent: mat.get-color-from-palette(theme.$my-accent, 500);
-$warn: mat.get-color-from-palette(theme.$my-warn, 500);
-$background-light: #ffffff;
-$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
-$text-primary-light: rgba(0, 0, 0, 0.87);
-$text-primary-dark: rgba(255, 255, 255, 0.87);
-$text-secondary-light: #5f6368;
-$text-secondary-dark: rgba(255, 255, 255, 0.7);
-$divider-light: #e0e0e0;
-$divider-dark: rgba(255, 255, 255, 0.12);
+// Essential color variables for this component
+$primary: vars.$primary-light;
+$accent: vars.$accent-light;
+$warn: vars.$warn-light;
+$background-light: vars.$background-light-card;
+$background-dark: vars.$background-dark-card;
+$text-primary-light: vars.$text-primary-light;
+$text-primary-dark: vars.$text-primary-dark;
+$text-secondary-light: vars.$text-secondary-light;
+$text-secondary-dark: vars.$text-secondary-dark;
+$divider-light: vars.$divider-light;
+$divider-dark: vars.$divider-dark;
 
 .dual-view-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  // FullCalendar CSS custom properties for light theme
+  --fc-border-color: #{vars.$border-light};
+  --fc-button-bg-color: #{vars.$primary-light};
+  --fc-button-border-color: #{vars.$primary-light};
+  --fc-button-text-color: #{vars.$text-primary-dark};
+  --fc-button-hover-bg-color: #{vars.$primary-dark};
+  --fc-button-hover-border-color: #{vars.$primary-dark};
+  --fc-button-active-bg-color: #{vars.$primary-dark};
+  --fc-button-active-border-color: #{vars.$primary-dark};
+  --fc-today-bg-color: #{vars.$purple-glass-light};
+  --fc-page-bg-color: #{vars.$background-light-card};
+  --fc-neutral-bg-color: #{vars.$background-light-card};
+  --fc-neutral-text-color: #{vars.$text-primary-light};
+  --fc-list-event-hover-bg-color: #{vars.$purple-glass-light};
   
   .table-header-controls,
   .calendar-header-controls {
@@ -54,10 +71,6 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         font-size: 16px;
         height: 16px;
         width: 16px;
-      }
-
-      &:hover {
-        background-color: mat.get-color-from-palette(theme.$my-primary, 600);
       }
     }
   }
@@ -100,29 +113,25 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 
   ::ng-deep .mat-button-toggle {
-    background-color: #f5f5f5;
-    color: #666;
-    transition: all 0.2s ease;
-    border: 1px solid #e0e0e0;
+    @include mixins.purple-glass-accent();
+    color: vars.$text-secondary-light;
     height: 32px;
+    border-radius: 0 !important;
     
     &:first-child {
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
+      border-top-left-radius: 4px !important;
+      border-bottom-left-radius: 4px !important;
     }
     
     &:last-child {
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
+      border-top-right-radius: 4px !important;
+      border-bottom-right-radius: 4px !important;
     }
-  }
-
-  ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-    background-color: #e8e8e8;
-  }
-
-  ::ng-deep .mat-button-toggle-checked:hover {
-    background-color: mat.get-color-from-palette(theme.$my-primary, 600);
+    
+    &.mat-button-toggle-checked {
+      @include mixins.glass-button();
+      color: white;
+    }
   }
 
   .view-content {
@@ -136,9 +145,107 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       margin: 0;
     }
   }
+
+  // FullCalendar light theme styles
+  ::ng-deep .fc {
+    background-color: vars.$background-light-card !important;
+  }
+
+  ::ng-deep .fc .fc-view-harness {
+    background-color: vars.$background-light-card !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid {
+    background-color: vars.$background-light-card !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid {
+    background-color: vars.$background-light-card !important;
+  }
+
+  ::ng-deep .fc .fc-button {
+    background-color: vars.$primary-light !important;
+    border-color: vars.$primary-light !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button:hover:not(:disabled) {
+    background-color: vars.$primary-dark !important;
+    border-color: vars.$primary-dark !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button.fc-button-active {
+    background-color: vars.$primary-dark !important;
+    border-color: vars.$primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary {
+    background-color: vars.$primary-light !important;
+    border-color: vars.$primary-light !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary:hover:not(:disabled) {
+    background-color: vars.$primary-dark !important;
+    border-color: vars.$primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary:disabled {
+    background-color: vars.$text-hint-light !important;
+    border-color: vars.$text-hint-light !important;
+    color: vars.$text-secondary-light !important;
+  }
+
+  ::ng-deep .fc .fc-toolbar-title {
+    color: vars.$text-primary-light !important;
+  }
+
+  ::ng-deep .fc .fc-col-header-cell-cushion {
+    color: vars.$text-primary-light !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid-day-number {
+    color: vars.$text-primary-light !important;
+  }
+
+  ::ng-deep .fc .fc-day-today {
+    background-color: vars.$purple-glass-light !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid {
+    border-color: vars.$border-light !important;
+  }
+
+  ::ng-deep .fc .fc-col-header-cell {
+    border-color: vars.$border-light !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid-day {
+    border-color: vars.$border-light !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid-section > td {
+    border-color: vars.$border-light !important;
+  }
 }
 
 :host-context(body.dark) .dual-view-container {
+
+  // FullCalendar CSS custom properties for dark theme
+  --fc-border-color: #{vars.$border-dark};
+  --fc-button-bg-color: #{vars.$primary-dark};
+  --fc-button-border-color: #{vars.$primary-dark};
+  --fc-button-text-color: #{vars.$text-primary-dark};
+  --fc-button-hover-bg-color: #{vars.$primary-light};
+  --fc-button-hover-border-color: #{vars.$primary-light};
+  --fc-button-active-bg-color: #{vars.$primary-light};
+  --fc-button-active-border-color: #{vars.$primary-light};
+  --fc-today-bg-color: #{vars.$purple-glass-dark};
+  --fc-page-bg-color: #{vars.$background-dark-card};
+  --fc-neutral-bg-color: #{vars.$background-dark-card};
+  --fc-neutral-text-color: #{vars.$text-primary-dark};
+  --fc-list-event-hover-bg-color: #{vars.$purple-glass-dark};
 
   .filter-container {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -187,13 +294,104 @@ $divider-dark: rgba(255, 255, 255, 0.12);
   }
 
   ::ng-deep .mat-button-toggle {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    @include mixins.purple-glass-accent();
+    background-color: vars.$glass-background-dark;
+    color: vars.$text-secondary-dark;
+    border: 1px solid vars.$border-dark;
+    border-radius: 0 !important;
 
     &:hover:not(.mat-button-toggle-checked) {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: vars.$glass-background-dark-elevated;
     }
+
+    &.mat-button-toggle-checked {
+      @include mixins.glass-button();
+      background-color: vars.$purple-glass-dark !important;
+      color: vars.$text-primary-dark !important;
+    }
+  }
+
+  // FullCalendar dark theme overrides for this component
+  ::ng-deep .fc {
+    background-color: vars.$background-dark-card !important;
+  }
+
+  ::ng-deep .fc .fc-view-harness {
+    background-color: vars.$background-dark-card !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid {
+    background-color: vars.$background-dark-card !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid {
+    background-color: vars.$background-dark-card !important;
+  }
+
+  ::ng-deep .fc .fc-button {
+    background-color: vars.$primary-dark !important;
+    border-color: vars.$primary-dark !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button:hover:not(:disabled) {
+    background-color: vars.$primary-light !important;
+    border-color: vars.$primary-light !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button.fc-button-active {
+    background-color: vars.$primary-light !important;
+    border-color: vars.$primary-light !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary {
+    background-color: vars.$primary-dark !important;
+    border-color: vars.$primary-dark !important;
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary:hover:not(:disabled) {
+    background-color: vars.$primary-light !important;
+    border-color: vars.$primary-light !important;
+  }
+
+  ::ng-deep .fc .fc-button-primary:disabled {
+    background-color: vars.$text-hint-dark !important;
+    border-color: vars.$text-hint-dark !important;
+    color: vars.$text-secondary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-toolbar-title {
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-col-header-cell-cushion {
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid-day-number {
+    color: vars.$text-primary-dark !important;
+  }
+
+  ::ng-deep .fc .fc-day-today {
+    background-color: vars.$purple-glass-dark !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid {
+    border-color: vars.$border-dark !important;
+  }
+
+  ::ng-deep .fc .fc-col-header-cell {
+    border-color: vars.$border-dark !important;
+  }
+
+  ::ng-deep .fc .fc-daygrid-day {
+    border-color: vars.$border-dark !important;
+  }
+
+  ::ng-deep .fc .fc-scrollgrid-section > td {
+    border-color: vars.$border-dark !important;
   }
 }
 

@@ -1,22 +1,24 @@
 @use '@angular/material' as mat;
 @use '../../../../styles/_theme-mixins' as mixins;
 @use '../../../../styles.scss' as theme;
+@use '../../../../styles/_theme-variables' as vars;
 
-$primary: mat.get-color-from-palette(theme.$my-primary, 500);
-$accent: mat.get-color-from-palette(theme.$my-accent, 500);
-$warn: mat.get-color-from-palette(theme.$my-warn, 500);
-$background-light: #ffffff;
-$background-dark: mat.get-color-from-palette(mat.$grey-palette, 900);
-$text-primary-light: rgba(0, 0, 0, 0.87);
-$text-primary-dark: rgba(255, 255, 255, 0.87);
-$text-secondary-light: #5f6368;
-$text-secondary-dark: rgba(255, 255, 255, 0.7);
-$divider-light: #e0e0e0;
-$divider-dark: rgba(255, 255, 255, 0.12);
+// Quick fix - essential color variables for this component
+$primary: vars.$primary-light;
+$accent: vars.$accent-light;
+$warn: vars.$warn-light;
+$background-light: vars.$background-light-card;
+$background-dark: vars.$background-dark-card;
+$text-primary-light: vars.$text-primary-light;
+$text-primary-dark: vars.$text-primary-dark;
+$text-secondary-light: vars.$text-secondary-light;
+$text-secondary-dark: vars.$text-secondary-dark;
+$divider-light: vars.$divider-light;
+$divider-dark: vars.$divider-dark;
 
 .generic-table-container {
   font-family: 'Roboto', sans-serif;
-  color: $text-primary-light;
+  color: vars.$text-primary-light;
 
   .table-header {
     display: flex;
@@ -35,19 +37,14 @@ $divider-dark: rgba(255, 255, 255, 0.12);
         height: 18px;
         width: 18px;
       }
-
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 12px rgba($primary, 0.2);
-      }
     }
   }
 
   .table-wrapper {
     border-radius: 12px;
     overflow: hidden;
-    background: $background-light;
-    border: 1px solid $divider-light;
+    background: vars.$background-light-card;
+    border: 1px solid vars.$divider-light;
     
     @media (max-width: 768px) {
       overflow-x: auto;
@@ -304,6 +301,285 @@ $divider-dark: rgba(255, 255, 255, 0.12);
       ::ng-deep .mat-mdc-paginator-page-size {
         flex: 1;
         min-width: 0;
+      }
+    }
+  }
+}
+
+.mobile-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 4px;
+
+  .mobile-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: $text-secondary-light;
+
+    .empty-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  }
+
+  .mobile-card {
+    .data-card {
+      background: $background-light;
+      border: 1px solid $divider-light;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba($primary, 0.15);
+      }
+
+      .mat-mdc-card-header {
+        padding: 16px 16px 8px 16px;
+        
+        .card-header-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          width: 100%;
+          margin-bottom: 8px;
+
+          .primary-info {
+            flex: 1;
+            min-width: 0;
+
+            .primary-title {
+              font-size: 18px;
+              font-weight: 600;
+              margin: 0 0 4px 0;
+              color: $text-primary-light;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .primary-label {
+              font-size: 12px;
+              color: $text-secondary-light;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              font-weight: 500;
+            }
+          }
+
+          .card-actions {
+            flex-shrink: 0;
+            margin-left: 16px;
+
+            .menu-trigger {
+              color: $text-secondary-light;
+              
+              &:hover {
+                color: $primary;
+                background-color: rgba($primary, 0.08);
+              }
+            }
+          }
+        }
+
+        .status-chip {
+          .mat-mdc-chip {
+            font-size: 12px;
+            height: 24px;
+            border-radius: 12px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .mat-mdc-card-content {
+        padding: 0 16px 16px 16px;
+
+        .secondary-info {
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba($divider-light, 0.5);
+            
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .info-label {
+              font-size: 13px;
+              color: $text-secondary-light;
+              font-weight: 500;
+              flex-shrink: 0;
+              margin-right: 16px;
+              min-width: 80px;
+            }
+
+            .info-value {
+              font-size: 14px;
+              color: $text-primary-light;
+              text-align: right;
+              flex: 1;
+              min-width: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .mobile-paginator-wrapper {
+    margin-top: 16px;
+    background: $background-light;
+    border: 1px solid $divider-light;
+    border-radius: 12px;
+    overflow: hidden;
+
+    .mobile-paginator {
+      background: transparent;
+      border: none;
+      
+      ::ng-deep .mat-mdc-paginator-container {
+        padding: 8px 16px;
+        min-height: 48px;
+      }
+      
+      ::ng-deep .mat-mdc-paginator-page-size-label,
+      ::ng-deep .mat-mdc-paginator-range-label {
+        font-size: 12px;
+      }
+      
+      ::ng-deep .mat-mdc-icon-button {
+        width: 36px;
+        height: 36px;
+        
+        .mat-icon {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+:host-context(body.dark) {
+  .mobile-cards-container {
+    .mobile-empty-state {
+      color: $text-secondary-dark;
+    }
+
+    .mobile-card {
+      .data-card {
+        background: $background-dark;
+        border-color: $divider-dark;
+        
+        &:hover {
+          box-shadow: 0 4px 20px rgba($primary, 0.25);
+        }
+
+        .mat-mdc-card-header {
+          .card-header-content {
+            .primary-info {
+              .primary-title {
+                color: $text-primary-dark;
+              }
+
+              .primary-label {
+                color: $text-secondary-dark;
+              }
+            }
+
+            .card-actions {
+              .menu-trigger {
+                color: $text-secondary-dark;
+                
+                &:hover {
+                  color: $primary;
+                  background-color: rgba($primary, 0.12);
+                }
+              }
+            }
+          }
+        }
+
+        .mat-mdc-card-content {
+          .secondary-info {
+            .info-row {
+              border-bottom-color: rgba($divider-dark, 0.5);
+
+              .info-label {
+                color: $text-secondary-dark;
+              }
+
+              .info-value {
+                color: $text-primary-dark;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .mobile-paginator-wrapper {
+      background: $background-dark;
+      border-color: $divider-dark;
+    }
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .generic-table-container {
+    .table-header {
+      .add-button {
+        padding: 10px 20px;
+      }
+    }
+    
+    .data-table {
+      .column-cell,
+      .column-header {
+        padding: 12px 16px;
+        
+        .cell-content {
+          max-width: 200px;
+        }
+      }
+      
+      .actions-cell {
+        .action-buttons {
+          gap: 8px;
+          
+          .edit-button,
+          .delete-button {
+            padding: 6px 12px;
+            
+            .button-label {
+              display: none;
+            }
+          }
+        }
       }
     }
   }

@@ -1,3 +1,5 @@
+@use '../../../styles/_theme-variables' as vars;
+
 .calendar-app-container {
     height: 100%;
     display: flex;
@@ -7,12 +9,13 @@
 .calendar-app-sidenav-container {
     flex: 1;
     height: 100%;
+    border-radius: 15px;
 }
 
 .calendar-app-sidenav {
     width: 320px;
     border-right: none;
-    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: vars.$elevation-2;
 }
 
 .calendar-app-sidebar-header {
@@ -80,7 +83,7 @@
 }
 
 .event-item {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid vars.$border-light;
     height: auto !important;
     padding: 16px 0;
     min-height: 60px;
@@ -109,13 +112,13 @@
 
 .event-date {
     font-weight: 500;
-    color: #6750a4;
+    color: vars.$primary-light;
     margin-bottom: 4px;
     font-size: 0.875rem;
 }
 
 .event-title {
-    color: rgba(0, 0, 0, 0.87);
+    color: vars.$text-primary-light;
     font-size: 0.9rem;
     white-space: nowrap;
     overflow: hidden;
@@ -131,7 +134,7 @@
 }
 
 .event-icon {
-    color: #6750a4;
+    color: vars.$primary-light;
     transition: all 0.2s ease;
     width: 32px !important;
     height: 32px !important;
@@ -165,13 +168,13 @@
 }
 
 .event-icon:hover {
-    color: #ffffff;
-    background-color: #6750a4;
+    color: vars.$text-primary-dark;
+    background-color: vars.$primary-light;
 }
 
 .event-icon--delete:hover {
-    color: #ffffff;
-    background-color: #ff5449;
+    color: vars.$text-primary-dark;
+    background-color: vars.$status-error;
 }
 
 .event-icon mat-icon {
@@ -187,31 +190,12 @@
 }
 
 .no-events {
-    color: rgba(0, 0, 0, 0.54);
+    color: vars.$text-secondary-light;
     font-style: italic;
 }
 
 :host ::ng-deep .fc {
     max-width: 100%;
-}
-
-:host ::ng-deep .fc .fc-toolbar-title {
-    font-size: 1.5rem;
-}
-
-:host ::ng-deep .fc .fc-button {
-    background-color: #6750a4;
-    border-color: #6750a4;
-}
-
-:host ::ng-deep .fc .fc-button:hover {
-    background-color: #5f499c;
-    border-color: #5f499c;
-}
-
-:host ::ng-deep .fc .fc-button.fc-button-active {
-    background-color: #5f499c;
-    border-color: #5f499c;
 }
 
 :host ::ng-deep .fc .fc-event {
@@ -225,35 +209,89 @@
     filter: brightness(0.9);
 }
 
-:host ::ng-deep .fc .fc-day-today {
-    background-color: rgba(103, 80, 164, 0.1) !important;
-}
-
 :host-context(body.dark) {
+    .calendar-app-sidenav {
+        box-shadow: vars.$elevation-2-dark;
+        background-color: vars.$background-dark-surface !important;
+        
+        .mat-drawer-inner-container {
+            background-color: vars.$background-dark-surface !important;
+        }
+    }
+    
+    .calendar-app-sidebar-header {
+        background-color: vars.$background-dark-surface !important;
+        
+        h1 {
+            color: vars.$text-primary-dark !important;
+        }
+    }
+    
+    .calendar-app-sidebar-content {
+        background-color: vars.$background-dark-surface !important;
+    }
+    
+    .events-header {
+        color: vars.$text-primary-dark !important;
+    }
+    
+    .calendar-card {
+        background-color: vars.$background-dark-card !important;
+        
+        .mat-mdc-card {
+            background-color: vars.$background-dark-card !important;
+        }
+    }
+    
+    .events-card {
+        background-color: vars.$background-dark-card !important;
+        
+        .mat-mdc-card {
+            background-color: vars.$background-dark-card !important;
+        }
+    }
+    
+    .events-list {
+        background-color: vars.$background-dark-card !important;
+        
+        .mat-mdc-list {
+            background-color: vars.$background-dark-card !important;
+        }
+    }
+    
+    .event-item {
+        border-bottom-color: vars.$border-dark;
+        background-color: vars.$background-dark-card !important;
+        
+        .mat-mdc-list-item {
+            background-color: vars.$background-dark-card !important;
+        }
+    }
+    
     .event-date {
-        color: #9585bf;
+        color: vars.$primary-dark;
     }
     
     .event-title {
-        color: rgba(255, 255, 255, 0.87);
+        color: vars.$text-primary-dark;
     }
     
     .event-icon {
-        color: #9585bf;
+        color: vars.$primary-dark;
     }
     
     .event-icon:hover {
-        color: #ffffff;
-        background-color: #6750a4;
+        color: vars.$text-primary-dark;
+        background-color: vars.$primary-dark;
     }
     
     .event-icon--delete:hover {
-        color: #ffffff;
-        background-color: #ff5449;
+        color: vars.$text-primary-dark;
+        background-color: vars.$status-error;
     }
     
     .no-events {
-        color: rgba(255, 255, 255, 0.54);
+        color: vars.$text-secondary-dark;
     }
 }
 

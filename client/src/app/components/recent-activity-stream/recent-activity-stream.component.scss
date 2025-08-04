@@ -1,3 +1,8 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use '../../../styles/theme-variables' as vars;
+@use '../../../styles/theme-mixins' as mixins;
+
 :host {
   height: 100%;
   display: flex;
@@ -19,13 +24,25 @@
   gap: 12px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--mat-card-background-color, #fafafa);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-left: 4px solid transparent;
-  transition: all 0.3s ease;
+  transition: all vars.$transition-normal;
   
   &:hover {
-    background: var(--mat-card-hover-background, #f0f0f0);
-    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  :host-context(body.dark) & {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
   }
   
   &.clock-in {
@@ -44,10 +61,15 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--mat-card-background-color, white);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
   margin-top: 2px;
+  
+  :host-context(body.dark) & {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .activity-content {
@@ -65,12 +87,20 @@
 .activity-type {
   font-weight: 500;
   color: var(--mat-primary-text, #333);
+  
+  :host-context(body.dark) & {
+    color: #ffffff;
+  }
 }
 
 .activity-time {
   font-size: 0.9rem;
   color: var(--mat-secondary-text, #666);
   font-weight: 500;
+  
+  :host-context(body.dark) & {
+    color: rgba(255, 255, 255, 0.8);
+  }
 }
 
 .activity-details {
@@ -83,6 +113,10 @@
 .activity-date {
   font-size: 0.8rem;
   color: var(--mat-secondary-text, #999);
+  
+  :host-context(body.dark) & {
+    color: rgba(255, 255, 255, 0.6);
+  }
 }
 
 .duration-chip {
@@ -108,33 +142,6 @@
   p {
     margin: 0;
     font-size: 1rem;
-  }
-}
-
-:host-context(.dark) {
-  .activity-item {
-    background: var(--mat-card-dark-background, #424242);
-    
-    &:hover {
-      background: var(--mat-card-dark-hover, #505050);
-    }
-  }
-  
-  .activity-icon-container {
-    background: var(--mat-card-dark-background, #424242);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  
-  .activity-type {
-    color: var(--mat-primary-text-dark, #fff);
-  }
-  
-  .activity-time {
-    color: var(--mat-secondary-text-dark, #ccc);
-  }
-  
-  .activity-date {
-    color: var(--mat-secondary-text-dark, #999);
   }
 }
 

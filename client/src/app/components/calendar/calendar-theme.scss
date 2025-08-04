@@ -1,38 +1,41 @@
+@use '../../../styles/theme-variables' as vars;
+
 :host {
-  --mat-primary-color: #3f51b5;
-  --mat-primary-darker: #303f9f;
-  --mat-primary-lighter: rgba(63, 81, 181, 0.1);
-  --mat-accent-color: #ff4081;
-  --mat-warn-color: #f44336;
-  --mat-warn-lighter: rgba(244, 67, 54, 0.04);
-  --mat-text-primary: rgba(0, 0, 0, 0.87);
-  --mat-text-secondary: rgba(0, 0, 0, 0.54);
-  --mat-text-hint: rgba(0, 0, 0, 0.38);
-  --mat-divider-color: rgba(0, 0, 0, 0.12);
-  --mat-card-highlighted: rgba(63, 81, 181, 0.05);
-  --mat-background: #f5f5f5;
-  --mat-card-background: #ffffff;
-  --mat-icon-color: rgba(0, 0, 0, 0.54);
+  --mat-primary-color: #{vars.$purple-500};
+  --mat-primary-darker: #{vars.$purple-700};
+  --mat-primary-lighter: #{vars.$purple-glass-light};
+  --mat-accent-color: #{vars.$purple-accent};
+  --mat-warn-color: #{vars.$error-color};
+  --mat-warn-lighter: #{vars.$error-glass-light};
+  --mat-text-primary: #{vars.$text-primary-light};
+  --mat-text-secondary: #{vars.$text-secondary-light};
+  --mat-text-hint: #{vars.$text-hint-light};
+  --mat-divider-color: #{vars.$border-light};
+  --mat-card-highlighted: #{vars.$purple-glass-light};
+  --mat-background: #{vars.$background-light};
+  --mat-card-background: #{vars.$glass-background-light};
+  --mat-icon-color: #{vars.$text-secondary-light};
 }
 
 :host-context(.dark) {
-  --mat-primary-color: #5c6bc0;
-  --mat-primary-darker: #3f51b5;
-  --mat-primary-lighter: rgba(92, 107, 192, 0.1);
-  --mat-accent-color: #ff4081;
-  --mat-warn-color: #f44336;
-  --mat-warn-lighter: rgba(244, 67, 54, 0.08);
-  --mat-text-primary: rgba(255, 255, 255, 0.87);
-  --mat-text-secondary: rgba(255, 255, 255, 0.6);
-  --mat-text-hint: rgba(255, 255, 255, 0.38);
-  --mat-divider-color: rgba(255, 255, 255, 0.12);
-  --mat-card-highlighted: rgba(92, 107, 192, 0.1);
-  --mat-background: #303030;
-  --mat-card-background: #424242;
-  --mat-icon-color: rgba(255, 255, 255, 0.7);
+  --mat-primary-color: #{vars.$purple-400};
+  --mat-primary-darker: #{vars.$purple-600};
+  --mat-primary-lighter: #{vars.$purple-glass-dark};
+  --mat-accent-color: #{vars.$purple-accent};
+  --mat-warn-color: #{vars.$error-color};
+  --mat-warn-lighter: #{vars.$error-glass-dark};
+  --mat-text-primary: #{vars.$text-primary-dark};
+  --mat-text-secondary: #{vars.$text-secondary-dark};
+  --mat-text-hint: #{vars.$text-hint-dark};
+  --mat-divider-color: #{vars.$border-dark};
+  --mat-card-highlighted: #{vars.$purple-glass-dark};
+  --mat-background: #{vars.$background-dark};
+  --mat-card-background: #{vars.$glass-background-dark};
+  --mat-icon-color: #{vars.$text-secondary-dark};
   
   .calendar-app-sidenav {
     background-color: #424242;
+    border-radius: 15px;
   }
   
   .calendar-app-main-content {

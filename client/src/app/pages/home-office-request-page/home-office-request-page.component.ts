@@ -174,13 +174,11 @@ export class HomeOfficeRequestPageComponent implements OnDestroy, AfterViewInit 
   }
 
   onCalendarEventAdded(event: EventApi): void {
-    const newRequest: HomeOfficeRequest = {
-      id: Number(event.id) || Date.now(),
+    const newRequest: Omit<HomeOfficeRequest, 'id' | 'status'> = {
       startDate: event.start ? this.dateFormattingService.formatDateISO(event.start) : '',
       endDate: event.end ? this.dateFormattingService.formatDateISO(event.end) : '',
       reason: event.title,
-      location: 'Default Office',
-      status: 'pending'
+      location: 'Default Office'
     };
     this.homeOfficeService.addRequest(newRequest);
   }

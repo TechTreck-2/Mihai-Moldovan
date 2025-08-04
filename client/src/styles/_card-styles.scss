@@ -1,40 +1,56 @@
 
-.app-card,
-mat-card,
-.holiday-summary,
-.events-card,
-.calendar-card,
-.login-card,
-.office-list {
-  border: none !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-}
-
-:host-context(body.dark) {
-  .app-card,
-  mat-card,
-  .holiday-summary,
-  .events-card,
-  .calendar-card,
-  .login-card,
-  .office-list {
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  }
-}
+@use 'theme-variables' as vars;
 
 .filter-container,
 .table-wrapper {
-  border: 1px solid #ffffff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  border: none !important;
+  border-radius: vars.$glass-border-radius !important;
+  background: vars.$glass-background-light !important;
+  backdrop-filter: vars.$glass-backdrop-filter !important;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter !important;
+  border: vars.$glass-border-light !important;
+  box-shadow: vars.$glass-shadow-light !important;
+  transition: all vars.$transition-normal !important;
 }
 
 :host-context(body.dark) {
   .filter-container,
   .table-wrapper {
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    background: vars.$glass-background-dark !important;
+    border: vars.$glass-border-dark !important;
+    box-shadow: vars.$glass-shadow-dark !important;
+  }
+}
+
+// Special glass effects for buttons
+.mat-raised-button,
+.mat-fab,
+.mat-mini-fab {
+  backdrop-filter: vars.$glass-backdrop-filter !important;
+  -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter !important;
+  transition: all vars.$transition-fast !important;
+  
+  &.mat-primary {
+    background: vars.$button-glass-background-light !important;
+    border: 1px solid rgba(103, 80, 164, 0.3) !important;
+    
+    &:hover {
+      background: vars.$button-glass-hover-light !important;
+    }
+  }
+}
+
+:host-context(body.dark) {
+  .mat-raised-button,
+  .mat-fab,
+  .mat-mini-fab {
+    &.mat-primary {
+      background: vars.$button-glass-background-dark !important;
+      border-color: rgba(103, 80, 164, 0.5) !important;
+      
+      &:hover {
+        background: vars.$button-glass-hover-dark !important;
+      }
+    }
   }
 }

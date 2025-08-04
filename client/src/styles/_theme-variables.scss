@@ -1,0 +1,116 @@
+@use '@angular/material' as mat;
+@use '../palettes.scss' as palettes;
+
+// Base color definitions
+$primary-palette: palettes.$m2-primary;
+$accent-palette: palettes.$m2-accent;
+$warn-palette: palettes.$m2-error;
+
+// Light theme colors
+$background-light: #f8f9fa;
+$background-light-card: #ffffff;
+$background-light-elevated: #ffffff;
+$text-primary-light: rgba(0, 0, 0, 0.87);
+$text-secondary-light: rgba(0, 0, 0, 0.6);
+$text-hint-light: rgba(0, 0, 0, 0.38);
+$divider-light: rgba(0, 0, 0, 0.12);
+$border-light: rgba(0, 0, 0, 0.08);
+
+// Dark theme colors - Ultra dark consistent palette
+$background-dark: #080808;
+$background-dark-surface: #0f0f0f;
+$background-dark-card: #121212;
+$background-dark-elevated: #1a1a1a;
+$text-primary-dark: rgba(255, 255, 255, 0.95);
+$text-secondary-dark: rgba(255, 255, 255, 0.7);
+$text-hint-dark: rgba(255, 255, 255, 0.4);
+$divider-dark: rgba(255, 255, 255, 0.06);
+$border-dark: rgba(255, 255, 255, 0.04);
+
+// Primary colors
+$primary-light: mat.get-color-from-palette($primary-palette, 500);
+$primary-dark: mat.get-color-from-palette($primary-palette, 400);
+$primary-contrast-light: mat.get-contrast-color-from-palette($primary-palette, 500);
+$primary-contrast-dark: mat.get-contrast-color-from-palette($primary-palette, 400);
+
+// Accent colors
+$accent-light: mat.get-color-from-palette($accent-palette, 500);
+$accent-dark: mat.get-color-from-palette($accent-palette, 400);
+
+// Warning colors
+$warn-light: mat.get-color-from-palette($warn-palette, 500);
+$warn-dark: mat.get-color-from-palette($warn-palette, 400);
+
+// Glass effect variables
+$glass-backdrop-filter: blur(20px) saturate(180%);
+$glass-webkit-backdrop-filter: blur(20px) saturate(180%);
+$glass-border-radius: 12px;
+$glass-border: 1px solid rgba(255, 255, 255, 0.15);
+$glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+
+// Light theme glass
+$glass-background-light: rgba(255, 255, 255, 0.75);
+$glass-background-light-elevated: rgba(255, 255, 255, 0.85);
+$glass-border-light: 1px solid rgba(255, 255, 255, 0.3);
+$glass-shadow-light: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+// Dark theme glass - Enhanced liquid glass effects
+$glass-background-dark: rgba(18, 18, 18, 0.75);
+$glass-background-dark-elevated: rgba(26, 26, 26, 0.85);
+$glass-border-dark: 1px solid rgba(255, 255, 255, 0.08);
+$glass-shadow-dark: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+// Button glass effects - Enhanced transparency
+$button-glass-background-light: rgba(103, 80, 164, 0.85);
+$button-glass-background-dark: rgba(103, 80, 164, 0.6);
+$button-glass-hover-light: rgba(103, 80, 164, 0.95);
+$button-glass-hover-dark: rgba(103, 80, 164, 0.8);
+
+// Purple glass variants for special elements - Enhanced liquid effects
+$purple-glass-light: rgba(103, 80, 164, 0.08);
+$purple-glass-dark: rgba(103, 80, 164, 0.12);
+$purple-glass-hover-light: rgba(103, 80, 164, 0.15);
+$purple-glass-hover-dark: rgba(103, 80, 164, 0.20);
+
+// Accent glass effects for special UI elements
+$accent-glass-light: rgba(181, 131, 146, 0.08);
+$accent-glass-dark: rgba(181, 131, 146, 0.12);
+$accent-glass-hover-light: rgba(181, 131, 146, 0.15);
+$accent-glass-hover-dark: rgba(181, 131, 146, 0.20);
+
+// Success/Error glass effects
+$success-glass-light: rgba(16, 185, 129, 0.08);
+$success-glass-dark: rgba(16, 185, 129, 0.12);
+$error-glass-light: rgba(239, 68, 68, 0.08);
+$error-glass-dark: rgba(239, 68, 68, 0.12);
+
+// Status colors
+$status-success: #10b981;
+$status-warning: #f59e0b;
+$status-error: #ef4444;
+$status-info: #3b82f6;
+
+// Elevation shadows
+$elevation-1: 0 2px 4px rgba(0, 0, 0, 0.1);
+$elevation-2: 0 4px 8px rgba(0, 0, 0, 0.12);
+$elevation-3: 0 8px 16px rgba(0, 0, 0, 0.15);
+$elevation-4: 0 12px 24px rgba(0, 0, 0, 0.18);
+
+$elevation-1-dark: 0 2px 4px rgba(0, 0, 0, 0.3);
+$elevation-2-dark: 0 4px 8px rgba(0, 0, 0, 0.35);
+$elevation-3-dark: 0 8px 16px rgba(0, 0, 0, 0.4);
+$elevation-4-dark: 0 12px 24px rgba(0, 0, 0, 0.45);
+
+// Transitions
+$transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Z-index layers
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;

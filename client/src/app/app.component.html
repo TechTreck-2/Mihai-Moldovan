@@ -8,11 +8,11 @@
 <mat-sidenav-container *ngIf="!isLoginPage" class="sidenav-container">
   <mat-sidenav 
     #sidenav 
-    mode="side" 
-    opened 
+    mode="over" 
     class="sidenav desktop-sidenav"
     [fixedInViewport]="true"
-    fixedTopGap="0">
+    fixedTopGap="0"
+    [opened]="false">
     <mat-toolbar class="sidenav-header">
       <span class="app-title">TimeTracking</span>
     </mat-toolbar>
@@ -74,7 +74,7 @@
       <button 
         mat-icon-button 
         class="menu-button"
-        (click)="sidenav.toggle()"
+        (click)="toggleSidenav()"
         aria-label="Toggle navigation">
         <mat-icon>menu</mat-icon>
       </button>      <span class="toolbar-title">Dashboard</span>
@@ -100,8 +100,8 @@
       <button
         mat-icon-button 
         (click)="settings()" 
-        aria-label="Logout"
-        matTooltip="Logout">
+        aria-label="Timer Settings"
+        matTooltip="Timer Settings">
         <mat-icon>settings</mat-icon>
       </button>
     </mat-toolbar>

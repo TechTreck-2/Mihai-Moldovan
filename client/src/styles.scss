@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use 'palettes';
 @use 'sass:map';
+@use 'styles/theme-variables' as vars;
 @import 'styles/card-styles';
 @import 'styles/accessibility-fixes';
 
@@ -54,8 +55,9 @@ mat-sidenav {
 body {
   margin: 0;
   padding: 0;
-  background-color: mat.get-color-from-palette(palettes.$m2-primary, 50);
-  color: mat.get-color-from-palette(palettes.$m2-primary, 900);
+  background-color: vars.$background-light;
+  color: vars.$text-primary-light;
+  transition: background-color vars.$transition-normal, color vars.$transition-normal;
   
   @media (max-width: 768px) {
     overflow-y: auto;
@@ -79,7 +81,207 @@ body {
   @include mat.all-component-themes($my-dark-theme);
 
   body {
-    background-color: mat.get-color-from-palette(palettes.$m2-primary, 900);
-    color: mat.get-color-from-palette(palettes.$m2-primary, 50);
+    background-color: vars.$background-dark;
+    color: vars.$text-primary-dark;
   }
+  
+  // Update sidenav for consistent dark theme
+  .sidenav {
+    background-color: vars.$background-dark-surface !important;
+  }
+  
+  // Update toolbar for consistent dark theme
+  .main-toolbar {
+    background-color: vars.$background-dark-surface !important;
+  }
+  
+  // Force icon button colors in dark theme
+  mat-toolbar button[mat-icon-button] {
+    color: vars.$text-primary-dark !important;
+    
+    mat-icon {
+      color: vars.$text-primary-dark !important;
+    }
+  }
+  
+  // Force username text color in dark theme
+  mat-toolbar .username {
+    color: vars.$text-primary-dark !important;
+  }
+  
+  // Force toolbar title color in dark theme
+  mat-toolbar .toolbar-title {
+    color: vars.$text-primary-dark !important;
+  }
+}
+
+// Force icon button colors in light theme
+mat-toolbar button[mat-icon-button] {
+  color: vars.$text-primary-light !important;
+  
+  mat-icon {
+    color: vars.$text-primary-light !important;
+  }
+}
+
+// Force username text color in light theme
+mat-toolbar .username {
+  color: vars.$text-primary-light !important;
+}
+
+// Force toolbar title color in light theme
+mat-toolbar .toolbar-title {
+  color: vars.$text-primary-light !important;
+}
+
+// FullCalendar customization using recommended approach
+// Technique 1: CSS Custom Properties for FullCalendar
+:root {
+  --fc-border-color: #{vars.$border-light};
+  --fc-button-bg-color: #{vars.$primary-light};
+  --fc-button-border-color: #{vars.$primary-light};
+  --fc-button-text-color: #{vars.$text-primary-dark};
+  --fc-button-hover-bg-color: #{vars.$primary-dark};
+  --fc-button-hover-border-color: #{vars.$primary-dark};
+  --fc-button-active-bg-color: #{vars.$primary-dark};
+  --fc-button-active-border-color: #{vars.$primary-dark};
+  --fc-today-bg-color: #{vars.$purple-glass-light};
+}
+
+// Dark theme CSS custom properties
+body.dark {
+  --fc-border-color: #{vars.$border-dark};
+  --fc-button-bg-color: #{vars.$primary-dark};
+  --fc-button-border-color: #{vars.$primary-dark};
+  --fc-button-text-color: #{vars.$text-primary-dark};
+  --fc-button-hover-bg-color: #{vars.$primary-light};
+  --fc-button-hover-border-color: #{vars.$primary-light};
+  --fc-button-active-bg-color: #{vars.$primary-light};
+  --fc-button-active-border-color: #{vars.$primary-light};
+  --fc-today-bg-color: #{vars.$purple-glass-dark};
+}
+
+// Technique 2: Override specific properties with !important for maximum override power
+.fc .fc-toolbar-title {
+  color: vars.$text-primary-light !important;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: vars.$text-primary-light !important;
+}
+
+.fc .fc-daygrid-day-number {
+  color: vars.$text-primary-light !important;
+}
+
+.fc .fc-button {
+  background-color: vars.$primary-light !important;
+  border-color: vars.$primary-light !important;
+  color: vars.$text-primary-dark !important;
+}
+
+.fc .fc-button:hover:not(:disabled) {
+  background-color: vars.$primary-dark !important;
+  border-color: vars.$primary-dark !important;
+  color: vars.$text-primary-dark !important;
+}
+
+.fc .fc-button.fc-button-active {
+  background-color: vars.$primary-dark !important;
+  border-color: vars.$primary-dark !important;
+}
+
+.fc .fc-button-primary {
+  background-color: vars.$primary-light !important;
+  border-color: vars.$primary-light !important;
+  color: vars.$text-primary-dark !important;
+}
+
+.fc .fc-button-primary:hover:not(:disabled) {
+  background-color: vars.$primary-dark !important;
+  border-color: vars.$primary-dark !important;
+}
+
+.fc .fc-button-primary:disabled {
+  background-color: vars.$text-hint-light !important;
+  border-color: vars.$text-hint-light !important;
+  color: vars.$text-secondary-light !important;
+}
+
+.fc .fc-day-today {
+  background-color: vars.$purple-glass-light !important;
+}
+
+.fc .fc-scrollgrid {
+  border-color: vars.$border-light !important;
+}
+
+.fc .fc-col-header-cell {
+  border-color: vars.$border-light !important;
+}
+
+.fc .fc-daygrid-day {
+  border-color: vars.$border-light !important;
+}
+
+body.dark .fc .fc-toolbar-title {
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-col-header-cell-cushion {
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-daygrid-day-number {
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-button {
+  background-color: vars.$primary-dark !important;
+  border-color: vars.$primary-dark !important;
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-button:hover:not(:disabled) {
+  background-color: vars.$primary-light !important;
+  border-color: vars.$primary-light !important;
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-button.fc-button-active {
+  background-color: vars.$primary-light !important;
+  border-color: vars.$primary-light !important;
+}
+
+body.dark .fc .fc-button-primary {
+  background-color: vars.$primary-dark !important;
+  border-color: vars.$primary-dark !important;
+  color: vars.$text-primary-dark !important;
+}
+
+body.dark .fc .fc-button-primary:hover:not(:disabled) {
+  background-color: vars.$primary-light !important;
+  border-color: vars.$primary-light !important;
+}
+
+body.dark .fc .fc-button-primary:disabled {
+  background-color: vars.$text-hint-dark !important;
+  border-color: vars.$text-hint-dark !important;
+  color: vars.$text-secondary-dark !important;
+}
+
+body.dark .fc .fc-day-today {
+  background-color: vars.$purple-glass-dark !important;
+}
+
+body.dark .fc .fc-scrollgrid {
+  border-color: vars.$border-dark !important;
+}
+
+body.dark .fc .fc-col-header-cell {
+  border-color: vars.$border-dark !important;
+}
+
+body.dark .fc .fc-daygrid-day {
+  border-color: vars.$border-dark !important;
 }
