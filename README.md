@@ -23,6 +23,7 @@ The project is organized as a monorepo (no nx) with two main parts:
     -   SQLite
 
 
+
 ## Screenshots
 
 ### Login Page
