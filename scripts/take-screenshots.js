@@ -124,6 +124,7 @@ async function takeScreenshots() {
       
       // Navigate to the target page after setting up auth
       console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
+      console.log(`DEBUG: Full URL being used: "${pageDef.url}"`);
       await page.goto(pageDef.url);
       await page.waitForTimeout(1000); // Wait for navigation and auth check
       

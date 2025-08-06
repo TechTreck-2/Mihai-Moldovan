@@ -46,6 +46,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
+      - name: Cache backend build
+        uses: actions/cache@v4
+        with:
+          path: |
+            backend/dist
+            backend/.cache
+          key: backend-build-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}-${{ hashFiles('backend/src/**/*') }}
+          restore-keys: |
+            backend-build-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}-
+            backend-build-${{ runner.os }}-
+
       - name: Install Dependencies
         working-directory: ./backend
         run: npm ci
@@ -88,6 +99,18 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
+
+      - name: Cache Angular build
+        uses: actions/cache@v4
+        with:
+          path: |
+            client/dist
+            client/.angular/cache
+            client/node_modules/.cache
+          key: client-build-${{ runner.os }}-${{ hashFiles('client/package-lock.json') }}-${{ hashFiles('client/src/**/*', 'client/angular.json', 'client/tsconfig.json') }}
+          restore-keys: |
+            client-build-${{ runner.os }}-${{ hashFiles('client/package-lock.json') }}-
+            client-build-${{ runner.os }}-
 
       - name: Install Dependencies
         working-directory: ./client
@@ -166,13 +189,49 @@ jobs:
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
+      - name: Cache screenshots
+        uses: actions/cache@v4
+        with:
+          path: screenshots/
+          key: screenshots-${{ runner.os }}-${{ hashFiles('client/src/**/*', 'scripts/take-screenshots.js') }}
+          restore-keys: |
+            screenshots-${{ runner.os }}-
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            client/node_modules/.cache/playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('client/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: Install Client Dependencies (for Playwright)
         working-directory: ./client
         run: npm ci
 
       - name: Install Playwright browsers
         working-directory: ./client
-        run: npx playwright install --with-deps chromium
+        run: |
+          # Only install if not cached
+          if [ ! -d ~/.cache/ms-playwright ]; then
+            npx playwright install --with-deps chromium
+          else
+            echo "Playwright browsers found in cache"
+            npx playwright install-deps chromium
+          fi
+
+      - name: Check if screenshots exist
+        id: check-screenshots
+        run: |
+          if [ -d "screenshots" ] && [ "$(ls -A screenshots)" ]; then
+            echo "screenshots-exist=true" >> $GITHUB_OUTPUT
+            echo "Screenshots found in cache"
+          else
+            echo "screenshots-exist=false" >> $GITHUB_OUTPUT
+            echo "No screenshots found, will generate new ones"
+          fi
 
       - name: Wait for GitHub Pages deployment
         run: |
@@ -184,7 +243,9 @@ jobs:
         working-directory: ./client
         env:
           BASE_URL: ${{ needs.deploy-client.outputs.deployment-url }}
-        run: node take-screenshots.js
+        run: |
+          echo "Taking screenshots with BASE_URL: $BASE_URL"
+          node take-screenshots.js
 
       - name: Update README with screenshots
         working-directory: ./client
@@ -195,8 +256,8 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Add all screenshots and README changes
-          git add screenshots/ README.md
+          # Force add screenshots even though they're in .gitignore
+          git add -f screenshots/ README.md
           
           # Check if there are changes to commit
           if git diff --staged --quiet; then
