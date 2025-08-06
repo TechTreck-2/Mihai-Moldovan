@@ -11,7 +11,10 @@ async function takeScreenshots() {
   const browser = await chromium.launch();
   
   // Get base URL from environment variable or use localhost for local testing
-  const baseUrl = process.env.BASE_URL || 'http://localhost:4200';
+  let baseUrl = process.env.BASE_URL || 'http://localhost:4200';
+  
+  // Remove trailing slash to avoid double slashes in URLs
+  baseUrl = baseUrl.replace(/\/$/, '');
   
   console.log(`Taking screenshots from: ${baseUrl}`);
   

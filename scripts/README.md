@@ -59,11 +59,11 @@ These scripts are automatically used by the GitHub Actions workflow when client 
 To test the scripts locally with your development server:
 
 ```bash
-# Terminal 1: Start the app
+# Terminal 1: Start the app.
 cd client
 npm start
 
-# Terminal 2: Take screenshots
+# Terminal 2: Take screenshots.
 cd client
 BASE_URL=http://localhost:4200 npm run screenshots
 npm run screenshots:update-readme
