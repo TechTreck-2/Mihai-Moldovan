@@ -1,0 +1,11 @@
+{
+  "routes": [
+    "/absence-requests",
+    "/clocking",
+    "/holiday",
+    "/home-office",
+    "/home-office-requests",
+    "/login",
+    "/modify"
+  ]
+}
