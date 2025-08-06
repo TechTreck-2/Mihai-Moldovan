@@ -63,7 +63,7 @@ export interface TimerDisplaySettings {
                   </div>
                 </div>
                 <div class="layout-title">Vertical Timer</div>
-                <div class="layout-description">Modern vertical line with AOD-style time</div>
+                <div class="layout-description">AOD Style timer</div>
               </mat-card-content>
             </mat-card>
           </div>
