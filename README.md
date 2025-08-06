@@ -22,6 +22,27 @@ The project is organized as a monorepo (no nx) with two main parts:
     -   TypeORM
     -   SQLite
 
+
+## Screenshots
+
+### Login Page
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Login Light](screenshots/login-light.png) | ![Login Dark](screenshots/login-dark.png) |
+
+### Clock In/Out Page
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Clocking Light](screenshots/clocking-light.png) | ![Clocking Dark](screenshots/clocking-dark.png) |
+
+### Holiday Planning Page
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Holiday Light](screenshots/holiday-light.png) | ![Holiday Dark](screenshots/holiday-dark.png) |
+
+*Screenshots are automatically updated on every client code change.*
+
+
 ## Setup and Running
 
 **Prerequisites:**
@@ -152,16 +173,4 @@ The project uses different environment files:
 The backend is configured to accept requests from:
 - Local development (`http://localhost:4200`, `http://127.0.0.1:4200`)
 - GitHub Pages (`https://ccc909.github.io`, `https://*.github.io`)
-
-## Screenshots
-
-![Screenshot_13-7-2025_02539_localhost](https://github.com/user-attachments/assets/f3927986-05ef-4463-b306-684f94fc1fc8)
-![Screenshot_13-7-2025_02831_localhost](https://github.com/user-attachments/assets/fe754937-5486-4038-8100-56d6a88b8e0e)
-![Screenshot_13-7-2025_0294_localhost](https://github.com/user-attachments/assets/2cb1ce2d-1d1e-40be-873d-b1507bc84eda)
-![Screenshot_13-7-2025_02917_localhost](https://github.com/user-attachments/assets/26b91528-74b4-48e9-abd9-a5980941c7a0)
-
-
-
-
-
 
