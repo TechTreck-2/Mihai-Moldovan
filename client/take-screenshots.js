@@ -31,12 +31,13 @@ async function takeScreenshots() {
       waitFor: '[data-cy="clocking-page"], .clocking-container, .timer-container, body',
       actions: [
         async (page) => {
-          // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/#/login`);
+          // First navigate to the app root to ensure Angular is loaded
+          await page.goto(`${baseUrl}`);
+          await page.waitForTimeout(2000);
 
-          // Mock login by setting localStorage with correct format
+          // Set up authentication in localStorage (matching AuthService expectations)
           await page.evaluate(() => {
-            localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
+            localStorage.setItem('JWT_TOKEN', 'mock-jwt-token-12345');
             localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
@@ -45,15 +46,16 @@ async function takeScreenshots() {
     {
       name: 'holiday',
       url: `${baseUrl}/#/holiday`,
-      waitFor: '.holiday-planner-container, .holiday-container, body',
+      waitFor: '.holiday-planner-container, .holiday-container, .fc-header-toolbar, body',
       actions: [
         async (page) => {
-          // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/#/login`);
+          // First navigate to the app root to ensure Angular is loaded
+          await page.goto(`${baseUrl}`);
+          await page.waitForTimeout(2000);
 
-          // Mock login by setting localStorage with correct format
+          // Set up authentication in localStorage (matching AuthService expectations)
           await page.evaluate(() => {
-            localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
+            localStorage.setItem('JWT_TOKEN', 'mock-jwt-token-12345');
             localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
@@ -63,7 +65,7 @@ async function takeScreenshots() {
 
   const themes = ['light', 'dark'];
 
-  // Create screenshots directory if it doesn't exist - create in root of monorepo
+  // Create screenshots directory if it doesn't exist - create in root of monorepo1
   const screenshotsDir = path.join(process.cwd(), '..', 'screenshots');
   if (!fs.existsSync(screenshotsDir)) {
     fs.mkdirSync(screenshotsDir, { recursive: true });
@@ -78,22 +80,48 @@ async function takeScreenshots() {
 
       const page = await context.newPage();
 
-      // Mock API responses
+      // Mock API responses - more comprehensive auth handling
       await page.route('**/api/**', route => {
         const url = route.request().url();
+        const method = route.request().method();
+        
+        console.log(`API Call: ${method} ${url}`);
+        
         if (url.includes('/auth/login')) {
           route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
-              access_token: 'mock-jwt-token'
+              access_token: 'mock-jwt-token-12345',
+              user: {
+                id: 1,
+                email: 'demo@example.com',
+                name: 'Demo User'
+              }
+            })
+          });
+        } else if (url.includes('/auth/verify') || url.includes('/auth/profile')) {
+          route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              id: 1,
+              email: 'demo@example.com',
+              name: 'Demo User'
             })
           });
         } else if (url.includes('/clockings')) {
           route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify([])
+            body: JSON.stringify([
+              {
+                id: 1,
+                clockIn: '2024-08-07T09:00:00Z',
+                clockOut: null,
+                userId: 1
+              }
+            ])
           });
         } else if (url.includes('/holidays')) {
           route.fulfill({
@@ -104,15 +132,23 @@ async function takeScreenshots() {
                 id: 1,
                 holidayName: 'Summer Vacation',
                 startDate: '2024-07-15',
-                endDate: '2024-07-25'
+                endDate: '2024-07-25',
+                userId: 1
               }
             ])
           });
-        } else {
+        } else if (url.includes('/absences') || url.includes('/home-office')) {
           route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify({})
+            body: JSON.stringify([])
+          });
+        } else {
+          // Default response for any other API calls
+          route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true })
           });
         }
       });
@@ -125,8 +161,32 @@ async function takeScreenshots() {
       // Navigate to the target page after setting up auth
       console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
       console.log(`DEBUG: Full URL being used: "${pageDef.url}"`);
-      await page.goto(pageDef.url);
-      await page.waitForTimeout(1000); // Wait for navigation and auth check
+      
+      // For protected pages, reload after setting auth to ensure Angular picks up the authentication
+      if (pageDef.actions.length > 0) {
+        await page.goto(pageDef.url, { waitUntil: 'networkidle' });
+        // Wait for any redirects to complete
+        await page.waitForTimeout(3000);
+        
+        // Check if we got redirected to login, if so, set auth again and retry
+        const currentUrl = page.url();
+        console.log(`Current URL after navigation: ${currentUrl}`);
+        if (currentUrl.includes('/login')) {
+          console.log('Detected redirect to login, setting auth again...');
+          await page.evaluate(() => {
+            localStorage.setItem('JWT_TOKEN', 'mock-jwt-token-12345');
+            localStorage.setItem('CURRENT_USER', 'demo@example.com');
+          });
+          await page.goto(pageDef.url, { waitUntil: 'networkidle' });
+          await page.waitForTimeout(2000);
+          
+          const finalUrl = page.url();
+          console.log(`Final URL after retry: ${finalUrl}`);
+        }
+      } else {
+        await page.goto(pageDef.url, { waitUntil: 'networkidle' });
+        await page.waitForTimeout(1000);
+      }
 
       // Set theme preference with more comprehensive approach
       await page.evaluate((themeValue) => {

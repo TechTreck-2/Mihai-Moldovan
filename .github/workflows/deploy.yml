@@ -245,11 +245,39 @@ jobs:
           BASE_URL: ${{ needs.deploy-client.outputs.deployment-url }}
         run: |
           echo "Taking screenshots with BASE_URL: $BASE_URL"
+          echo "Current directory: $(pwd)"
+          echo "Node version: $(node --version)"
+          
+          # Run screenshot generation with more verbose output
           node take-screenshots.js
+          
+          # Debug: List contents of screenshots directory
+          echo "Screenshots created:"
+          ls -la ../screenshots/ || echo "No screenshots directory found in parent"
+          ls -la screenshots/ || echo "No screenshots directory found in client"
+          
+          # Show screenshot file sizes if they exist
+          if [ -d "../screenshots" ]; then
+            echo "Root screenshots directory contents:"
+            find ../screenshots -name "*.png" -exec ls -lh {} \;
+          fi
 
       - name: Update README with screenshots
         working-directory: ./client
-        run: node update-readme.js
+        run: |
+          echo "Updating README..."
+          echo "Current directory: $(pwd)"
+          echo "README.md location check:"
+          ls -la ../README.md || echo "README.md not found in parent directory"
+          
+          node update-readme.js
+          
+          # Debug: Check if README was modified
+          echo "README modification status:"
+          git status ../README.md || echo "Could not check README status"
+          
+          echo "Git diff for README:"
+          git diff ../README.md || echo "No changes to README or file not found"
 
       - name: Commit and push changes
         run: |

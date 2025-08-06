@@ -50,7 +50,6 @@ function updateReadmeWithScreenshots() {
     readme = readme.substring(0, startIndex) + readme.substring(endIndex);
   }
   
-  // Find insertion point (before "Setup and Running" or at the end)
   let insertIndex = readme.indexOf('## Setup and Running');
   if (insertIndex === -1) {
     insertIndex = readme.indexOf('## Development');
@@ -59,11 +58,9 @@ function updateReadmeWithScreenshots() {
     insertIndex = readme.indexOf('## Features');
   }
   if (insertIndex === -1) {
-    // Insert before the last section or at the end
     insertIndex = readme.length;
   }
   
-  // Insert the screenshot section
   readme = readme.substring(0, insertIndex) + screenshotSection + '\n' + readme.substring(insertIndex);
   
   fs.writeFileSync(readmePath, readme);
