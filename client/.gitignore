@@ -59,4 +59,7 @@ baseline.json
 # Ignore cache created with the Angular CLI.
 .angular/
 
+# Screenshots folder
+screenshots/
+
 .vscode
