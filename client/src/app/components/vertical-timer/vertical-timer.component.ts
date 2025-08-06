@@ -35,10 +35,6 @@ import { interval, Subscription } from "rxjs";
           </div>
         </div>
         
-        <div class="target-display">
-          <div class="target-label">TARGET</div>
-          <div class="target-time">{{ formatTarget() }}</div>
-        </div>
       </div>
     </div>
   `,

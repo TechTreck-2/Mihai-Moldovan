@@ -11,7 +11,6 @@
     min-height: 100vh;
   }
 
-  // Optimize performance for sidenav animations
   .mat-drawer-backdrop {
     transition: opacity vars.$transition-normal ease-in-out;
   }
@@ -73,7 +72,6 @@
   border-bottom: 1px solid vars.$border-light;
   color: vars.$text-primary-light !important;
   
-  // Only apply backdrop filter on supported browsers and when not animating
   @supports (backdrop-filter: blur(10px)) {
     backdrop-filter: vars.$glass-backdrop-filter;
     -webkit-backdrop-filter: vars.$glass-webkit-backdrop-filter;
@@ -93,7 +91,6 @@
     }
   }
   
-  // Style toolbar buttons
   button[mat-icon-button] {
     color: vars.$text-primary-light !important;
     
@@ -238,7 +235,6 @@
       border-top-color: vars.$border-dark;
     }
     
-    // Style bottom nav buttons
     button[mat-icon-button] {
       min-width: 48px;
       height: 48px;
