@@ -9,15 +9,15 @@ const fs = require('fs');
 
 async function takeScreenshots() {
   const browser = await chromium.launch();
-  
+
   // Get base URL from environment variable or use localhost for local testing
   let baseUrl = process.env.BASE_URL || 'http://localhost:4200';
-  
-  // Remove trailing slash to avoid double slashes in URLs
-  baseUrl = baseUrl.replace(/\/$/, '');
-  
+
+  // Trim whitespace and remove trailing slash to avoid double slashes in URLs
+  baseUrl = baseUrl.trim().replace(/\/$/, '');
+
   console.log(`Taking screenshots from: ${baseUrl}`);
-  
+
   const pages = [
     {
       name: 'login',
@@ -33,7 +33,7 @@ async function takeScreenshots() {
         async (page) => {
           // Navigate to login first to set up authentication properly
           await page.goto(`${baseUrl}/#/login`);
-          
+
           // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
@@ -50,7 +50,7 @@ async function takeScreenshots() {
         async (page) => {
           // Navigate to login first to set up authentication properly
           await page.goto(`${baseUrl}/#/login`);
-          
+
           // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
@@ -75,9 +75,9 @@ async function takeScreenshots() {
         viewport: { width: 1920, height: 1080 },
         colorScheme: theme
       });
-      
+
       const page = await context.newPage();
-      
+
       // Mock API responses
       await page.route('**/api/**', route => {
         const url = route.request().url();
@@ -121,23 +121,23 @@ async function takeScreenshots() {
       for (const action of pageDef.actions) {
         await action(page);
       }
-      
+
       // Navigate to the target page after setting up auth
       console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
       console.log(`DEBUG: Full URL being used: "${pageDef.url}"`);
       await page.goto(pageDef.url);
       await page.waitForTimeout(1000); // Wait for navigation and auth check
-      
+
       // Set theme preference with more comprehensive approach
       await page.evaluate((themeValue) => {
         // Set localStorage theme
         localStorage.setItem('theme-preference', themeValue);
         localStorage.setItem('theme', themeValue);
-        
+
         // Apply theme to document
         document.documentElement.setAttribute('data-theme', themeValue);
         document.documentElement.setAttribute('theme', themeValue);
-        
+
         // Add/remove theme classes
         if (themeValue === 'dark') {
           document.documentElement.classList.add('dark-theme', 'dark');
@@ -148,10 +148,10 @@ async function takeScreenshots() {
           document.documentElement.classList.add('light-theme', 'light');
           document.body.classList.add('light-theme', 'light');
         }
-        
+
         // Trigger any theme change events
         window.dispatchEvent(new CustomEvent('themechange', { detail: themeValue }));
-        
+
         // Force Angular Material theme update if available
         if (window.angular && window.angular.reloadWithDebugInfo) {
           console.log('Theme set to:', themeValue);
@@ -180,12 +180,12 @@ async function takeScreenshots() {
       });
 
       const screenshotPath = path.join(screenshotsDir, `${pageDef.name}-${theme}.png`);
-      await page.screenshot({ 
+      await page.screenshot({
         path: screenshotPath,
         fullPage: false,
         clip: { x: 0, y: 0, width: 1920, height: 1080 }
       });
-      
+
       console.log(`Screenshot saved: ${screenshotPath}`);
       await context.close();
     }
