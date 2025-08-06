@@ -1,20 +1,130 @@
-name: Update Screenshots and README
+name: Deploy Applications
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'client/**'
-      - '.github/workflows/screenshot-update.yml'
   pull_request:
     branches:
       - main
-    paths:
-      - 'client/**'
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend-changed: ${{ steps.changes.outputs.backend }}
+      client-changed: ${{ steps.changes.outputs.client }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            client:
+              - 'client/**'
+
+  deploy-backend:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend-changed == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run Linting
+        working-directory: ./backend
+        run: npm run lint
+
+      - name: Build Application
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Run Tests
+        working-directory: ./backend
+        run: npm test
+        continue-on-error: true
+
+      - name: Deploy to Railway
+        working-directory: ./backend
+        run: |
+          npm install -g @railway/cli
+          railway deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  deploy-client:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.client-changed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.page_url }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./client
+        run: npm ci
+
+      - name: Build Application
+        working-directory: ./client
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
+        run: |
+          if [[ ! "$BACKEND_URL" =~ ^https?:// ]]; then
+            echo "Warning: BACKEND_URL doesn't include protocol. Adding https://"
+            BACKEND_URL="https://$BACKEND_URL"
+          fi
+
+          echo "Using backend URL: $BACKEND_URL"
+          if [ -f src/environments/environment.github-pages.ts ]; then
+            sed -i "s|BACKEND_URL_PLACEHOLDER|$BACKEND_URL|g" src/environments/environment.github-pages.ts
+          fi
+
+          npm run build:github
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './client/dist/techtrek'
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
   take-screenshots:
+    needs: [detect-changes, deploy-client]
+    if: needs.detect-changes.outputs.client-changed == 'true' && needs.deploy-client.result == 'success'
     runs-on: ubuntu-latest
     
     steps:
@@ -29,15 +139,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: |
-            client/package-lock.json
-            backend/package-lock.json
+          cache-dependency-path: client/package-lock.json
 
-      - name: Install Backend Dependencies
-        working-directory: ./backend
-        run: npm ci
-
-      - name: Install Client Dependencies
+      - name: Install Client Dependencies (for Playwright)
         working-directory: ./client
         run: npm ci
 
@@ -45,36 +149,11 @@ jobs:
         working-directory: ./client
         run: npx playwright install --with-deps chromium
 
-      - name: Build Backend
-        working-directory: ./backend
-        run: npm run build
-
-      - name: Build Client
-        working-directory: ./client
-        run: npm run build
-
-      - name: Start Backend Server
-        working-directory: ./backend
+      - name: Wait for GitHub Pages deployment
         run: |
-          npm start &
-          echo $! > backend.pid
-          sleep 10
-        env:
-          NODE_ENV: production
-          JWT_SECRET: test-secret-key
-          DATABASE_URL: ":memory:"
-
-      - name: Start Client Server
-        working-directory: ./client
-        run: |
-          npx serve -s dist/techtrek -l 4200 &
-          echo $! > client.pid
-          sleep 5
-
-      - name: Wait for servers to be ready
-        run: |
-          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
-          timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
+          echo "Waiting for GitHub Pages to be ready..."
+          sleep 30
+          timeout 300 bash -c 'until curl -f ${{ needs.deploy-client.outputs.deployment-url }}; do sleep 10; done'
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
@@ -88,17 +167,18 @@ jobs:
 
           async function takeScreenshots() {
             const browser = await chromium.launch();
+            const baseUrl = '${{ needs.deploy-client.outputs.deployment-url }}';
             
             const pages = [
               {
                 name: 'login',
-                url: 'http://localhost:4200/login',
+                url: `${baseUrl}/login`,
                 waitFor: '[data-cy="login-card"]',
                 actions: []
               },
               {
                 name: 'clocking',
-                url: 'http://localhost:4200/clocking',
+                url: `${baseUrl}/clocking`,
                 waitFor: '[data-cy="clocking-page"]',
                 actions: [
                   async (page) => {
@@ -116,7 +196,7 @@ jobs:
               },
               {
                 name: 'holiday',
-                url: 'http://localhost:4200/holiday',
+                url: `${baseUrl}/holiday`,
                 waitFor: '.holiday-planner-container',
                 actions: [
                   async (page) => {
@@ -235,17 +315,6 @@ jobs:
         working-directory: ./client
         run: node ../take-screenshots.js
 
-      - name: Stop servers
-        run: |
-          if [ -f backend/backend.pid ]; then
-            kill $(cat backend/backend.pid) || true
-            rm backend/backend.pid
-          fi
-          if [ -f client/client.pid ]; then
-            kill $(cat client/client.pid) || true
-            rm client/client.pid
-          fi
-
       - name: Update README with screenshots
         run: |
           cat << 'EOF' > update-readme.js
@@ -338,3 +407,9 @@ jobs:
           name: screenshots
           path: screenshots/
           retention-days: 30
+
+# Grant GITHUB_TOKEN the necessary permissions
+permissions:
+  contents: write
+  pages: write
+  id-token: write
