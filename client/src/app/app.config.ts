@@ -1,5 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, RouterModule } from '@angular/router';
+import { provideRouter, RouterModule, withHashLocation } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withNoHttpTransferCache } from '@angular/platform-browser';
@@ -9,7 +9,7 @@ import { AuthInterceptor } from './services/auth/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withHashLocation()),
     provideClientHydration(withNoHttpTransferCache()),
     provideAnimationsAsync(),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
