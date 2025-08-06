@@ -71,7 +71,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-  deploy-client:
+  build-client:
     needs: detect-changes
     if: needs.detect-changes.outputs.client-changed == 'true'
     runs-on: ubuntu-latest
@@ -126,9 +126,9 @@ jobs:
         with:
           path: './client/dist/techtrek/browser'
 
-  deploy-pages:
+  deploy-client:
     if: needs.detect-changes.outputs.client-changed == 'true' && github.event_name != 'pull_request'
-    needs: [detect-changes, deploy-client]
+    needs: [detect-changes, build-client]
     runs-on: ubuntu-latest
     
     permissions:
@@ -148,8 +148,8 @@ jobs:
         uses: actions/deploy-pages@v4
 
   take-screenshots:
-    needs: [detect-changes, deploy-pages]
-    if: needs.detect-changes.outputs.client-changed == 'true' && needs.deploy-pages.result == 'success'
+    needs: [detect-changes, deploy-client]
+    if: needs.detect-changes.outputs.client-changed == 'true' && needs.deploy-client.result == 'success'
     runs-on: ubuntu-latest
     
     steps:
@@ -178,7 +178,7 @@ jobs:
         run: |
           echo "Waiting for GitHub Pages to be ready..."
           sleep 30
-          timeout 300 bash -c 'until curl -f ${{ needs.deploy-pages.outputs.deployment-url }}; do sleep 10; done'
+          timeout 300 bash -c 'until curl -f ${{ needs.deploy-client.outputs.deployment-url }}; do sleep 10; done'
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
@@ -192,7 +192,7 @@ jobs:
 
           async function takeScreenshots() {
             const browser = await chromium.launch();
-            const baseUrl = '${{ needs.deploy-pages.outputs.deployment-url }}';
+            const baseUrl = '${{ needs.deploy-client.outputs.deployment-url }}';
             
             const pages = [
               {
