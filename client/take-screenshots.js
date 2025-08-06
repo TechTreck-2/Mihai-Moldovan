@@ -1,64 +1,60 @@
+const path = require('path');
+
+// Add client node_modules to the module search path
+const clientNodeModules = path.join(__dirname, '..', 'client', 'node_modules');
+require('module').globalPaths.push(clientNodeModules);
+
 const { chromium } = require('playwright');
 const fs = require('fs');
-const path = require('path');
 
 async function takeScreenshots() {
   const browser = await chromium.launch();
-  
+
   // Get base URL from environment variable or use localhost for local testing
-  const baseUrl = process.env.BASE_URL || 'http://localhost:4200';
-  
+  let baseUrl = process.env.BASE_URL || 'http://localhost:4200';
+
+  // Trim whitespace and remove trailing slash to avoid double slashes in URLs
+  baseUrl = baseUrl.trim().replace(/\/$/, '');
+
   console.log(`Taking screenshots from: ${baseUrl}`);
-  
+
   const pages = [
     {
       name: 'login',
-      url: `${baseUrl}/login`,
+      url: `${baseUrl}/#/login`,
       waitFor: '[data-cy="login-card"]',
       actions: []
     },
     {
       name: 'clocking',
-      url: `${baseUrl}/clocking`,
+      url: `${baseUrl}/#/clocking`,
       waitFor: '[data-cy="clocking-page"], .clocking-container, .timer-container, body',
       actions: [
         async (page) => {
           // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/login`);
-          
-          // Mock login by setting localStorage
+          await page.goto(`${baseUrl}/#/login`);
+
+          // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
-            localStorage.setItem('CURRENT_USER', JSON.stringify({
-              id: 1,
-              username: 'demo@example.com',
-              email: 'demo@example.com'
-            }));
-            // Also set any other auth-related items your app might check
-            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
       ]
     },
     {
       name: 'holiday',
-      url: `${baseUrl}/holiday`,
+      url: `${baseUrl}/#/holiday`,
       waitFor: '.holiday-planner-container, .holiday-container, body',
       actions: [
         async (page) => {
           // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/login`);
-          
-          // Mock login by setting localStorage
+          await page.goto(`${baseUrl}/#/login`);
+
+          // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
-            localStorage.setItem('CURRENT_USER', JSON.stringify({
-              id: 1,
-              username: 'demo@example.com',
-              email: 'demo@example.com'
-            }));
-            // Also set any other auth-related items your app might check
-            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
       ]
@@ -68,7 +64,7 @@ async function takeScreenshots() {
   const themes = ['light', 'dark'];
 
   // Create screenshots directory if it doesn't exist
-  const screenshotsDir = path.join(process.cwd(), '..', 'screenshots');
+  const screenshotsDir = path.join(process.cwd(), 'screenshots');
   if (!fs.existsSync(screenshotsDir)) {
     fs.mkdirSync(screenshotsDir, { recursive: true });
   }
@@ -79,13 +75,21 @@ async function takeScreenshots() {
         viewport: { width: 1920, height: 1080 },
         colorScheme: theme
       });
-      
+
       const page = await context.newPage();
-      
+
       // Mock API responses
       await page.route('**/api/**', route => {
         const url = route.request().url();
-        if (url.includes('/clockings')) {
+        if (url.includes('/auth/login')) {
+          route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              access_token: 'mock-jwt-token'
+            })
+          });
+        } else if (url.includes('/clockings')) {
           route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -113,31 +117,27 @@ async function takeScreenshots() {
         }
       });
 
-      // Navigate to page first
-      console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
-      await page.goto(pageDef.url);
-      
-      // Execute pre-actions after navigation (for auth setup)
+      // Execute pre-actions for auth setup
       for (const action of pageDef.actions) {
         await action(page);
       }
-      
-      // If this page requires auth, navigate to it again after setting up auth
-      if (pageDef.actions.length > 0) {
-        await page.goto(pageDef.url);
-        await page.waitForTimeout(1000); // Wait for navigation
-      }
-      
+
+      // Navigate to the target page after setting up auth
+      console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
+      console.log(`DEBUG: Full URL being used: "${pageDef.url}"`);
+      await page.goto(pageDef.url);
+      await page.waitForTimeout(1000); // Wait for navigation and auth check
+
       // Set theme preference with more comprehensive approach
       await page.evaluate((themeValue) => {
         // Set localStorage theme
         localStorage.setItem('theme-preference', themeValue);
         localStorage.setItem('theme', themeValue);
-        
+
         // Apply theme to document
         document.documentElement.setAttribute('data-theme', themeValue);
         document.documentElement.setAttribute('theme', themeValue);
-        
+
         // Add/remove theme classes
         if (themeValue === 'dark') {
           document.documentElement.classList.add('dark-theme', 'dark');
@@ -148,10 +148,10 @@ async function takeScreenshots() {
           document.documentElement.classList.add('light-theme', 'light');
           document.body.classList.add('light-theme', 'light');
         }
-        
+
         // Trigger any theme change events
         window.dispatchEvent(new CustomEvent('themechange', { detail: themeValue }));
-        
+
         // Force Angular Material theme update if available
         if (window.angular && window.angular.reloadWithDebugInfo) {
           console.log('Theme set to:', themeValue);
@@ -180,12 +180,12 @@ async function takeScreenshots() {
       });
 
       const screenshotPath = path.join(screenshotsDir, `${pageDef.name}-${theme}.png`);
-      await page.screenshot({ 
+      await page.screenshot({
         path: screenshotPath,
         fullPage: false,
         clip: { x: 0, y: 0, width: 1920, height: 1080 }
       });
-      
+
       console.log(`Screenshot saved: ${screenshotPath}`);
       await context.close();
     }
