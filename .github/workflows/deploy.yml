@@ -85,7 +85,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18.x'
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
@@ -96,19 +96,27 @@ jobs:
       - name: Build Application
         working-directory: ./client
         env:
-          BACKEND_URL: ${{ vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
+          BACKEND_URL: ${{ github.event.client_payload.backend_url || vars.BACKEND_URL || secrets.BACKEND_URL || 'http://localhost:3000' }}
         run: |
+          # Validate and ensure the backend URL has a protocol
           if [[ ! "$BACKEND_URL" =~ ^https?:// ]]; then
             echo "Warning: BACKEND_URL doesn't include protocol. Adding https://"
             BACKEND_URL="https://$BACKEND_URL"
           fi
-
-          echo "Using backend URL: $BACKEND_URL"
-          if [ -f src/environments/environment.github-pages.ts ]; then
-            sed -i "s|BACKEND_URL_PLACEHOLDER|$BACKEND_URL|g" src/environments/environment.github-pages.ts
-          fi
-
+          
+          # Replace the placeholder with the actual backend URL
+          echo "Before replacement:"
+          cat src/environments/environment.github-pages.ts
+          
+          sed -i "s|BACKEND_URL_PLACEHOLDER|$BACKEND_URL|g" src/environments/environment.github-pages.ts
+          
+          echo "After replacement - Using backend URL: $BACKEND_URL"
+          cat src/environments/environment.github-pages.ts
+          
           npm run build:github
+
+      - name: Create .nojekyll file
+        run: touch ./client/dist/techtrek/browser/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -116,15 +124,32 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './client/dist/techtrek'
+          path: './client/dist/techtrek/browser'
 
+  deploy-pages:
+    if: needs.detect-changes.outputs.client-changed == 'true' && github.event_name != 'pull_request'
+    needs: [detect-changes, deploy-client]
+    runs-on: ubuntu-latest
+    
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    outputs:
+      deployment-url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
       - name: Deploy to GitHub Pages
-        id: deploy
+        id: deployment
         uses: actions/deploy-pages@v4
 
   take-screenshots:
-    needs: [detect-changes, deploy-client]
-    if: needs.detect-changes.outputs.client-changed == 'true' && needs.deploy-client.result == 'success'
+    needs: [detect-changes, deploy-pages]
+    if: needs.detect-changes.outputs.client-changed == 'true' && needs.deploy-pages.result == 'success'
     runs-on: ubuntu-latest
     
     steps:
@@ -153,7 +178,7 @@ jobs:
         run: |
           echo "Waiting for GitHub Pages to be ready..."
           sleep 30
-          timeout 300 bash -c 'until curl -f ${{ needs.deploy-client.outputs.deployment-url }}; do sleep 10; done'
+          timeout 300 bash -c 'until curl -f ${{ needs.deploy-pages.outputs.deployment-url }}; do sleep 10; done'
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
@@ -167,7 +192,7 @@ jobs:
 
           async function takeScreenshots() {
             const browser = await chromium.launch();
-            const baseUrl = '${{ needs.deploy-client.outputs.deployment-url }}';
+            const baseUrl = '${{ needs.deploy-pages.outputs.deployment-url }}';
             
             const pages = [
               {
