@@ -4,10 +4,15 @@ const path = require('path');
 function updateReadmeWithScreenshots() {
   const readmePath = path.join(process.cwd(), '..', 'README.md');
   
+  console.log('Current working directory:', process.cwd());
+  console.log('Looking for README.md at:', readmePath);
+  
   if (!fs.existsSync(readmePath)) {
     console.error('README.md not found!');
     return;
   }
+  
+  console.log('README.md found, proceeding with update...');
   
   let readme = fs.readFileSync(readmePath, 'utf8');
   
@@ -50,7 +55,6 @@ function updateReadmeWithScreenshots() {
     readme = readme.substring(0, startIndex) + readme.substring(endIndex);
   }
   
-  // Find insertion point (before "Setup and Running" or at the end)
   let insertIndex = readme.indexOf('## Setup and Running');
   if (insertIndex === -1) {
     insertIndex = readme.indexOf('## Development');
@@ -59,15 +63,14 @@ function updateReadmeWithScreenshots() {
     insertIndex = readme.indexOf('## Features');
   }
   if (insertIndex === -1) {
-    // Insert before the last section or at the end
     insertIndex = readme.length;
   }
   
-  // Insert the screenshot section
   readme = readme.substring(0, insertIndex) + screenshotSection + '\n' + readme.substring(insertIndex);
   
   fs.writeFileSync(readmePath, readme);
   console.log('README.md updated with screenshots');
+  console.log('File written to:', readmePath);
 }
 
 if (require.main === module) {

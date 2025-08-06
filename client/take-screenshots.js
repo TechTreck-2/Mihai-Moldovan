@@ -63,8 +63,8 @@ async function takeScreenshots() {
 
   const themes = ['light', 'dark'];
 
-  // Create screenshots directory if it doesn't exist
-  const screenshotsDir = path.join(process.cwd(), 'screenshots');
+  // Create screenshots directory if it doesn't exist - create in root of monorepo
+  const screenshotsDir = path.join(process.cwd(), '..', 'screenshots');
   if (!fs.existsSync(screenshotsDir)) {
     fs.mkdirSync(screenshotsDir, { recursive: true });
   }
