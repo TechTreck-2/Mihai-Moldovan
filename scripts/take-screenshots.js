@@ -18,52 +18,40 @@ async function takeScreenshots() {
   const pages = [
     {
       name: 'login',
-      url: `${baseUrl}/login`,
+      url: `${baseUrl}/#/login`,
       waitFor: '[data-cy="login-card"]',
       actions: []
     },
     {
       name: 'clocking',
-      url: `${baseUrl}/clocking`,
+      url: `${baseUrl}/#/clocking`,
       waitFor: '[data-cy="clocking-page"], .clocking-container, .timer-container, body',
       actions: [
         async (page) => {
           // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/login`);
+          await page.goto(`${baseUrl}/#/login`);
           
-          // Mock login by setting localStorage
+          // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
-            localStorage.setItem('CURRENT_USER', JSON.stringify({
-              id: 1,
-              username: 'demo@example.com',
-              email: 'demo@example.com'
-            }));
-            // Also set any other auth-related items your app might check
-            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
       ]
     },
     {
       name: 'holiday',
-      url: `${baseUrl}/holiday`,
+      url: `${baseUrl}/#/holiday`,
       waitFor: '.holiday-planner-container, .holiday-container, body',
       actions: [
         async (page) => {
           // Navigate to login first to set up authentication properly
-          await page.goto(`${baseUrl}/login`);
+          await page.goto(`${baseUrl}/#/login`);
           
-          // Mock login by setting localStorage
+          // Mock login by setting localStorage with correct format
           await page.evaluate(() => {
             localStorage.setItem('JWT_TOKEN', 'mock-jwt-token');
-            localStorage.setItem('CURRENT_USER', JSON.stringify({
-              id: 1,
-              username: 'demo@example.com',
-              email: 'demo@example.com'
-            }));
-            // Also set any other auth-related items your app might check
-            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('CURRENT_USER', 'demo@example.com');
           });
         }
       ]
@@ -90,7 +78,15 @@ async function takeScreenshots() {
       // Mock API responses
       await page.route('**/api/**', route => {
         const url = route.request().url();
-        if (url.includes('/clockings')) {
+        if (url.includes('/auth/login')) {
+          route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              access_token: 'mock-jwt-token'
+            })
+          });
+        } else if (url.includes('/clockings')) {
           route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -118,20 +114,15 @@ async function takeScreenshots() {
         }
       });
 
-      // Navigate to page first
-      console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
-      await page.goto(pageDef.url);
-      
-      // Execute pre-actions after navigation (for auth setup)
+      // Execute pre-actions for auth setup
       for (const action of pageDef.actions) {
         await action(page);
       }
       
-      // If this page requires auth, navigate to it again after setting up auth
-      if (pageDef.actions.length > 0) {
-        await page.goto(pageDef.url);
-        await page.waitForTimeout(1000); // Wait for navigation
-      }
+      // Navigate to the target page after setting up auth
+      console.log(`Navigating to ${pageDef.url} (${theme} theme)...`);
+      await page.goto(pageDef.url);
+      await page.waitForTimeout(1000); // Wait for navigation and auth check
       
       // Set theme preference with more comprehensive approach
       await page.evaluate((themeValue) => {
