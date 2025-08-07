@@ -47,8 +47,6 @@ The project is organized as a monorepo (no nx) with two main parts:
 |------------|-----------|
 | ![Holiday Light](screenshots/holiday-light.png) | ![Holiday Dark](screenshots/holiday-dark.png) |
 
-*Screenshots are automatically updated on every client code change.*
-
 
 ## Setup and Running
 
