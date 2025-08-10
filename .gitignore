@@ -100,8 +100,7 @@ baseline.json
 modules/ssr-benchmarks/node_modules/
 
 # Screenshots folder
-screenshots/
-
+/screenshots/
 # Rollup test output
 /modules/rollup-test/dist/
 
