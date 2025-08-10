@@ -7,14 +7,18 @@ export default defineConfig({
       bundler: "webpack",
     },
     specPattern: "**/*.cy.ts",
+    // Ensure component tests render at a desktop viewport to avoid mobile layout
+    viewportWidth: 1440,
+    viewportHeight: 900,
+    supportFile: 'cypress/support/component.ts',
   },
 
   e2e: {
     baseUrl: 'http://localhost:4200',
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/e2e.ts',
-    viewportWidth: 1280,
-    viewportHeight: 720,
+    viewportWidth: 1920,
+    viewportHeight: 1080,
     video: false,
     screenshotOnRunFailure: true,
     defaultCommandTimeout: 10000,

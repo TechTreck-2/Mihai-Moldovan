@@ -31,5 +31,10 @@ declare global {
 
 Cypress.Commands.add('mount', mount);
 
+// Ensure component tests run with a desktop-sized viewport to prevent mobile layouts
+beforeEach(() => {
+  cy.viewport(1440, 900);
+});
+
 // Example use:
 // cy.mount(MyComponent)

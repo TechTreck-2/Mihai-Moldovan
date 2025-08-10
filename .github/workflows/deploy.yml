@@ -149,9 +149,62 @@ jobs:
         with:
           path: './client/dist/techtrek/browser'
 
+  e2e-tests:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.client-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: client
+          start: npm start
+          wait-on: 'http://localhost:4200'
+          wait-on-timeout: 180
+          browser: chrome
+          headed: false
+          spec: cypress/e2e/**/*.cy.{js,jsx,ts,tsx}
+        env:
+          CYPRESS_VIDEO: 'false'
+
+  component-tests:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.client-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Run Cypress Component tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: client
+          component: true
+          browser: chrome
+          headed: false
+        env:
+          CYPRESS_VIDEO: 'false'
+
   deploy-client:
-    if: needs.detect-changes.outputs.client-changed == 'true' && github.event_name != 'pull_request'
-    needs: [detect-changes, build-client]
+    if: needs.detect-changes.outputs.client-changed == 'true' && github.event_name != 'pull_request' && needs.e2e-tests.result == 'success' && needs.component-tests.result == 'success'
+    needs: [detect-changes, build-client, e2e-tests, component-tests]
     runs-on: ubuntu-latest
     
     permissions:
